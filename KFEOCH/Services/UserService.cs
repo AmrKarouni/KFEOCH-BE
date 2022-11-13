@@ -83,7 +83,8 @@ namespace KFEOCH.Services
         {
             var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
             var officeTypeId = _db.OfficeTypes.Where(o => o.IsAdmin).Select(x => x.Id).FirstOrDefault();
-            var licenseId = _db.Users.Where(u => u.OfficeTypeId == officeTypeId).Max(u => u.LicenseId);
+            var maxlicenseUser= _db.Users.Where(u => u.OfficeTypeId == officeTypeId).OrderByDescending(x => x.LicenseId).FirstOrDefault();
+            var licenseId = maxlicenseUser == null ? 0 : maxlicenseUser.LicenseId;
             if (userWithSameEmail != null)
             {
                 return new ResultWithMessage { Success = false, Message = "Email Already Exist!!" };
