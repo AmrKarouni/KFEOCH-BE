@@ -412,5 +412,44 @@ namespace KFEOCH.Services
             }
             return new ResultWithMessage() { Success = false, Message = $@"Role {roleName} Is Not Created !!!" };
         }
+
+        public async Task<ResultWithMessage> CheckOfficeUserId(string officeTypeId, string LicenseId)
+        {
+            var user = _userManager.FindByNameAsync("T" + officeTypeId + "L" + LicenseId);
+            if (user == null)
+            {
+                return new ResultWithMessage { Success = false};
+            }
+            return new ResultWithMessage { Success = true };
+        }
+
+        public async Task<ResultWithMessage> CheckOfficeNameArabic(string nameArabic)
+        {
+            var user = _db.Offices?.Where(x => x.NameArabic == nameArabic).FirstOrDefault();
+            if (user == null)
+            {
+                return new ResultWithMessage { Success = false };
+            }
+            return new ResultWithMessage { Success = true };
+        }
+        
+        public async Task<ResultWithMessage> CheckOfficeNameEnglish(string nameEnglish)
+        {
+            var user = _db.Offices?.Where(x => x.NameEnglish == nameEnglish).FirstOrDefault();
+            if (user == null)
+            {
+                return new ResultWithMessage { Success = false };
+            }
+            return new ResultWithMessage { Success = true };
+        }
+        public async Task<ResultWithMessage> CheckOfficeEmail(string email)
+        {
+            var user = _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new ResultWithMessage { Success = false };
+            }
+            return new ResultWithMessage { Success = true };
+        }
     }
 }

@@ -19,5 +19,9 @@ namespace KFEOCH.Services.Interfaces
         ResultWithMessage RevokeToken(string token);
         ResultWithMessage RevokeTokenById(string userId);
         Task<ResultWithMessage> AddNewRole(string roleName);
-    }
+        Task<ResultWithMessage> CheckOfficeUserId(string officeTypeId, string LicenseId);
+        Task<ResultWithMessage> CheckOfficeNameArabic(string nameArbic);
+        Task<ResultWithMessage> CheckOfficeNameEnglish(string nameEnglish);
+        Task<ResultWithMessage> CheckOfficeEmail(string email);
+    } 
 }

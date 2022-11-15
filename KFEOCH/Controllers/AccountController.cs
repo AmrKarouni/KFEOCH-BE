@@ -33,6 +33,10 @@ namespace KFEOCH.Controllers
         [HttpPost("office-register")]
         public async Task<ActionResult> OfficeRegistrationAsync(OfficeRegistrationModel model)
         {
+            if (!ModelState.IsValid )
+            {
+                return BadRequest(ModelState.Select(x => x.Value.Errors).Where(y => y.Count > 0).ToList());
+            }
             var result = await _userService.OfficeRegistrationAsync(model);
             if (result.Success == false)
             {
@@ -171,5 +175,31 @@ namespace KFEOCH.Controllers
         {
             return Ok(await _userService.AddNewRole(roleName));
         }
+
+        [HttpGet("check-userid")]
+        public async Task<IActionResult> CheckUserId(string officeTypeId,string licenseId)
+        {
+            var response = await _userService.CheckOfficeUserId(officeTypeId, licenseId);
+            return Ok(response.Success);
+        }
+        [HttpGet("check-nameArabic")]
+        public async Task<IActionResult> CheckOfficeNameArabic(string nameArabic)
+        {
+            var response = await _userService.CheckOfficeNameArabic(nameArabic);
+            return Ok(response.Success);
+        }
+        [HttpGet("check-userid")]
+        public async Task<IActionResult> CheckOfficeNameEnglish(string nameEnglish)
+        {
+            var response = await _userService.CheckOfficeNameEnglish(nameEnglish);
+            return Ok(response.Success);
+        }
+        [HttpGet("check-userid")]
+        public async Task<IActionResult> CheckUserId(string email)
+        {
+            var response = await _userService.CheckOfficeEmail(email);
+            return Ok(response.Success);
+        }
+
     }
 }
