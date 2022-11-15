@@ -20,6 +20,10 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> AdminRegistrationAsync(AdminRegistrationModel model)
         {
             var result = await _userService.AdminRegistrationAsync(model);
+            if (result.Success == false)
+            {
+                return BadRequest(new { message = result.Message});
+            }
             if (result == null)
             {
                 return BadRequest(new { message = "Email Already Exist" });
@@ -30,6 +34,10 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> OfficeRegistrationAsync(OfficeRegistrationModel model)
         {
             var result = await _userService.OfficeRegistrationAsync(model);
+            if (result.Success == false)
+            {
+                return BadRequest(new { message = result.Message });
+            }
             if (result == null)
             {
                 return BadRequest(new { message = "Email Already Exist" });
