@@ -183,21 +183,21 @@ namespace KFEOCH.Controllers
             return Ok(response.Success);
         }
         [HttpGet("check-namearabic")]
-        public async Task<IActionResult> CheckOfficeNameArabic(string nameArabic)
+        public async Task<IActionResult> CheckOfficeNameArabic(string value)
         {
-            var response = await _userService.CheckOfficeNameArabic(nameArabic);
+            var response = await _userService.CheckOfficeNameArabic(value);
             return Ok(response.Success);
         }
         [HttpGet("check-nameenglish")]
-        public async Task<IActionResult> CheckOfficeNameEnglish(string nameEnglish)
+        public async Task<IActionResult> CheckOfficeNameEnglish(string value)
         {
-            var response = await _userService.CheckOfficeNameEnglish(nameEnglish);
+            var response = await _userService.CheckOfficeNameEnglish(value);
             return Ok(response.Success);
         }
         [HttpGet("check-email")]
-        public async Task<IActionResult> CheckUserId(string email)
+        public async Task<IActionResult> CheckUserId(string value)
         {
-            var response = await _userService.CheckOfficeEmail(email);
+            var response = await _userService.CheckOfficeEmail(value);
             return Ok(response.Success);
         }
 
