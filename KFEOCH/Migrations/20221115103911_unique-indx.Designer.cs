@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221115100755_unique-indx")]
+    [Migration("20221115103911_unique-indx")]
     partial class uniqueindx
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

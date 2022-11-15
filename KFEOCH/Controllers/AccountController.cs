@@ -40,7 +40,10 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> AdminLoginAsync(AdminLoginModel model)
         {
             var result = await _userService.AdminLoginAsync(model);
-            SetRefreshTokenInCookie(result.RefreshToken);
+            if (result.IsAuthenticated)
+            {
+                SetRefreshTokenInCookie(result.RefreshToken);
+            }
             return Ok(result);
         }
 
@@ -48,7 +51,10 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> OfficeLoginAsync(OfficeLoginModel model)
         {
             var result = await _userService.OfficeLoginAsync(model);
-            SetRefreshTokenInCookie(result.RefreshToken);
+            if (result.IsAuthenticated)
+            {
+                SetRefreshTokenInCookie(result.RefreshToken);
+            }
             return Ok(result);
         }
         private void SetRefreshTokenInCookie(string refreshToken)
@@ -58,7 +64,7 @@ namespace KFEOCH.Controllers
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddDays(10)
             };
-            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+            Response.Cookies.Append("refreshToken", refreshToken.ToString(), cookieOptions);
         }
 
         [HttpPost("admin-changepassword")]

@@ -10,8 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Newtonsoft.Json.Serialization;
 
+var testConnectionString = "MochaConnection";
+var localConnectionString = "LocalConnection";
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("MochaConnection");
+var connectionString = builder.Configuration.GetConnectionString(localConnectionString);
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
