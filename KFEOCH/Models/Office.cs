@@ -1,5 +1,6 @@
 ﻿using KFEOCH.Models.Dictionaries;
 using KFEOCH.Models.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KFEOCH.Models
@@ -17,13 +18,20 @@ namespace KFEOCH.Models
             PhoneNumber = model.PhoneNumber;
             IsActive = true;
         }
+
         public int Id { get; set; }
+        [Required]
+        [StringLength(50,MinimumLength =5)]
         public string? NameArabic { get; set; }
+        [Required]
+        [StringLength(50, MinimumLength = 5)]
         public string? NameEnglish { get; set; }
         [ForeignKey("Type")]
         public int TypeId { get; set; }
         public long LicenseId { get; set; }
         public DateTime? RegistrationDate { get; set; }
+        [Required]
+        [EmailAddress]
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
         public string? FaxNumber { get; set; }

@@ -26,6 +26,30 @@ namespace KFEOCH.Contexts
         public DbSet<OfficeSpeciality>? OfficeSpecialities { get; set; }
         public DbSet<OfficeStatus>? officeStatuses { get; set; }
         public DbSet<Article>? Articles { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            
+            //Write Fluent API configurations here
 
+            //Property Configurations
+            modelBuilder.Entity<ApplicationUser>(entity => {
+                entity.HasIndex(e => new { e.LicenseId, e.OfficeTypeId})
+                .IsUnique();
+            });
+            modelBuilder.Entity<Office>(entity => {
+                entity.HasIndex(e => new { e.LicenseId,e.TypeId })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Office>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Office>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

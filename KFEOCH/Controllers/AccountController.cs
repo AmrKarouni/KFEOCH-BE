@@ -104,9 +104,9 @@ namespace KFEOCH.Controllers
             return Ok(response);
         }
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshTokenParam(RefreshToken refreshToken)
+        public async Task<IActionResult> RefreshTokenParam(RefreshTokenBindingModel refreshToken)
         {
-            var response = await _userService.RefreshTokenAsync(refreshToken.ToString());
+            var response = await _userService.RefreshTokenAsync(refreshToken.Token.ToString());
             if (!string.IsNullOrEmpty(response.RefreshToken))
                 SetRefreshTokenInCookie(response.RefreshToken);
             return Ok(response);
