@@ -18,11 +18,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> AdminRegistrationAsync(Country model)
         {
             var result = await _dictionaryService.PostCountryAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Country Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpGet("countries")]
         public IActionResult GetAllCountries()
@@ -49,11 +49,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostGovernorateAsync(Governorate model)
         {
             var result = await _dictionaryService.PostGovernorateAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Governorate Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpGet("Governorates")]
         public IActionResult GetAllGovernorates()
@@ -81,11 +81,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostAreaAsync(Area model)
         {
             var result = await _dictionaryService.PostAreaAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Area Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpGet("GetAllAreas")]
         public IActionResult GetallA()
@@ -113,11 +113,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostCertificateEntityAsync(CertificateEntity model)
         {
             var result = await _dictionaryService.PostCertificateEntityAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Certificate Entity Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpGet("delete-certificate-entity/{id}")]
         public IActionResult DeleteCertificateEntityAsync(int id)
@@ -145,11 +145,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostCourseCategoryAsync(CourseCategory model)
         {
             var result = await _dictionaryService.PostCourseCategoryAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Course Category Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpDelete("delete-course-category/{id}")]
         public IActionResult DeleteCourseCategoryAsync(int id)
@@ -188,11 +188,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostOfficeActivityAsync(OfficeActivity model)
         {
             var result = await _dictionaryService.PostOfficeActivityAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Office Activity Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpDelete("delete-office-activity/{id}")]
         public IActionResult DeleteOfficeActivityAsync(int id)
@@ -231,11 +231,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostOfficeEntityAsync(OfficeEntity model)
         {
             var result = await _dictionaryService.PostOfficeEntityAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Office Entity Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpDelete("delete-office-entity/{id}")]
         public IActionResult DeleteOfficeEntityAsync(int id)
@@ -263,11 +263,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostOfficeLegalEntityAsync(OfficeLegalEntity model)
         {
             var result = await _dictionaryService.PostOfficeLegalEntityAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Office Legal Entity Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpDelete("delete-office-legal-entity/{id}")]
         public IActionResult DeleteOfficeLegalEntityAsync(int id)
@@ -295,11 +295,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostOfficeSpecialityAsync(OfficeSpeciality model)
         {
             var result = await _dictionaryService.PostOfficeSpecialityAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Office Speciality Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpDelete("delete-office-speciality/{id}")]
         public IActionResult DeleteOfficeSpecialityAsync(int id)
@@ -338,11 +338,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostOfficeStatusAsync(OfficeStatus model)
         {
             var result = await _dictionaryService.PostOfficeStatusAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Office Status Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpDelete("delete-office-status/{id}")]
         public IActionResult DeleteOfficeStatusAsync(int id)
@@ -370,11 +370,11 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> PostOfficeTypeAsync(OfficeType model)
         {
             var result = await _dictionaryService.PostOfficeTypeAsync(model);
-            if (result == null)
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Office Type Already Exist" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
         [HttpDelete("delete-office-type/{id}")]
         public IActionResult DeleteOfficeTypeAsync(int id)

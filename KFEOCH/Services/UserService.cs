@@ -113,6 +113,7 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
 
         }
+
         private string InitialOfficeAsync(OfficeRegistrationModel model, out Office office)
         {
 
@@ -144,6 +145,7 @@ namespace KFEOCH.Services
             _db.Offices?.Add(office);
             return "";
         }
+
         public async Task<ResultWithMessage> OfficeRegistrationAsync(OfficeRegistrationModel model)
         {
             var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
@@ -386,6 +388,7 @@ namespace KFEOCH.Services
 
 
         }
+
         public ResultWithMessage RevokeToken(string token)
         {
             var user = _db.Users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
@@ -451,6 +454,7 @@ namespace KFEOCH.Services
             }
             return new ResultWithMessage { Success = true };
         }
+
         public async Task<ResultWithMessage> CheckOfficeNameArabic(string nameArabic)
         {
             var user = _db.Offices?.Where(x => x.NameArabic.ToLower() == nameArabic.ToLower()).FirstOrDefault();
@@ -460,7 +464,7 @@ namespace KFEOCH.Services
             }
             return new ResultWithMessage { Success = true };
         }
-        
+
         public async Task<ResultWithMessage> CheckOfficeNameEnglish(string nameEnglish)
         {
             var user =  _db.Offices?.Where(x => x.NameEnglish.ToLower() == nameEnglish.ToLower()).FirstOrDefault();
@@ -470,6 +474,7 @@ namespace KFEOCH.Services
             }
             return new ResultWithMessage { Success = true };
         }
+
         public async Task<ResultWithMessage> CheckOfficeEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);

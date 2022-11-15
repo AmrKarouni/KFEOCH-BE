@@ -21,10 +21,10 @@ namespace KFEOCH.Models
 
         public int Id { get; set; }
         [Required]
-        [StringLength(50,MinimumLength =5)]
+        [StringLength(100,MinimumLength =5)]
         public string? NameArabic { get; set; }
         [Required]
-        [StringLength(50, MinimumLength = 5)]
+        [StringLength(100, MinimumLength = 5)]
         public string? NameEnglish { get; set; }
         [ForeignKey("Type")]
         public int TypeId { get; set; }

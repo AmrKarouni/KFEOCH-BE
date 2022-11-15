@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221115110733_Dictionreies-unique")]
+    partial class Dictionreiesunique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,13 +86,13 @@ namespace KFEOCH.Migrations
 
                     b.Property<string>("NameArabic")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("NameEnglish")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -411,13 +413,13 @@ namespace KFEOCH.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NameArabic")
+                        .IsUnique();
+
+                    b.HasIndex("NameEnglish")
+                        .IsUnique();
+
                     b.HasIndex("OfficeTypeId");
-
-                    b.HasIndex("NameArabic", "OfficeTypeId")
-                        .IsUnique();
-
-                    b.HasIndex("NameEnglish", "OfficeTypeId")
-                        .IsUnique();
 
                     b.ToTable("OfficeSpecialities");
                 });
@@ -604,7 +606,7 @@ namespace KFEOCH.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FaxNumber")
                         .HasColumnType("nvarchar(max)");
@@ -626,13 +628,13 @@ namespace KFEOCH.Migrations
 
                     b.Property<string>("NameArabic")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("NameEnglish")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -653,9 +655,6 @@ namespace KFEOCH.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.HasIndex("NameArabic")
                         .IsUnique();

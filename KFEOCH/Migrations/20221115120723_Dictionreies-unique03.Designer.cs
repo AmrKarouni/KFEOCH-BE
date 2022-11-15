@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221115120723_Dictionreies-unique03")]
+    partial class Dictionreiesunique03
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -411,13 +413,13 @@ namespace KFEOCH.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NameArabic")
+                        .IsUnique();
+
+                    b.HasIndex("NameEnglish")
+                        .IsUnique();
+
                     b.HasIndex("OfficeTypeId");
-
-                    b.HasIndex("NameArabic", "OfficeTypeId")
-                        .IsUnique();
-
-                    b.HasIndex("NameEnglish", "OfficeTypeId")
-                        .IsUnique();
 
                     b.ToTable("OfficeSpecialities");
                 });

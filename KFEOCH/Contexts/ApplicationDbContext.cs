@@ -48,6 +48,110 @@ namespace KFEOCH.Contexts
                 entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();
             });
+            modelBuilder.Entity<Office>(entity => {
+                entity.HasIndex(e => new { e.Email })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Office>(entity => {
+                entity.HasIndex(e => new { e.Email })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Area>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Area>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<CertificateEntity>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<CertificateEntity>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Country>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Country>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<CourseCategory>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<CourseCategory>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Gender>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Gender>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Governorate>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Governorate>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeActivity>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeActivity>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeEntity>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeEntity>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeLegalEntity>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeLegalEntity>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeSpeciality>(entity => {
+                entity.HasIndex(e => new { e.NameArabic,e.OfficeTypeId })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeSpeciality>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish, e.OfficeTypeId })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeStatus>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeStatus>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeType>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeType>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
 
             base.OnModelCreating(modelBuilder);
         }

@@ -31,7 +31,7 @@ namespace KFEOCH.Services
             }
             await _db.Areas.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Area {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
 
         }
         public async Task<ResultWithMessage> DeleteAreaAsync(int id)
@@ -71,7 +71,7 @@ namespace KFEOCH.Services
             }
             await _db.Governorates.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Governorate {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteGovernorateAsync(int id)
         {
@@ -112,7 +112,7 @@ namespace KFEOCH.Services
             }
             await _db.Countries.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Country {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
 
         }
         public async Task<ResultWithMessage> DeleteCountryAsync(int id)
@@ -154,7 +154,7 @@ namespace KFEOCH.Services
             }
             await _db.CertificateEntities.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Certificate Entity {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteCertificateEntityAsync(int id)
         {
@@ -187,7 +187,7 @@ namespace KFEOCH.Services
             }
             await _db.CourseCategories.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Course Category {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteCourseCategoryAsync(int id)
         {
@@ -229,7 +229,7 @@ namespace KFEOCH.Services
             }
             await _db.OfficeActivities.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Office Activity {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeActivityAsync(int id)
         {
@@ -272,7 +272,7 @@ namespace KFEOCH.Services
             }
             await _db.OfficeEntities.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Office Entity {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeEntityAsync(int id)
         {
@@ -305,7 +305,7 @@ namespace KFEOCH.Services
             }
             await _db.OfficeLegalEntities.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Office Legal Entity {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeLegalEntityAsync(int id)
         {
@@ -338,7 +338,7 @@ namespace KFEOCH.Services
             }
             await _db.OfficeSpecialities.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Office Speciality {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeSpecialityAsync(int id)
         {
@@ -378,7 +378,7 @@ namespace KFEOCH.Services
             }
             await _db.officeStatuses.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Office Status {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeStatusAsync(int id)
         {
@@ -411,7 +411,7 @@ namespace KFEOCH.Services
             }
             await _db.OfficeTypes.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = $@"Office Type {model.NameArabic} Added !!!" };
+            return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeTypeAsync(int id)
         {
