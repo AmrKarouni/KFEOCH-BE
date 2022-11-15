@@ -113,12 +113,36 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
 
         }
-        private async Task<Office> InitialOfficeAsync(OfficeRegistrationModel model)
+        private string InitialOfficeAsync(OfficeRegistrationModel model, out Office office)
         {
-            var office = new Office(model);
+
+            var emailExist = CheckOfficeEmail(model.Email);
+            var userIdExist = CheckOfficeUserId(model.OfficeTypeId.ToString(),model.LicenseId.ToString());
+            var nameArabicExist = CheckOfficeNameArabic(model.NameArabic);
+            var nameEglishExist = CheckOfficeNameEnglish(model.NameEnglish);
+            if (emailExist.Result.Success)
+            {
+                office = null;
+                return "Email Already Exist";
+            }
+            if (userIdExist.Result.Success)
+            {
+                office = null;
+                return "License Already Exist";
+            }
+            if (nameArabicExist.Result.Success)
+            {
+                office = null;
+                return "Arabic Name Already Exist";
+            }
+            if (nameEglishExist.Result.Success)
+            {
+                office = null;
+                return "English Name Already Exist";
+            }
+            office = new Office(model);
             _db.Offices?.Add(office);
-            _db.SaveChanges();
-            return office;
+            return "";
         }
         public async Task<ResultWithMessage> OfficeRegistrationAsync(OfficeRegistrationModel model)
         {
@@ -127,7 +151,11 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = "Email Already Exist!!" };
             }
-            var office = await InitialOfficeAsync(model);
+            var isOfficeCreated = InitialOfficeAsync(model, out var office);
+            if(!string.IsNullOrEmpty(isOfficeCreated))
+            {
+                return new ResultWithMessage { Success = false, Message = isOfficeCreated };
+            }
             var user = new ApplicationUser
             {
                 UserName = "T" + model.OfficeTypeId + "L" + model.LicenseId,
@@ -143,6 +171,7 @@ namespace KFEOCH.Services
             {
 
                 await _userManager.AddToRoleAsync(user, Authorization.office_role.ToString());
+                _db.SaveChanges();
                 return new ResultWithMessage { Success = true, Message = $@"User {model.NameEnglish} has been registered!" };
             }
             return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
@@ -444,7 +473,8 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> CheckOfficeEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            var office = _db.Offices?.Where(x => x.Email == email);
+            if (user == null && office == null)
             {
                 return new ResultWithMessage { Success = false };
             }
