@@ -117,10 +117,10 @@ namespace KFEOCH.Services
         private string InitialOfficeAsync(OfficeRegistrationModel model, out Office office)
         {
 
-            var emailExist = CheckOfficeEmail(model.Email);
-            var userIdExist = CheckOfficeUserId(model.OfficeTypeId.ToString(),model.LicenseId.ToString());
-            var nameArabicExist = CheckOfficeNameArabic(model.NameArabic);
-            var nameEglishExist = CheckOfficeNameEnglish(model.NameEnglish);
+            var emailExist =  CheckOfficeEmail(model.Email);
+            var userIdExist =  CheckOfficeUserId(model.OfficeTypeId.ToString(), model.LicenseId.ToString());
+            var nameArabicExist =  CheckOfficeNameArabic(model.NameArabic);
+            var nameEglishExist =  CheckOfficeNameEnglish(model.NameEnglish);
             if (emailExist.Result.Success)
             {
                 office = null;
@@ -142,7 +142,33 @@ namespace KFEOCH.Services
                 return "English Name Already Exist";
             }
             office = new Office(model);
-            _db.Offices?.Add(office);
+            _db.Offices.Add(office);
+            return "";
+        }
+
+        private async Task<string> CheckOffice(OfficeRegistrationModel model)
+        {
+
+            var emailExist = await CheckOfficeEmail(model.Email);
+            var userIdExist = await CheckOfficeUserId(model.OfficeTypeId.ToString(), model.LicenseId.ToString());
+            var nameArabicExist = await CheckOfficeNameArabic(model.NameArabic);
+            var nameEglishExist = await CheckOfficeNameEnglish(model.NameEnglish);
+            if (emailExist.Success)
+            {
+                return "Email Already Exist";
+            }
+            if (userIdExist.Success)
+            {
+                return "License Already Exist";
+            }
+            if (nameArabicExist.Success)
+            {
+                return "Arabic Name Already Exist";
+            }
+            if (nameEglishExist.Success)
+            {
+                return "English Name Already Exist";
+            }
             return "";
         }
 
@@ -153,11 +179,14 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = "Email Already Exist!!" };
             }
-            var isOfficeCreated = InitialOfficeAsync(model, out var office);
-            if(!string.IsNullOrEmpty(isOfficeCreated))
+            var isOfficeCreated = await CheckOffice(model);
+            if (!string.IsNullOrEmpty(isOfficeCreated))
             {
                 return new ResultWithMessage { Success = false, Message = isOfficeCreated };
             }
+            var office = new Office(model);
+            _db.Offices.Add(office);
+            _db.SaveChanges();
             var user = new ApplicationUser
             {
                 UserName = "T" + model.OfficeTypeId + "L" + model.LicenseId,
@@ -168,15 +197,15 @@ namespace KFEOCH.Services
                 IsPasswordChanged = true,
                 IsActive = true
             };
+
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
 
                 await _userManager.AddToRoleAsync(user, Authorization.office_role.ToString());
-                _db.SaveChanges();
-                return new ResultWithMessage { Success = true, Message = $@"User {model.NameEnglish} has been registered!" };
+                return new ResultWithMessage { Success = true, Message = $@"User { model.NameEnglish } has been registered!!"};
             }
-            return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
+            return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault().Description };
 
         }
 
@@ -194,7 +223,7 @@ namespace KFEOCH.Services
             {
                 authenticationModel.IsAuthenticated = true;
                 authenticationModel.Email = user.Email;
-                authenticationModel.NameEnglish = user.UserName;
+                authenticationModel.UserName = user.UserName;
                 var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                 authenticationModel.Roles = rolesList.ToList();
                 JwtSecurityToken jwtSecurityToken = await CreateJwtToken(user);
@@ -241,9 +270,12 @@ namespace KFEOCH.Services
             }
             if (await _userManager.CheckPasswordAsync(user, model.Password))
             {
+                var office = _db.Offices?.FirstOrDefault(x => x.LicenseId == model.LicenseId && x.TypeId == model.OfficeTypeId);
                 authenticationModel.IsAuthenticated = true;
                 authenticationModel.Email = user.Email;
-                authenticationModel.NameEnglish = user.UserName;
+                authenticationModel.UserName = user.UserName;
+                authenticationModel.NameArabic = office.NameArabic;
+                authenticationModel.NameEnglish = office.NameEnglish;
                 var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                 authenticationModel.Roles = rolesList.ToList();
                 JwtSecurityToken jwtSecurityToken = await CreateJwtToken(user);
@@ -457,7 +489,7 @@ namespace KFEOCH.Services
 
         public async Task<ResultWithMessage> CheckOfficeNameArabic(string nameArabic)
         {
-            var user = _db.Offices?.Where(x => x.NameArabic.ToLower() == nameArabic.ToLower()).FirstOrDefault();
+            var user = _db.Offices?.FirstOrDefault(x => x.NameArabic.ToLower() == nameArabic.ToLower());
             if (user == null)
             {
                 return new ResultWithMessage { Success = false };
@@ -467,7 +499,7 @@ namespace KFEOCH.Services
 
         public async Task<ResultWithMessage> CheckOfficeNameEnglish(string nameEnglish)
         {
-            var user =  _db.Offices?.Where(x => x.NameEnglish.ToLower() == nameEnglish.ToLower()).FirstOrDefault();
+            var user = _db.Offices?.FirstOrDefault(x => x.NameEnglish.ToLower() == nameEnglish.ToLower());
             if (user == null)
             {
                 return new ResultWithMessage { Success = false };
@@ -478,7 +510,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> CheckOfficeEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            var office = _db.Offices?.Where(x => x.Email == email);
+            var office = _db.Offices?.FirstOrDefault(x => x.Email == email);
             if (user == null && office == null)
             {
                 return new ResultWithMessage { Success = false };
