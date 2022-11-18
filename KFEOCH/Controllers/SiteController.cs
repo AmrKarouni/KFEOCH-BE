@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using KFEOCH.Services;
 using KFEOCH.Models;
 
+
 namespace KFEOCH.Controllers
 {
     [Route("api/[controller]")]
@@ -38,18 +39,5 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
-
-        //[HttpPost("UploadFile")]
-        //public IActionResult SavePostImageAsync([FromForm] FileModel model)
-        //{
-        //    var filePath = "../App_Media/"+model.ImageName;
-            
-        //    var result = model.Image.CopyToAsync(new FileStream(filePath, FileMode.Create));
-        //    if (result == null)
-        //    {
-        //        return BadRequest(new { message = "No Office Found!!!" });
-        //    }
-        //    return Ok(result);
-        //}
     }
 }

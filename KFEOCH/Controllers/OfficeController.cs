@@ -28,9 +28,9 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("office/{id}")]
-        public IActionResult GetOfficeById(int id,Office model)
+        public IActionResult PutOffice(int id,Office model, [FromForm] FileModel file)
         {
-            var result = _officeService.PutOfficeAsync(id,model);
+            var result = _officeService.PutOfficeAsync(id,model,file);
             if (!result.Result.Success)
             {
                 return BadRequest(new
