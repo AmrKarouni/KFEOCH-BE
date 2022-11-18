@@ -18,5 +18,22 @@ namespace KFEOCH.Services
             var office = _db.Offices?.Find(id);
             return office ?? new Office();
         }
+        public async Task<ResultWithMessage> PutOfficeAsync(int id, Office model)
+        {
+            if (id != model.Id)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Bad Request" };
+            }
+            var office = _db.Offices.Find(id);
+            _db.Entry(office).State = EntityState.Detached;
+            if (office == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
+            }
+            office = model;
+            _db.Entry(office).State = EntityState.Modified;
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = model };
+        }
     }
 }

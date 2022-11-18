@@ -27,6 +27,18 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        
+        [HttpPut("office/{id}")]
+        public IActionResult GetOfficeById(int id,Office model)
+        {
+            var result = _officeService.PutOfficeAsync(id,model);
+            if (!result.Result.Success)
+            {
+                return BadRequest(new
+                {
+                    message = result.Result.Message
+                });
+            }
+            return Ok(result.Result.Result);
+        }
     }
 }

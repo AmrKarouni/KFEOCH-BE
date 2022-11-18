@@ -19,10 +19,32 @@ namespace KFEOCH.Models
             RegistrationDate = DateTime.UtcNow;
             IsActive = true;
         }
+        public Office(Office model)
+        {
+            NameArabic = model.NameArabic;
+            NameEnglish = model.NameEnglish;
+            EstablishmentDate = model.EstablishmentDate;
+            LicenseEndDate = model.LicenseEndDate;
+            Email = model.Email;
+            PhoneNumber = model.PhoneNumber;
+            FaxNumber = model.FaxNumber;
+            MailBox = model.MailBox;
+            PostalCode = model.PostalCode;
+            Address = model.Address;
+            AreaId = model.AreaId;
+            SEMId = model.SEMId;
+            EntityId = model.EntityId;
+            LegalEntityId = model.LegalEntityId;
+            IsVerified = model.IsVerified;
+            IsActive = model.IsActive;
+            AgreeToTerms = model.AgreeToTerms;
+            LogoUrl = model.LogoUrl;
+            ShowInHome = model.ShowInHome;
+        }
 
         public int Id { get; set; }
         [Required]
-        [StringLength(100,MinimumLength =5)]
+        [StringLength(100, MinimumLength = 5)]
         public string? NameArabic { get; set; }
         [Required]
         [StringLength(100, MinimumLength = 5)]
