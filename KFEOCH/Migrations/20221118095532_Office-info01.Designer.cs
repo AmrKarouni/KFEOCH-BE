@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221118095532_Office-info01")]
+    partial class Officeinfo01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -602,14 +604,14 @@ namespace KFEOCH.Migrations
                     b.Property<bool>("AgreeToTerms")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("AreaId")
+                    b.Property<int>("AreaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("EntityId")
+                    b.Property<int>("EntityId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("EstablishmentDate")
@@ -624,7 +626,7 @@ namespace KFEOCH.Migrations
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("LegalEntityId")
+                    b.Property<int>("LegalEntityId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("LicenseEndDate")
@@ -963,15 +965,21 @@ namespace KFEOCH.Migrations
                 {
                     b.HasOne("KFEOCH.Models.Dictionaries.Area", "Location")
                         .WithMany()
-                        .HasForeignKey("AreaId");
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeEntity", "Entity")
                         .WithMany()
-                        .HasForeignKey("EntityId");
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeLegalEntity", "LegalEntity")
                         .WithMany()
-                        .HasForeignKey("LegalEntityId");
+                        .HasForeignKey("LegalEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeType", "Type")
                         .WithMany()

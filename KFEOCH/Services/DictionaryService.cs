@@ -37,7 +37,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteAreaAsync(int id)
         {
             var area = _db.Areas.Find(id);
-            if(area != null)
+            if(area == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Area Not Found !!!" };
             }
@@ -76,7 +76,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteGovernorateAsync(int id)
         {
             var governorate = _db.Governorates.Find(id);
-            if (governorate != null)
+            if (governorate == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Governorate Not Found !!!" };
             }
@@ -118,7 +118,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteCountryAsync(int id)
         {
             var country = _db.Countries.Find(id);
-            if (country != null)
+            if (country == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Country Not Found !!!" };
             }
@@ -159,7 +159,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteCertificateEntityAsync(int id)
         {
             var cEntity = _db.CertificateEntities.Find(id);
-            if (cEntity != null)
+            if (cEntity == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Certificate Entity  Not Found !!!" };
             }
@@ -192,7 +192,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteCourseCategoryAsync(int id)
         {
             var coursecategory = _db.CourseCategories.Find(id);
-            if (coursecategory != null)
+            if (coursecategory == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Course Category  Not Found !!!" };
             }
@@ -234,7 +234,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteOfficeActivityAsync(int id)
         {
             var officeactivity = _db.OfficeActivities.Find(id);
-            if (officeactivity != null)
+            if (officeactivity == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Activity Not Found !!!" };
             }
@@ -277,7 +277,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteOfficeEntityAsync(int id)
         {
             var officeentity = _db.OfficeEntities.Find(id);
-            if (officeentity != null)
+            if (officeentity == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Entity Not Found !!!" };
             }
@@ -310,7 +310,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteOfficeLegalEntityAsync(int id)
         {
             var officelegalentity = _db.OfficeLegalEntities.Find(id);
-            if (officelegalentity != null)
+            if (officelegalentity == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Legal Entity Not Found !!!" };
             }
@@ -343,7 +343,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteOfficeSpecialityAsync(int id)
         {
             var OfficeSpeciality = _db.OfficeSpecialities.Find(id);
-            if (OfficeSpeciality != null)
+            if (OfficeSpeciality == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Speciality Not Found !!!" };
             }
@@ -383,7 +383,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteOfficeStatusAsync(int id)
         {
             var officeStatus = _db.officeStatuses.Find(id);
-            if (officeStatus != null)
+            if (officeStatus == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Status Not Found !!!" };
             }
@@ -416,7 +416,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteOfficeTypeAsync(int id)
         {
             var officeType = _db.OfficeTypes.Find(id);
-            if (officeType != null)
+            if (officeType == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Type Not Found !!!" };
             }
