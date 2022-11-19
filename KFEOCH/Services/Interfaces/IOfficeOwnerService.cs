@@ -5,9 +5,10 @@ namespace KFEOCH.Services.Interfaces
 {
     public interface IOfficeOwnerService
     {
-        List<OfficeOwnerService> GetAllOfficeOwnersByOfficeId(int id);
-        Task<ResultWithMessage> PostOfficeOwnerAsync(OfficeOwnerService model);
+        OfficeOwner GetById(int id);
+        List<OfficeOwner> GetAllOfficeOwnersByOfficeId(int id);
+        Task<ResultWithMessage> PostOfficeOwnerAsync(OfficeOwner model);
+        Task<ResultWithMessage> PutOfficeOwnerAsync(int id ,OfficeOwner model);
         Task<ResultWithMessage> DeleteOfficeOwnerAsync(int id);
-        OfficeOwnerService GetOfficeOwner(int id);
     }
 }

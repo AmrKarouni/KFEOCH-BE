@@ -11,11 +11,13 @@ namespace KFEOCH.Controllers
     {
         private readonly IOfficeService _officeService;
         private readonly IFileService _fileService;
+        private readonly IOfficeOwnerService _officeOwnerService;
 
-        public OfficeController(IOfficeService officeService, IFileService fileService)
+        public OfficeController(IOfficeService officeService, IFileService fileService,IOfficeOwnerService officeOwnerService)
         {
             _officeService = officeService;
             _fileService = fileService;
+            _officeOwnerService = officeOwnerService;
         }
 
         [HttpGet("{id}")]
@@ -55,6 +57,17 @@ namespace KFEOCH.Controllers
                 });
             }
             return Ok(result.Message);
+        }
+
+        [HttpGet("owners/{officeId}")]
+        public IActionResult GetAllOfficeOwnersByOfficeId(int officeId)
+        {
+            var result = _officeOwnerService.GetAllOfficeOwnersByOfficeId(officeId);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Owner Found!!!" });
+            }
+            return Ok(result);
         }
     }
 }

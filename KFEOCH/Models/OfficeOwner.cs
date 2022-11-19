@@ -7,6 +7,22 @@ namespace KFEOCH.Models
     public class OfficeOwner
     {
         public OfficeOwner() { }
+        public OfficeOwner(OfficeOwner model)
+        {
+            OfficeId = model.OfficeId;
+            NameArabic = model.NameArabic;
+            NameEnglish = model.NameEnglish;
+            GenderId = model.GenderId;
+            NationalId = model.NationalId;
+            SemId = model.SemId;
+            SpecialityId = model.SpecialityId;
+            ExperienceYears = model.ExperienceYears;
+            SignatureUrl = model.SignatureUrl;
+            CvUrl = model.CvUrl;
+            CertificateUrl = model.CertificateUrl;
+            IsApproved = model.IsApproved;
+            IsDeleted = model.IsDeleted;
+        }
         public int Id { get; set; }
         [ForeignKey("Office")]
         public int OfficeId { get; set; }
