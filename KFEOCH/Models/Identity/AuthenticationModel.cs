@@ -4,6 +4,7 @@
     {
         public string? Message { get; set; }
         public bool IsAuthenticated { get; set; }
+        public int? OfficeId { get; set; }
         public string? UserName { get; set; }
         public string? NameArabic { get; set; }
         public string? NameEnglish { get; set; }

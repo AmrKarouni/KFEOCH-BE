@@ -274,6 +274,7 @@ namespace KFEOCH.Services
                 authenticationModel.IsAuthenticated = true;
                 authenticationModel.Email = user.Email;
                 authenticationModel.UserName = user.UserName;
+                authenticationModel.OfficeId = office.Id;
                 authenticationModel.NameArabic = office.NameArabic;
                 authenticationModel.NameEnglish = office.NameEnglish;
                 var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);

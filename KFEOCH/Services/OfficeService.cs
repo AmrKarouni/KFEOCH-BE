@@ -9,16 +9,18 @@ namespace KFEOCH.Services
     public class OfficeService : IOfficeService
     {
         private readonly ApplicationDbContext _db;
-        public OfficeService(ApplicationDbContext db, FileService fileService)
+        private readonly IFileService _fileService;
+        public OfficeService(ApplicationDbContext db, IFileService fileService)
         {
             _db = db;
+            _fileService = fileService;
         }
         public Office GetById(int id)
         {
             var office = _db.Offices?.Find(id);
             return office ?? new Office();
         }
-        public async Task<ResultWithMessage> PutOfficeAsync(int id, Office model,FileModel logofile)
+        public async Task<ResultWithMessage> PutOfficeAsync(int id, Office model)
         {
             string logoUrl = null;
             if (id != model.Id)
@@ -34,12 +36,12 @@ namespace KFEOCH.Services
             //if (logofile != null)
             //{
 
-            //    //ResultWithMessage uploadresult = FileService.UploadFile(logofile);
+            //    ResultWithMessage uploadresult = _fileService.UploadFile(logofile);
             //    if (uploadresult.Success)
             //    {
             //        logoUrl = uploadresult.Message;
             //    }
-                
+
             //}
             office = model;
             office.LogoUrl = logoUrl;

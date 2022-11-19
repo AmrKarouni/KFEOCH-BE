@@ -1,10 +1,15 @@
 ﻿using KFEOCH.Models;
 using KFEOCH.Models.Views;
+using KFEOCH.Services.Interfaces;
 
 namespace KFEOCH.Services
 {
-    public class FileService
+    public class FileService : IFileService
     {
+        public FileService()
+        {
+
+        }
         public ResultWithMessage UploadFile(FileModel model)
         {
             int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB
