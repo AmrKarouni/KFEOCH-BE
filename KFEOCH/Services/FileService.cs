@@ -10,7 +10,7 @@ namespace KFEOCH.Services
         {
 
         }
-        public ResultWithMessage UploadFile(FileModel model)
+        public ResultWithMessage UploadFile(FileModel model, string path)
         {
             int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB
             IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".png", ".pdf" };
@@ -27,7 +27,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = "Max Size Allowed is 5 M.B" };
             }
-            var filePath = Path.Combine(@"../App_Media/", model.FileName + extension);
+            var filePath = Path.Combine(@"../App_Media/", path + "/" + model.FileName + extension);
             string directory = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(directory))
             {

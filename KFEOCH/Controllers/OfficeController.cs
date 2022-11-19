@@ -10,13 +10,15 @@ namespace KFEOCH.Controllers
     public class OfficeController : ControllerBase
     {
         private readonly IOfficeService _officeService;
+        private readonly IFileService _fileService;
 
-        public OfficeController(IOfficeService officeService)
+        public OfficeController(IOfficeService officeService, IFileService fileService)
         {
             _officeService = officeService;
+            _fileService = fileService;
         }
 
-        [HttpGet("office/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetOfficeById(int id)
         {
             var result = _officeService.GetById(id);
@@ -27,7 +29,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPut("office/{id}")]
+        [HttpPut("{id}")]
         public IActionResult PutOffice(int id,Office model)
         {
             var result = _officeService.PutOfficeAsync(id,model);
@@ -39,6 +41,20 @@ namespace KFEOCH.Controllers
                 });
             }
             return Ok(result.Result.Result);
+        }
+
+        [HttpPost("upload-logo")]
+        public IActionResult UploadLogo([FromForm] FileModel model)
+        {
+            var result = _fileService.UploadFile(model,"logos");
+            if (!result.Success)
+            {
+                return BadRequest(new
+                {
+                    message = result.Message
+                });
+            }
+            return Ok(result.Message);
         }
     }
 }

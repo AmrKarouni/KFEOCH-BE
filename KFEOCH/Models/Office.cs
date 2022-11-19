@@ -35,8 +35,6 @@ namespace KFEOCH.Models
             SEMId = model.SEMId;
             EntityId = model.EntityId;
             LegalEntityId = model.LegalEntityId;
-            IsVerified = model.IsVerified;
-            IsActive = model.IsActive;
             AgreeToTerms = model.AgreeToTerms;
             LogoUrl = model.LogoUrl;
             ShowInHome = model.ShowInHome;

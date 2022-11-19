@@ -9,11 +9,9 @@ namespace KFEOCH.Services
     public class OfficeService : IOfficeService
     {
         private readonly ApplicationDbContext _db;
-        private readonly IFileService _fileService;
-        public OfficeService(ApplicationDbContext db, IFileService fileService)
+        public OfficeService(ApplicationDbContext db)
         {
             _db = db;
-            _fileService = fileService;
         }
         public Office GetById(int id)
         {
@@ -22,7 +20,6 @@ namespace KFEOCH.Services
         }
         public async Task<ResultWithMessage> PutOfficeAsync(int id, Office model)
         {
-            string logoUrl = null;
             if (id != model.Id)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Bad Request" };
@@ -32,19 +29,8 @@ namespace KFEOCH.Services
             if (office == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
-            }
-            //if (logofile != null)
-            //{
-
-            //    ResultWithMessage uploadresult = _fileService.UploadFile(logofile);
-            //    if (uploadresult.Success)
-            //    {
-            //        logoUrl = uploadresult.Message;
-            //    }
-
-            //}
+            } 
             office = model;
-            office.LogoUrl = logoUrl;
             _db.Entry(office).State = EntityState.Modified;
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = office };
