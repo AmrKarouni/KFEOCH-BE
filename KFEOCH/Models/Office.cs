@@ -32,7 +32,6 @@ namespace KFEOCH.Models
             PostalCode = model.PostalCode;
             Address = model.Address;
             AreaId = model.AreaId;
-            SEMId = model.SEMId;
             EntityId = model.EntityId;
             LegalEntityId = model.LegalEntityId;
             AgreeToTerms = model.AgreeToTerms;
@@ -61,10 +60,12 @@ namespace KFEOCH.Models
         public string? MailBox { get; set; }
         public string? PostalCode { get; set; }
         public string? Address { get; set; }
-        [ForeignKey("Location")]
+        [ForeignKey("Area")]
         public int? AreaId { get; set; }
-        //Society of Engineers Membership Id
-        public string? SEMId { get; set; }
+        [ForeignKey("Governorate")]
+        public int? GovernorateId { get; set; }
+        [ForeignKey("Country")]
+        public int? CountryId { get; set; }
         [ForeignKey("Entity")]
         public int? EntityId { get; set; }
         [ForeignKey("LegalEntity")]
@@ -75,7 +76,10 @@ namespace KFEOCH.Models
         public string? LogoUrl { get; set; }
         public bool? ShowInHome { get; set; }
         public virtual OfficeType? Type { get; set; }
-        public virtual Area? Location { get; set; }
+        public virtual Area? Area { get; set; }
+        public virtual Governorate? Governorate { get; set; }
+        public virtual Country? Country { get; set; }
+
         public virtual OfficeEntity? Entity { get; set; }
         public virtual OfficeLegalEntity? LegalEntity { get; set; }
     }

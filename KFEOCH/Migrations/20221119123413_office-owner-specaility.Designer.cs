@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221119123413_office-owner-specaility")]
+    partial class officeownerspecaility
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -379,44 +381,6 @@ namespace KFEOCH.Migrations
                     b.ToTable("OfficeLegalEntities");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeOwnerSpeciality", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("DescriptionArabic")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DescriptionEnglish")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NameArabic")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("NameEnglish")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NameArabic")
-                        .IsUnique();
-
-                    b.HasIndex("NameEnglish")
-                        .IsUnique();
-
-                    b.ToTable("OfficeOwnerSpecialities");
-                });
-
             modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeSpeciality", b =>
                 {
                     b.Property<int>("Id")
@@ -643,9 +607,6 @@ namespace KFEOCH.Migrations
                     b.Property<int?>("AreaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CountryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -658,9 +619,6 @@ namespace KFEOCH.Migrations
 
                     b.Property<string>("FaxNumber")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GovernorateId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -712,14 +670,10 @@ namespace KFEOCH.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex("CountryId");
-
                     b.HasIndex("Email")
                         .IsUnique();
 
                     b.HasIndex("EntityId");
-
-                    b.HasIndex("GovernorateId");
 
                     b.HasIndex("LegalEntityId");
 
@@ -735,68 +689,6 @@ namespace KFEOCH.Migrations
                         .IsUnique();
 
                     b.ToTable("Offices");
-                });
-
-            modelBuilder.Entity("KFEOCH.Models.OfficeOwner", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("CertificateUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CvUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ExperienceYears")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GenderId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NameArabic")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("NameEnglish")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("NationalId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OfficeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SemId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SignatureUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SpecialityId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GenderId");
-
-                    b.HasIndex("OfficeId");
-
-                    b.HasIndex("SpecialityId");
-
-                    b.ToTable("OfficeOwners");
                 });
 
             modelBuilder.Entity("KFEOCH.Models.Site.Article", b =>
@@ -1068,21 +960,13 @@ namespace KFEOCH.Migrations
 
             modelBuilder.Entity("KFEOCH.Models.Office", b =>
                 {
-                    b.HasOne("KFEOCH.Models.Dictionaries.Area", "Area")
+                    b.HasOne("KFEOCH.Models.Dictionaries.Area", "Location")
                         .WithMany()
                         .HasForeignKey("AreaId");
-
-                    b.HasOne("KFEOCH.Models.Dictionaries.Country", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryId");
 
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeEntity", "Entity")
                         .WithMany()
                         .HasForeignKey("EntityId");
-
-                    b.HasOne("KFEOCH.Models.Dictionaries.Governorate", "Governorate")
-                        .WithMany()
-                        .HasForeignKey("GovernorateId");
 
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeLegalEntity", "LegalEntity")
                         .WithMany()
@@ -1094,42 +978,13 @@ namespace KFEOCH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Area");
-
-                    b.Navigation("Country");
-
                     b.Navigation("Entity");
-
-                    b.Navigation("Governorate");
 
                     b.Navigation("LegalEntity");
 
+                    b.Navigation("Location");
+
                     b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("KFEOCH.Models.OfficeOwner", b =>
-                {
-                    b.HasOne("KFEOCH.Models.Dictionaries.Gender", "Gender")
-                        .WithMany()
-                        .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KFEOCH.Models.Office", "Office")
-                        .WithMany()
-                        .HasForeignKey("OfficeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KFEOCH.Models.Dictionaries.OfficeOwnerSpeciality", "Speciality")
-                        .WithMany()
-                        .HasForeignKey("SpecialityId");
-
-                    b.Navigation("Gender");
-
-                    b.Navigation("Office");
-
-                    b.Navigation("Speciality");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

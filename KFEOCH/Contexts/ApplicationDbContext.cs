@@ -24,6 +24,8 @@ namespace KFEOCH.Contexts
         public DbSet<OfficeEntity>? OfficeEntities { get; set; }
         public DbSet<OfficeLegalEntity>? OfficeLegalEntities { get; set; }
         public DbSet<OfficeSpeciality>? OfficeSpecialities { get; set; }
+        public DbSet<OfficeOwnerSpeciality>? OfficeOwnerSpecialities { get; set; }
+        public DbSet<OfficeOwner>? OfficeOwners { get; set; }
         public DbSet<OfficeStatus>? officeStatuses { get; set; }
         public DbSet<Article>? Articles { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -136,6 +138,16 @@ namespace KFEOCH.Contexts
                 entity.HasIndex(e => new { e.NameEnglish, e.OfficeTypeId })
                 .IsUnique();
             });
+
+            modelBuilder.Entity<OfficeOwnerSpeciality>(entity => {
+                entity.HasIndex(e => new { e.NameArabic})
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeOwnerSpeciality>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+
             modelBuilder.Entity<OfficeStatus>(entity => {
                 entity.HasIndex(e => new { e.NameArabic })
                 .IsUnique();

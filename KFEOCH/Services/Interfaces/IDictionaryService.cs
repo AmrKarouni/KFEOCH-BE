@@ -58,6 +58,12 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> DeleteOfficeSpecialityAsync(int id);
         List<OfficeSpeciality> GetAllOfficeSpecialitiesByOfficeTypeId(int id);
 
+        //OfficeOwnerSpeciality
+        List<OfficeOwnerSpeciality> GetAllOfficeOwnerSpecialities();
+        Task<ResultWithMessage> PostOfficeOwnerSpecialityAsync(OfficeOwnerSpeciality model);
+        Task<ResultWithMessage> DeleteOfficeOwnerSpecialityAsync(int id);
+
+
         //OfficeStatus
         List<OfficeStatus> GetAllOfficeStatuses();
         Task<ResultWithMessage> PostOfficeStatusAsync(OfficeStatus model);

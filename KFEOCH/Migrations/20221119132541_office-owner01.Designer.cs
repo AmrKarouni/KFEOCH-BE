@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221119132541_office-owner01")]
+    partial class officeowner01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -643,9 +645,6 @@ namespace KFEOCH.Migrations
                     b.Property<int?>("AreaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CountryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -658,9 +657,6 @@ namespace KFEOCH.Migrations
 
                     b.Property<string>("FaxNumber")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GovernorateId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -712,14 +708,10 @@ namespace KFEOCH.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex("CountryId");
-
                     b.HasIndex("Email")
                         .IsUnique();
 
                     b.HasIndex("EntityId");
-
-                    b.HasIndex("GovernorateId");
 
                     b.HasIndex("LegalEntityId");
 
@@ -757,10 +749,10 @@ namespace KFEOCH.Migrations
                     b.Property<int>("GenderId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsApproved")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
 
                     b.Property<string>("NameArabic")
@@ -1068,21 +1060,13 @@ namespace KFEOCH.Migrations
 
             modelBuilder.Entity("KFEOCH.Models.Office", b =>
                 {
-                    b.HasOne("KFEOCH.Models.Dictionaries.Area", "Area")
+                    b.HasOne("KFEOCH.Models.Dictionaries.Area", "Location")
                         .WithMany()
                         .HasForeignKey("AreaId");
-
-                    b.HasOne("KFEOCH.Models.Dictionaries.Country", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryId");
 
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeEntity", "Entity")
                         .WithMany()
                         .HasForeignKey("EntityId");
-
-                    b.HasOne("KFEOCH.Models.Dictionaries.Governorate", "Governorate")
-                        .WithMany()
-                        .HasForeignKey("GovernorateId");
 
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeLegalEntity", "LegalEntity")
                         .WithMany()
@@ -1094,15 +1078,11 @@ namespace KFEOCH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Area");
-
-                    b.Navigation("Country");
-
                     b.Navigation("Entity");
 
-                    b.Navigation("Governorate");
-
                     b.Navigation("LegalEntity");
+
+                    b.Navigation("Location");
 
                     b.Navigation("Type");
                 });

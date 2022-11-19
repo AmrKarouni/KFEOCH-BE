@@ -359,6 +359,38 @@ namespace KFEOCH.Services
             return list ?? new List<OfficeSpeciality>();
         }
 
+        //OfficeOwnerSpeciality
+        public List<OfficeOwnerSpeciality> GetAllOfficeOwnerSpecialities()
+        {
+            var list = new List<OfficeOwnerSpeciality>();
+            list = _db.OfficeOwnerSpecialities?.Where(x => x.IsDeleted == false).ToList();
+            return list ?? new List<OfficeOwnerSpeciality>();
+        }
+        public async Task<ResultWithMessage> PostOfficeOwnerSpecialityAsync(OfficeOwnerSpeciality model)
+        {
+            var OfficeSpeciality = _db.OfficeOwnerSpecialities.Where(x => (x.NameArabic == model.NameArabic)
+                                   || (x.NameEnglish == model.NameEnglish)
+                                   ).FirstOrDefault();
+            if (OfficeSpeciality != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Owner Speciality {model.NameArabic} Already Exist !!!" };
+            }
+            await _db.OfficeOwnerSpecialities.AddAsync(model);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = model };
+        }
+        public async Task<ResultWithMessage> DeleteOfficeOwnerSpecialityAsync(int id)
+        {
+            var OfficeSpeciality = _db.OfficeOwnerSpecialities.Find(id);
+            if (OfficeSpeciality == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Speciality Not Found !!!" };
+            }
+            OfficeSpeciality.IsDeleted = true;
+            _db.Entry(OfficeSpeciality).State = EntityState.Modified;
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = $@"Office Owner Speciality {OfficeSpeciality.NameArabic} Deleted !!!" };
+        }
 
         //OfficeStatus
         public List<OfficeStatus> GetAllOfficeStatuses()
