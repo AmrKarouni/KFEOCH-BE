@@ -98,6 +98,17 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
+        [HttpGet("area-locations/{id}")]
+        public IActionResult GetAreasByGovernorateId(int id)
+        {
+            var result = _dictionaryService.GetAreasByGovernorateId(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "Areas Not Found!!!" });
+            }
+            return Ok(result);
+        }
+
         [HttpGet("certificate-entities")]
         public IActionResult GetAllCertificateEntity()
         {
