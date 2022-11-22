@@ -1,4 +1,5 @@
 ﻿using KFEOCH.Models;
+using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,15 @@ namespace KFEOCH.Controllers
         private readonly IOfficeService _officeService;
         private readonly IFileService _fileService;
         private readonly IOfficeOwnerService _officeOwnerService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OfficeController(IOfficeService officeService, IFileService fileService,IOfficeOwnerService officeOwnerService)
+        public OfficeController(IOfficeService officeService, IFileService fileService, IOfficeOwnerService officeOwnerService,
+                                IHttpContextAccessor httpContextAccessor)
         {
             _officeService = officeService;
             _fileService = fileService;
             _officeOwnerService = officeOwnerService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("{id}")]
@@ -32,9 +36,9 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult PutOffice(int id,Office model)
+        public IActionResult PutOffice(int id, Office model)
         {
-            var result = _officeService.PutOfficeAsync(id,model);
+            var result = _officeService.PutOfficeAsync(id, model);
             if (!result.Result.Success)
             {
                 return BadRequest(new
@@ -48,15 +52,12 @@ namespace KFEOCH.Controllers
         [HttpPost("upload-logo")]
         public IActionResult UploadLogo([FromForm] FileModel model)
         {
-            var result = _fileService.UploadFile(model,"logos");
-            if (!result.Success)
+            var result = _officeService.UploadLogo(model);
+            if (result == null)
             {
-                return BadRequest(new
-                {
-                    message = result.Message
-                });
+                return BadRequest(new { message = "Bad Request !!!" });
             }
-            return Ok(result.Message);
+            return Ok(result);
         }
 
         [HttpGet("owners/{officeId}")]

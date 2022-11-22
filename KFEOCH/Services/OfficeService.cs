@@ -9,9 +9,13 @@ namespace KFEOCH.Services
     public class OfficeService : IOfficeService
     {
         private readonly ApplicationDbContext _db;
-        public OfficeService(ApplicationDbContext db)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IFileService _fileService;
+        public OfficeService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor,IFileService fileService)
         {
             _db = db;
+            _httpContextAccessor = httpContextAccessor;
+            _fileService = fileService;
         }
         public Office GetById(int id)
         {
@@ -35,5 +39,26 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = office };
         }
+
+        public async Task<ResultWithMessage> UploadLogo(FileModel model)
+        {
+            var officeId = int.Parse(model.FileName);
+            var office = GetById(officeId);
+            var hostpath = _httpContextAccessor.HttpContext.Request.Host;
+            if (office == null)
+            {
+                new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
+            }
+            var uploadResult = _fileService.UploadFile(model, "logos");
+            if (!uploadResult.Success)
+            {
+                new ResultWithMessage { Success = false, Message = $@"Upload Logo Failed !!!" };
+            }
+            office.LogoUrl = uploadResult.Message;
+            await PutOfficeAsync(officeId, office);
+            var result = new { logoUrl = hostpath + uploadResult.Message };
+            return new ResultWithMessage { Success = true, Result = result };
+        }
+
     }
 }

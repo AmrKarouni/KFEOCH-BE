@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Newtonsoft.Json.Serialization;
+using Microsoft.Extensions.FileProviders;
 
 var testConnectionString = "MochaConnection";
 var localConnectionString = "LocalConnection";
@@ -100,6 +101,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "../App_Media/logos")),
+    RequestPath = "/logos"
+});
 app.UseAuthorization();
 
 app.MapControllers();

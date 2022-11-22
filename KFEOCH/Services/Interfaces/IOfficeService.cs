@@ -7,5 +7,6 @@ namespace KFEOCH.Services.Interfaces
     {
         Office GetById(int id);
         Task<ResultWithMessage> PutOfficeAsync(int id, Office model);
+        Task<ResultWithMessage> UploadLogo(FileModel model);
     }
 }

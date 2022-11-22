@@ -6,9 +6,9 @@ namespace KFEOCH.Services
 {
     public class FileService : IFileService
     {
+
         public FileService()
         {
-
         }
         public ResultWithMessage UploadFile(FileModel model, string path)
         {
@@ -27,13 +27,14 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = "Max Size Allowed is 5 M.B" };
             }
-            var filePath = Path.Combine(@"../App_Media/", path + "/" + model.FileName + extension);
+            var filePath = Path.Combine(path + "/" + model.FileName + extension);
+            var fullfilePath = Path.Combine(@"../App_Media/", filePath);
             string directory = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            FileStream FS = new FileStream(filePath, FileMode.Create);
+            FileStream FS = new FileStream(fullfilePath, FileMode.Create);
             model.File.CopyToAsync(FS);
             FS.Close();
             return new ResultWithMessage { Success = true, Message = filePath };
