@@ -20,6 +20,8 @@ namespace KFEOCH.Services
         public Office GetById(int id)
         {
             var office = _db.Offices?.Find(id);
+            var hostpath = _httpContextAccessor.HttpContext.Request.Host;
+            office.LogoUrl = hostpath + office.LogoUrl;
             return office ?? new Office();
         }
         public async Task<ResultWithMessage> PutOfficeAsync(int id, Office model)
