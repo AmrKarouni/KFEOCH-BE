@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KFEOCH.Models.Dictionaries
 {
-    public class OfficeSpeciality
+    public class Speciality
     {
         public int Id { get; set; }
         [Required]

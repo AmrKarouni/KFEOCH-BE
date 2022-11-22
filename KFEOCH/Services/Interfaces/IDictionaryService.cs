@@ -37,10 +37,10 @@ namespace KFEOCH.Services.Interfaces
         List<Gender> GetAllGenders();
 
         //OfficeActivity
-        List<OfficeActivity> GetAllOfficeActivities();
-        Task<ResultWithMessage> PostOfficeActivityAsync(OfficeActivity model);
+        List<Activity> GetAllOfficeActivities();
+        Task<ResultWithMessage> PostOfficeActivityAsync(Activity model);
         Task<ResultWithMessage> DeleteOfficeActivityAsync(int id);
-        List<OfficeActivity> GetAllOfficeActivitiesByOfficeTypeId(int id);
+        List<Activity> GetAllOfficeActivitiesByOfficeTypeId(int id);
 
         //OfficeEntity
         List<OfficeEntity> GetAllOfficeEntities();
@@ -53,10 +53,10 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> DeleteOfficeLegalEntityAsync(int id);
 
         //OfficeSpeciality
-        List<OfficeSpeciality> GetAllOfficeSpecialities();
-        Task<ResultWithMessage> PostOfficeSpecialityAsync(OfficeSpeciality model);
+        List<Speciality> GetAllOfficeSpecialities();
+        Task<ResultWithMessage> PostOfficeSpecialityAsync(Speciality model);
         Task<ResultWithMessage> DeleteOfficeSpecialityAsync(int id);
-        List<OfficeSpeciality> GetAllOfficeSpecialitiesByOfficeTypeId(int id);
+        List<Speciality> GetAllOfficeSpecialitiesByOfficeTypeId(int id);
 
         //OfficeOwnerSpeciality
         List<OfficeOwnerSpeciality> GetAllOfficeOwnerSpecialities();

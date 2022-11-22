@@ -22,6 +22,49 @@ namespace KFEOCH.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("KFEOCH.Models.Dictionaries.Activity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("DescriptionArabic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DescriptionEnglish")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameArabic")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NameEnglish")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("OfficeTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NameArabic")
+                        .IsUnique();
+
+                    b.HasIndex("NameEnglish")
+                        .IsUnique();
+
+                    b.HasIndex("OfficeTypeId");
+
+                    b.ToTable("Activities");
+                });
+
             modelBuilder.Entity("KFEOCH.Models.Dictionaries.Area", b =>
                 {
                     b.Property<int>("Id")
@@ -260,49 +303,6 @@ namespace KFEOCH.Migrations
                     b.ToTable("Governorates");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeActivity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("DescriptionArabic")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DescriptionEnglish")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NameArabic")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("NameEnglish")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("OfficeTypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NameArabic")
-                        .IsUnique();
-
-                    b.HasIndex("NameEnglish")
-                        .IsUnique();
-
-                    b.HasIndex("OfficeTypeId");
-
-                    b.ToTable("OfficeActivities");
-                });
-
             modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -417,49 +417,6 @@ namespace KFEOCH.Migrations
                     b.ToTable("OfficeOwnerSpecialities");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeSpeciality", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("DescriptionArabic")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DescriptionEnglish")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NameArabic")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("NameEnglish")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("OfficeTypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OfficeTypeId");
-
-                    b.HasIndex("NameArabic", "OfficeTypeId")
-                        .IsUnique();
-
-                    b.HasIndex("NameEnglish", "OfficeTypeId")
-                        .IsUnique();
-
-                    b.ToTable("OfficeSpecialities");
-                });
-
             modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -495,7 +452,7 @@ namespace KFEOCH.Migrations
                     b.HasIndex("NameEnglish")
                         .IsUnique();
 
-                    b.ToTable("officeStatuses");
+                    b.ToTable("Statuses");
                 });
 
             modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeType", b =>
@@ -537,6 +494,49 @@ namespace KFEOCH.Migrations
                         .IsUnique();
 
                     b.ToTable("OfficeTypes");
+                });
+
+            modelBuilder.Entity("KFEOCH.Models.Dictionaries.Speciality", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("DescriptionArabic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DescriptionEnglish")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameArabic")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NameEnglish")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("OfficeTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfficeTypeId");
+
+                    b.HasIndex("NameArabic", "OfficeTypeId")
+                        .IsUnique();
+
+                    b.HasIndex("NameEnglish", "OfficeTypeId")
+                        .IsUnique();
+
+                    b.ToTable("Specialities");
                 });
 
             modelBuilder.Entity("KFEOCH.Models.Identity.ApplicationUser", b =>
@@ -972,6 +972,17 @@ namespace KFEOCH.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("KFEOCH.Models.Dictionaries.Activity", b =>
+                {
+                    b.HasOne("KFEOCH.Models.Dictionaries.OfficeType", "OfficeType")
+                        .WithMany("OfficeActivities")
+                        .HasForeignKey("OfficeTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OfficeType");
+                });
+
             modelBuilder.Entity("KFEOCH.Models.Dictionaries.Area", b =>
                 {
                     b.HasOne("KFEOCH.Models.Dictionaries.Governorate", "Governorate")
@@ -994,18 +1005,7 @@ namespace KFEOCH.Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeActivity", b =>
-                {
-                    b.HasOne("KFEOCH.Models.Dictionaries.OfficeType", "OfficeType")
-                        .WithMany("OfficeActivities")
-                        .HasForeignKey("OfficeTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OfficeType");
-                });
-
-            modelBuilder.Entity("KFEOCH.Models.Dictionaries.OfficeSpeciality", b =>
+            modelBuilder.Entity("KFEOCH.Models.Dictionaries.Speciality", b =>
                 {
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeType", "OfficeType")
                         .WithMany("OfficeSpecialities")

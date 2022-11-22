@@ -20,13 +20,13 @@ namespace KFEOCH.Contexts
         public DbSet<CourseCategory>? CourseCategories { get; set; }
         public DbSet<Gender>? Genders { get; set; }
         public DbSet<Governorate>? Governorates { get; set; }
-        public DbSet<OfficeActivity>? OfficeActivities { get; set; }
+        public DbSet<Activity>? Activities { get; set; }
         public DbSet<OfficeEntity>? OfficeEntities { get; set; }
         public DbSet<OfficeLegalEntity>? OfficeLegalEntities { get; set; }
-        public DbSet<OfficeSpeciality>? OfficeSpecialities { get; set; }
+        public DbSet<Speciality>? Specialities { get; set; }
         public DbSet<OfficeOwnerSpeciality>? OfficeOwnerSpecialities { get; set; }
         public DbSet<OfficeOwner>? OfficeOwners { get; set; }
-        public DbSet<OfficeStatus>? officeStatuses { get; set; }
+        public DbSet<OfficeStatus>? Statuses { get; set; }
         public DbSet<Article>? Articles { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -106,11 +106,11 @@ namespace KFEOCH.Contexts
                 entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();
             });
-            modelBuilder.Entity<OfficeActivity>(entity => {
+            modelBuilder.Entity<Activity>(entity => {
                 entity.HasIndex(e => new { e.NameArabic })
                 .IsUnique();
             });
-            modelBuilder.Entity<OfficeActivity>(entity => {
+            modelBuilder.Entity<Activity>(entity => {
                 entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();
             });
@@ -130,11 +130,11 @@ namespace KFEOCH.Contexts
                 entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();
             });
-            modelBuilder.Entity<OfficeSpeciality>(entity => {
+            modelBuilder.Entity<Speciality>(entity => {
                 entity.HasIndex(e => new { e.NameArabic,e.OfficeTypeId })
                 .IsUnique();
             });
-            modelBuilder.Entity<OfficeSpeciality>(entity => {
+            modelBuilder.Entity<Speciality>(entity => {
                 entity.HasIndex(e => new { e.NameEnglish, e.OfficeTypeId })
                 .IsUnique();
             });

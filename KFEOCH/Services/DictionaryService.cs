@@ -212,28 +212,28 @@ namespace KFEOCH.Services
         }
 
         //OfficeActivity
-        public List<OfficeActivity> GetAllOfficeActivities()
+        public List<Activity> GetAllOfficeActivities()
         {
-            var list = new List<OfficeActivity>();
-            list  = _db.OfficeActivities?.Where(x => x.IsDeleted == false).ToList();
-            return list ?? new List<OfficeActivity>();
+            var list = new List<Activity>();
+            list  = _db.Activities?.Where(x => x.IsDeleted == false).ToList();
+            return list ?? new List<Activity>();
         }
-        public async Task<ResultWithMessage> PostOfficeActivityAsync(OfficeActivity model)
+        public async Task<ResultWithMessage> PostOfficeActivityAsync(Activity model)
         {
-            var officeactivity = _db.OfficeActivities.Where(x => (x.NameArabic == model.NameArabic)
+            var officeactivity = _db.Activities?.FirstOrDefault(x => (x.NameArabic == model.NameArabic)
                                    || (x.NameEnglish == model.NameEnglish)
-                                   ).FirstOrDefault();
+                                   );
             if (officeactivity != null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Activity {model.NameArabic} Already Exist !!!" };
             }
-            await _db.OfficeActivities.AddAsync(model);
+            await _db.Activities.AddAsync(model);
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeActivityAsync(int id)
         {
-            var officeactivity = _db.OfficeActivities.Find(id);
+            var officeactivity = _db.Activities?.Find(id);
             if (officeactivity == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Activity Not Found !!!" };
@@ -243,11 +243,11 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Office Activity {officeactivity.NameArabic} Deleted !!!" };
         }
-        public List<OfficeActivity> GetAllOfficeActivitiesByOfficeTypeId(int id)
+        public List<Activity> GetAllOfficeActivitiesByOfficeTypeId(int id)
         {
-            var list = new List<OfficeActivity>();
-            list = _db.OfficeActivities?.Where(x => (x.IsDeleted == false)&& (x.OfficeTypeId == id)).ToList();
-            return list ?? new List<OfficeActivity>();
+            var list = new List<Activity>();
+            list = _db.Activities?.Where(x => (x.IsDeleted == false)&& (x.OfficeTypeId == id)).ToList();
+            return list ?? new List<Activity>();
         }
 
         //OfficeEntity
@@ -321,28 +321,27 @@ namespace KFEOCH.Services
         }
 
         //OfficeSpeciality
-        public List<OfficeSpeciality> GetAllOfficeSpecialities()
+        public List<Speciality> GetAllOfficeSpecialities()
         {
-            var list = new List<OfficeSpeciality>();
-            list = _db.OfficeSpecialities?.Where(x => x.IsDeleted == false).ToList();
-            return list ?? new List<OfficeSpeciality>();
+            var list = new List<Speciality>();
+            list = _db.Specialities?.Where(x => x.IsDeleted == false).ToList();
+            return list ?? new List<Speciality>();
         }
-        public async Task<ResultWithMessage> PostOfficeSpecialityAsync(OfficeSpeciality model)
+        public async Task<ResultWithMessage> PostOfficeSpecialityAsync(Speciality model)
         {
-            var OfficeSpeciality = _db.OfficeSpecialities.Where(x => (x.NameArabic == model.NameArabic)
-                                   || (x.NameEnglish == model.NameEnglish)
-                                   ).FirstOrDefault();
+            var OfficeSpeciality = _db.Specialities?.FirstOrDefault(x => (x.NameArabic == model.NameArabic)
+                                   || (x.NameEnglish == model.NameEnglish));
             if (OfficeSpeciality != null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Speciality {model.NameArabic} Already Exist !!!" };
             }
-            await _db.OfficeSpecialities.AddAsync(model);
+            await _db.Specialities.AddAsync(model);
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeSpecialityAsync(int id)
         {
-            var OfficeSpeciality = _db.OfficeSpecialities.Find(id);
+            var OfficeSpeciality = _db.Specialities?.Find(id);
             if (OfficeSpeciality == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Speciality Not Found !!!" };
@@ -352,11 +351,11 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Office Speciality {OfficeSpeciality.NameArabic} Deleted !!!" };
         }
-        public List<OfficeSpeciality> GetAllOfficeSpecialitiesByOfficeTypeId(int id)
+        public List<Speciality> GetAllOfficeSpecialitiesByOfficeTypeId(int id)
         {
-            var list = new List<OfficeSpeciality>();
-            list = _db.OfficeSpecialities?.Where(x => (x.IsDeleted == false) && (x.OfficeTypeId == id)).ToList();
-            return list ?? new List<OfficeSpeciality>();
+            var list = new List<Speciality>();
+            list = _db.Specialities?.Where(x => (x.IsDeleted == false) && (x.OfficeTypeId == id)).ToList();
+            return list ?? new List<Speciality>();
         }
 
         //OfficeOwnerSpeciality
@@ -396,25 +395,24 @@ namespace KFEOCH.Services
         public List<OfficeStatus> GetAllOfficeStatuses()
         {
             var list = new List<OfficeStatus>();
-            list = _db.officeStatuses?.Where(x => x.IsDeleted == false).ToList();
+            list = _db.Statuses?.Where(x => x.IsDeleted == false).ToList();
             return list ?? new List<OfficeStatus>();
         }
         public async Task<ResultWithMessage> PostOfficeStatusAsync(OfficeStatus model)
         {
-            var officeStatus = _db.officeStatuses.Where(x => (x.NameArabic == model.NameArabic)
-                             || (x.NameEnglish == model.NameEnglish)
-                             ).FirstOrDefault();
+            var officeStatus = _db.Statuses?.FirstOrDefault(x => (x.NameArabic == model.NameArabic)
+                             || (x.NameEnglish == model.NameEnglish));
             if (officeStatus != null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Status {model.NameArabic} Already Exist !!!" };
             }
-            await _db.officeStatuses.AddAsync(model);
+            await _db.Statuses.AddAsync(model);
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = model };
         }
         public async Task<ResultWithMessage> DeleteOfficeStatusAsync(int id)
         {
-            var officeStatus = _db.officeStatuses.Find(id);
+            var officeStatus = _db.Statuses?.Find(id);
             if (officeStatus == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Status Not Found !!!" };

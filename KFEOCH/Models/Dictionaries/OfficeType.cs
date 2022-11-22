@@ -18,7 +18,7 @@ namespace KFEOCH.Models.Dictionaries
         public string? DescriptionEnglish { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsDeleted { get; set; }
-        public virtual ICollection<OfficeActivity> OfficeActivities { get; set; } = new List<OfficeActivity>();
-        public virtual ICollection<OfficeSpeciality> OfficeSpecialities { get; set; } = new List<OfficeSpeciality>();
+        public virtual ICollection<Activity> OfficeActivities { get; set; } = new List<Activity>();
+        public virtual ICollection<Speciality> OfficeSpecialities { get; set; } = new List<Speciality>();
     }
 }

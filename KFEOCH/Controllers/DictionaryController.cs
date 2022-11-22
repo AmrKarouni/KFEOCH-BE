@@ -196,7 +196,7 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("add-office-activity")]
-        public async Task<ActionResult> PostOfficeActivityAsync(OfficeActivity model)
+        public async Task<ActionResult> PostOfficeActivityAsync(Activity model)
         {
             var result = await _dictionaryService.PostOfficeActivityAsync(model);
             if (!result.Success)
@@ -303,7 +303,7 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("add-office-speciality")]
-        public async Task<ActionResult> PostOfficeSpecialityAsync(OfficeSpeciality model)
+        public async Task<ActionResult> PostOfficeSpecialityAsync(Speciality model)
         {
             var result = await _dictionaryService.PostOfficeSpecialityAsync(model);
             if (!result.Success)
