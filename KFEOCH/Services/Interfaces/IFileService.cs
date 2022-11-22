@@ -5,6 +5,6 @@ namespace KFEOCH.Services.Interfaces
 {
     public interface IFileService
     {
-        ResultWithMessage UploadFile(FileModel model,string path);
+        Task<ResultWithMessage> UploadFile(FileModel model,string path);
     }
 }

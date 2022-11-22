@@ -46,12 +46,12 @@ namespace KFEOCH.Services
         {
             var officeId = int.Parse(model.FileName);
             var office = GetById(officeId);
-            var hostpath = _httpContextAccessor.HttpContext.Request.Host;
+            var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
             if (office == null)
             {
                 new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
             }
-            var uploadResult = _fileService.UploadFile(model, "logos");
+            var uploadResult = await _fileService.UploadFile(model, "logos");
             if (!uploadResult.Success)
             {
                 new ResultWithMessage { Success = false, Message = $@"Upload Logo Failed !!!" };

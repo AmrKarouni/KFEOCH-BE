@@ -10,7 +10,7 @@ namespace KFEOCH.Services
         public FileService()
         {
         }
-        public ResultWithMessage UploadFile(FileModel model, string path)
+        public async Task<ResultWithMessage> UploadFile(FileModel model, string path)
         {
             int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB
             IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".png", ".pdf" };
@@ -27,17 +27,17 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = "Max Size Allowed is 5 M.B" };
             }
-            var filePath = Path.Combine("/"+path + "/" + model.FileName + extension);
+            var filePath = Path.Combine(path + "/" + model.FileName + extension);
             var fullfilePath = Path.Combine(@"../App_Media/", filePath);
-            string directory = Path.GetDirectoryName(filePath);
+            string directory = Path.GetDirectoryName(fullfilePath);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
             FileStream FS = new FileStream(fullfilePath, FileMode.Create);
-            model.File.CopyToAsync(FS);
+            await model.File.CopyToAsync(FS);
             FS.Close();
-            return new ResultWithMessage { Success = true, Message = filePath };
+            return new ResultWithMessage { Success = true, Message = "/" + filePath };
         }
     }
 }
