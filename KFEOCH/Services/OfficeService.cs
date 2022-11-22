@@ -20,7 +20,7 @@ namespace KFEOCH.Services
         public Office GetById(int id)
         {
             var office = _db.Offices?.Find(id);
-            var hostpath = _httpContextAccessor.HttpContext.Request.Host;
+            var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
             office.LogoUrl = hostpath + office.LogoUrl;
             return office ?? new Office();
         }
