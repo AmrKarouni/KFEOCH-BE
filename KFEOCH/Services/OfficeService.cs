@@ -21,7 +21,7 @@ namespace KFEOCH.Services
         {
             var office = _db.Offices?.Find(id);
             var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
-            office.LogoUrl = hostpath + office.LogoUrl;
+            office.LogoUrl = hostpath + office.LogoUrl ;
             return office ?? new Office();
         }
         public async Task<ResultWithMessage> PutOfficeAsync(int id, Office model)
@@ -49,16 +49,16 @@ namespace KFEOCH.Services
             var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
             if (office == null)
             {
-                new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
+                return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
             }
             var uploadResult = await _fileService.UploadFile(model, "logos");
             if (!uploadResult.Success)
             {
-                new ResultWithMessage { Success = false, Message = $@"Upload Logo Failed !!!" };
+                return new ResultWithMessage { Success = false, Message = $@"Upload Logo Failed !!!" };
             }
             office.LogoUrl = uploadResult.Message;
             await PutOfficeAsync(officeId, office);
-            var result = new { logoUrl = hostpath + uploadResult.Message };
+            var result = new { LogoUrl = hostpath + uploadResult.Message };
             return new ResultWithMessage { Success = true, Result = result };
         }
 

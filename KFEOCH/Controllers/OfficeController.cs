@@ -50,14 +50,14 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("upload-logo")]
-        public IActionResult UploadLogo([FromForm] FileModel model)
+        public async Task<IActionResult> UploadLogo([FromForm] FileModel model)
         {
-            var result = _officeService.UploadLogo(model);
-            if (result == null)
+            var result = await _officeService.UploadLogo(model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "Bad Request !!!" });
+                return BadRequest(new {message = result.Message});
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
 
         [HttpGet("owners/{officeId}")]

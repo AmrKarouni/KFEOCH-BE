@@ -104,7 +104,7 @@ app.UseCors("CorsPolicy");
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
-           Path.Combine(builder.Environment.ContentRootPath, "/App_Media/logos")),
+           Path.Combine(builder.Environment.ContentRootPath, "./App_Media/logos")),
     RequestPath = "/logos"
 });
 app.UseAuthorization();
