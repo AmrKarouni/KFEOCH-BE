@@ -5,6 +5,19 @@ namespace KFEOCH.Models
 {
     public class OfficeSpeciality
     {
+        public OfficeSpeciality()
+        {
+
+        }
+        public OfficeSpeciality(int officeId, int specialityId)
+        {
+            OfficeId = officeId;
+            SpecialityId = specialityId;
+            AddedDate = DateTime.UtcNow;
+            IsApproved = true;
+            IsDeleted = false;
+        }
+
         public int Id { get; set; }
         [ForeignKey("Office")]
         public int? OfficeId { get; set; }
