@@ -29,6 +29,7 @@ namespace KFEOCH.Contexts
         public DbSet<OfficeStatus>? Statuses { get; set; }
         public DbSet<Article>? Articles { get; set; }
         public DbSet<OfficeSpeciality>? OfficeSpecialities { get; set; }
+        public DbSet<OfficeActivity>? officeActivities { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             
@@ -168,6 +169,11 @@ namespace KFEOCH.Contexts
 
             modelBuilder.Entity<OfficeSpeciality>(entity => {
                 entity.HasIndex(e => new { e.OfficeId,e.SpecialityId })
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<OfficeActivity>(entity => {
+                entity.HasIndex(e => new { e.OfficeId, e.ActivityId })
                 .IsUnique();
             });
 

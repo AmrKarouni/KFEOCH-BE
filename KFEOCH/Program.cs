@@ -24,6 +24,7 @@ builder.Services.AddScoped<IOfficeService, OfficeService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IOfficeOwnerService, OfficeOwnerService>();
 builder.Services.AddScoped<IOfficeSpecialityService, OfficeSpecialityService>();
+builder.Services.AddScoped<IOfficeActivityService, OfficeActivityService>();
 builder.Services.AddTransient<ApplicationDbContextSeed>();
 builder.Services.AddDbContext<ApplicationDbContext>(x =>
 {

@@ -1,0 +1,84 @@
+﻿using KFEOCH.Contexts;
+using KFEOCH.Models;
+using KFEOCH.Models.Binding;
+using KFEOCH.Models.Views;
+using KFEOCH.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace KFEOCH.Services
+{
+    public class OfficeActivityService : IOfficeActivityService
+    {
+        private readonly ApplicationDbContext _db;
+        public OfficeActivityService(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
+        public async Task<ResultWithMessage> PostOfficeActivityAsync(OfficeActivityBindingModel model)
+        {
+            var office = _db.Offices?.Find(model.OfficeId);
+            if (office == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
+            }
+            var activity = _db.Activities?.Find(model.ActivityId);
+            if (activity == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Activity Not Found !!!" };
+            }
+            var officeactivity = _db.officeActivities?.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.ActivityId == model.ActivityId);
+            if (officeactivity != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Activity Already Added !!!" };
+            }
+            if (office.TypeId != activity.OfficeTypeId)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Activity Can't be Added !!!" };
+            }
+            var newofficeactivity = new OfficeActivity(model.OfficeId, model.ActivityId);
+            await _db.officeActivities.AddAsync(newofficeactivity);
+            _db.SaveChanges();
+            var viewmodel = new OfficeActivityViewModel(newofficeactivity);
+            return new ResultWithMessage { Success = true, Result = viewmodel };
+        }
+
+        public async Task<ResultWithMessage> DeleteOfficeActivityAsync(OfficeActivityBindingModel model)
+        {
+            var office = _db.Offices?.Find(model.OfficeId);
+            if (office == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
+            }
+            var activity = _db.Activities?.Find(model.ActivityId);
+            if (activity == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Activity Not Found !!!" };
+            }
+            var officeactivity = _db.officeActivities?.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.ActivityId == model.ActivityId);
+            if (officeactivity == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Activity Not Found !!!" };
+            }
+            officeactivity.IsDeleted = true;
+            _db.Entry(officeactivity).State = EntityState.Modified;
+            _db.SaveChanges();
+            var viewmodel = new OfficeActivityViewModel(officeactivity);
+            return new ResultWithMessage { Success = true, Result = viewmodel };
+        }
+
+        public List<OfficeActivityViewModel> GetOfficeActivities(int officeId)
+        {
+            var result = new List<OfficeActivityViewModel>();
+            var office = _db.Offices?.Find(officeId);
+            if (office == null)
+            {
+                return result;
+            }
+            var officeactivities = _db.officeActivities?.Include(x => x.Activity)
+                                                            .Where(x => x.OfficeId == officeId && x.IsDeleted == false);
+            result = officeactivities?.Select(x => new OfficeActivityViewModel(x)).ToList();
+            return result ?? new List<OfficeActivityViewModel>();
+        }
+    }
+}
