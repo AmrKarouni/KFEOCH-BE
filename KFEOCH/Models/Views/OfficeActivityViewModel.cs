@@ -4,6 +4,7 @@
     {
         public OfficeActivityViewModel(OfficeActivity model)
         {
+            Id = model.Id;
             OfficeId = model.OfficeId;
             ActivityId = model.ActivityId;
             NameArabic = model.Activity?.NameArabic;
@@ -12,6 +13,7 @@
             IsApproved = model.IsApproved;
             IsDeleted = model.IsDeleted;
         }
+        public int Id { get; set; } 
         public int? OfficeId { get; set; }
         public int? ActivityId { get; set; }
         public string? NameArabic { get; set; }

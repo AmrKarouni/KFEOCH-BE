@@ -43,25 +43,14 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Result = viewmodel };
         }
 
-        public async Task<ResultWithMessage> DeleteOfficeSpecialityAsync(OfficeSpecialityBindingModel model)
+        public async Task<ResultWithMessage> DeleteOfficeSpecialityAsync(int id)
         {
-            var office = _db.Offices?.Find(model.OfficeId);
-            if (office == null)
-            {
-                return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
-            }
-            var speciality = _db.Specialities?.Find(model.SpecialityId);
-            if (speciality == null)
-            {
-                return new ResultWithMessage { Success = false, Message = $@"Speciality Not Found !!!" };
-            }
-            var officespeciality = _db.OfficeSpecialities?.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.SpecialityId == model.SpecialityId);
+            var officespeciality = _db.OfficeSpecialities?.Find(id);
             if (officespeciality == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Speciality Not Found !!!" };
             }
-            officespeciality.IsDeleted = true;
-            _db.Entry(officespeciality).State = EntityState.Modified;
+            _db.OfficeSpecialities.Remove(officespeciality);
             _db.SaveChanges();
             var viewmodel = new OfficeSpecialityViewModel(officespeciality);
             return new ResultWithMessage { Success = true, Result = viewmodel };

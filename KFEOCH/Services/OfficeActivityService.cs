@@ -43,25 +43,14 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Result = viewmodel };
         }
 
-        public async Task<ResultWithMessage> DeleteOfficeActivityAsync(OfficeActivityBindingModel model)
+        public async Task<ResultWithMessage> DeleteOfficeActivityAsync(int id)
         {
-            var office = _db.Offices?.Find(model.OfficeId);
-            if (office == null)
-            {
-                return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
-            }
-            var activity = _db.Activities?.Find(model.ActivityId);
-            if (activity == null)
-            {
-                return new ResultWithMessage { Success = false, Message = $@"Activity Not Found !!!" };
-            }
-            var officeactivity = _db.OfficeActivities?.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.ActivityId == model.ActivityId);
+            var officeactivity = _db.OfficeActivities?.Find(id);
             if (officeactivity == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Activity Not Found !!!" };
             }
-            officeactivity.IsDeleted = true;
-            _db.Entry(officeactivity).State = EntityState.Modified;
+            _db.OfficeActivities.Remove(officeactivity);
             _db.SaveChanges();
             var viewmodel = new OfficeActivityViewModel(officeactivity);
             return new ResultWithMessage { Success = true, Result = viewmodel };

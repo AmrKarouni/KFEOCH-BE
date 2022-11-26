@@ -4,6 +4,7 @@
     {
         public OfficeSpecialityViewModel(OfficeSpeciality model)
         {
+            Id = model.Id;
             OfficeId = model.OfficeId;
             SpecialityId = model.SpecialityId;
             NameArabic = model.Speciality?.NameArabic;
@@ -12,6 +13,7 @@
             IsApproved = model.IsApproved;
             IsDeleted = model.IsDeleted;
         }
+        public int Id { get; set; }
         public int? OfficeId { get; set; }
         public int? SpecialityId { get; set; }
         public string? NameArabic { get; set; }

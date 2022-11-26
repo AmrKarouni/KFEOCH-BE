@@ -6,7 +6,7 @@ namespace KFEOCH.Services.Interfaces
     public interface IOfficeActivityService
     {
         Task<ResultWithMessage> PostOfficeActivityAsync(OfficeActivityBindingModel model);
-        Task<ResultWithMessage> DeleteOfficeActivityAsync(OfficeActivityBindingModel model);
+        Task<ResultWithMessage> DeleteOfficeActivityAsync(int id);
         List<OfficeActivityViewModel> GetOfficeActivities(int officeId);
     }
 }

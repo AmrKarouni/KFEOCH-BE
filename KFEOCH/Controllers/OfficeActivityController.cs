@@ -26,10 +26,10 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteOfficeActivityAsync(OfficeActivityBindingModel model)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOfficeActivityAsync(int id)
         {
-            var result = await _officeActivityService.DeleteOfficeActivityAsync(model);
+            var result = await _officeActivityService.DeleteOfficeActivityAsync(id);
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });

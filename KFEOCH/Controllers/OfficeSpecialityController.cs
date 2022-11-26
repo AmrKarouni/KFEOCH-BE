@@ -26,10 +26,10 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteOfficeSpecialityAsync(OfficeSpecialityBindingModel model)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOfficeSpecialityAsync(int id)
         {
-            var result = await _officeSpecialityService.DeleteOfficeSpecialityAsync(model);
+            var result = await _officeSpecialityService.DeleteOfficeSpecialityAsync(id);
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
