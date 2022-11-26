@@ -29,7 +29,7 @@ namespace KFEOCH.Contexts
         public DbSet<OfficeStatus>? Statuses { get; set; }
         public DbSet<Article>? Articles { get; set; }
         public DbSet<OfficeSpeciality>? OfficeSpecialities { get; set; }
-        public DbSet<OfficeActivity>? officeActivities { get; set; }
+        public DbSet<OfficeActivity>? OfficeActivities { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             

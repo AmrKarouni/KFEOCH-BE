@@ -27,7 +27,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Activity Not Found !!!" };
             }
-            var officeactivity = _db.officeActivities?.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.ActivityId == model.ActivityId);
+            var officeactivity = _db.OfficeActivities?.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.ActivityId == model.ActivityId);
             if (officeactivity != null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Activity Already Added !!!" };
@@ -37,7 +37,7 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false, Message = $@"Activity Can't be Added !!!" };
             }
             var newofficeactivity = new OfficeActivity(model.OfficeId, model.ActivityId);
-            await _db.officeActivities.AddAsync(newofficeactivity);
+            await _db.OfficeActivities.AddAsync(newofficeactivity);
             _db.SaveChanges();
             var viewmodel = new OfficeActivityViewModel(newofficeactivity);
             return new ResultWithMessage { Success = true, Result = viewmodel };
@@ -55,7 +55,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Activity Not Found !!!" };
             }
-            var officeactivity = _db.officeActivities?.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.ActivityId == model.ActivityId);
+            var officeactivity = _db.OfficeActivities?.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.ActivityId == model.ActivityId);
             if (officeactivity == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Activity Not Found !!!" };
@@ -75,7 +75,7 @@ namespace KFEOCH.Services
             {
                 return result;
             }
-            var officeactivities = _db.officeActivities?.Include(x => x.Activity)
+            var officeactivities = _db.OfficeActivities?.Include(x => x.Activity)
                                                             .Where(x => x.OfficeId == officeId && x.IsDeleted == false);
             result = officeactivities?.Select(x => new OfficeActivityViewModel(x)).ToList();
             return result ?? new List<OfficeActivityViewModel>();
