@@ -13,15 +13,35 @@ namespace KFEOCH.Services
         {
             _db = db;
         }
-        public OfficeOwner GetById(int id)
+        public OfficeOwnerWithDocuments GetById(int id)
         {
-            var officeOwner = _db.OfficeOwners?.Find(id);
-            return officeOwner ?? new OfficeOwner();
+            var officeOwner = _db.OfficeOwners?.Include(x => x.Documents).FirstOrDefault(x => x.Id == id);
+            var types = _db.OwnerDocumentTypes.ToList().Select(x => new OfficeOwnerDocumentTypeView
+            {
+                Id = x.Id,
+                NameArabic = x.NameArabic,
+                NameEnglish = x.NameEnglish,
+                Files = officeOwner.Documents.Where(d => (d.TypeId ?? 0) == x.Id && d.IsActive == true).Select(d => new OfficeOwnerDocumentView
+                {
+                    Id = d.Id,
+                    DocumentUrl = d.DocumentUrl,
+                    AddedDate = d.AddedDate
+                }).ToList()
+            });
+            var result = new OfficeOwnerWithDocuments()
+            {
+                Id = officeOwner.Id,
+                NameArabic = officeOwner.NameArabic,
+                NameEnglish = officeOwner.NameEnglish,
+                Documents = types
+            };
+            return result ?? new OfficeOwnerWithDocuments();
         }
         public List<OfficeOwner> GetAllOfficeOwnersByOfficeId(int id)
         {
             var list = new List<OfficeOwner>();
-            list = _db.OfficeOwners?.Where(a => a.OfficeId == id && a.IsDeleted == false).ToList();
+            list = _db.OfficeOwners?.Where(a => a.OfficeId == id && a.IsDeleted == false)
+                                    .ToList();
             return list ?? new List<OfficeOwner>();
         }
         public async Task<ResultWithMessage> PostOfficeOwnerAsync(OfficeOwner model)
@@ -66,8 +86,5 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Owner {owner.NameArabic} | {owner.NameEnglish} Deleted !!!" };
         }
-        
-
-
     }
 }

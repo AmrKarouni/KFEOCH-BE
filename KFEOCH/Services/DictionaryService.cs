@@ -463,5 +463,78 @@ namespace KFEOCH.Services
                               .Include(a => a.OfficeActivities).ToList();
             return list ?? new List<OfficeType>();
         }
+
+
+        //OfficeDocumentType
+        public List<OfficeDocumentType> GetAllOfficeDocumentTypes()
+        {
+            var list = new List<OfficeDocumentType>();
+            var officeDocumentTypes = _db.OfficeDocumentTypes?.Where(x => x.IsDeleted == false).ToList();
+            if (officeDocumentTypes == null)
+            {
+                return list;
+            }
+            return officeDocumentTypes;
+        }
+        public async Task<ResultWithMessage> PostOfficeDocumentTypeAsync(OfficeDocumentType model)
+        {
+            var officeDocumentType = _db.OfficeDocumentTypes.Where(x => (x.NameArabic == model.NameArabic)
+                                  || (x.NameEnglish == model.NameEnglish)
+                                  ).FirstOrDefault();
+            if (officeDocumentType != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Document Type {model.NameEnglish} | {model.NameArabic} Already Exist !!!" };
+            }
+            await _db.OfficeDocumentTypes.AddAsync(model);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = model };
+        }
+        public async Task<ResultWithMessage> DeleteOfficeDocumentTypeAsync(int id)
+        {
+            var officeentity = _db.OfficeDocumentTypes?.Find(id);
+            if (officeentity == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Document Type Not Found !!!" };
+            }
+            _db.OfficeDocumentTypes.Remove(officeentity);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = $@"Office Document Type {officeentity.NameArabic} Deleted !!!" };
+        }
+
+        //OwnerDocumentType
+        public List<OwnerDocumentType> GetAllOwnerDocumentTypes()
+        {
+            var list = new List<OwnerDocumentType>();
+            var ownerDocumentTypes = _db.OwnerDocumentTypes?.Where(x => x.IsDeleted == false).ToList();
+            if (ownerDocumentTypes == null)
+            {
+                return list;
+            }
+            return ownerDocumentTypes;
+        }
+        public async Task<ResultWithMessage> PostOwnerDocumentTypeAsync(OwnerDocumentType model)
+        {
+            var ownerDocumentType = _db.OwnerDocumentTypes?.Where(x => (x.NameArabic == model.NameArabic)
+                                  || (x.NameEnglish == model.NameEnglish)
+                                  ).FirstOrDefault();
+            if (ownerDocumentType != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Owner Document Type {model.NameEnglish} | {model.NameArabic} Already Exist !!!" };
+            }
+            await _db.OwnerDocumentTypes.AddAsync(model);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = model };
+        }
+        public async Task<ResultWithMessage> DeleteOwnerDocumentTypeAsync(int id)
+        {
+            var ownerDocumentType = _db.OwnerDocumentTypes?.Find(id);
+            if (ownerDocumentType == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Document Type Not Found !!!" };
+            }
+            _db.OwnerDocumentTypes.Remove(ownerDocumentType);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = $@"Owner Document Type {ownerDocumentType.NameEnglish} | {ownerDocumentType.NameArabic} Deleted !!!" };
+        }
     }
 }

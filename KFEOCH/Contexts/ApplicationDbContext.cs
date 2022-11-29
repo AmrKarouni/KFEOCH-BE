@@ -30,6 +30,9 @@ namespace KFEOCH.Contexts
         public DbSet<Article>? Articles { get; set; }
         public DbSet<OfficeSpeciality>? OfficeSpecialities { get; set; }
         public DbSet<OfficeActivity>? OfficeActivities { get; set; }
+        public DbSet<OfficeDocumentType>? OfficeDocumentTypes { get; set; }
+        public DbSet<OwnerDocumentType>? OwnerDocumentTypes { get; set; }
+        public DbSet<OwnerDocument>? OwnerDocuments { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             
@@ -174,6 +177,24 @@ namespace KFEOCH.Contexts
 
             modelBuilder.Entity<OfficeActivity>(entity => {
                 entity.HasIndex(e => new { e.OfficeId, e.ActivityId })
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<OfficeDocumentType>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OfficeDocumentType>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<OwnerDocumentType>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OwnerDocumentType>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();
             });
 

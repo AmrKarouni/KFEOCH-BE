@@ -11,17 +11,12 @@ namespace KFEOCH.Controllers
     public class OfficeController : ControllerBase
     {
         private readonly IOfficeService _officeService;
-        private readonly IFileService _fileService;
         private readonly IOfficeOwnerService _officeOwnerService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OfficeController(IOfficeService officeService, IFileService fileService, IOfficeOwnerService officeOwnerService,
-                                IHttpContextAccessor httpContextAccessor)
+        public OfficeController(IOfficeService officeService, IOfficeOwnerService officeOwnerService)
         {
             _officeService = officeService;
-            _fileService = fileService;
             _officeOwnerService = officeOwnerService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("{id}")]
@@ -60,7 +55,7 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
-        [HttpGet("owners/{officeId}")]
+        [HttpGet("Owners/{officeId}")]
         public IActionResult GetAllOfficeOwnersByOfficeId(int officeId)
         {
             var result = _officeOwnerService.GetAllOfficeOwnersByOfficeId(officeId);

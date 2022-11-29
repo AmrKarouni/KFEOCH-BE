@@ -25,6 +25,7 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IOfficeOwnerService, OfficeOwnerService>();
 builder.Services.AddScoped<IOfficeSpecialityService, OfficeSpecialityService>();
 builder.Services.AddScoped<IOfficeActivityService, OfficeActivityService>();
+builder.Services.AddScoped<IOwnerDocumentService, OwnerDocumentService>();
 builder.Services.AddTransient<ApplicationDbContextSeed>();
 builder.Services.AddDbContext<ApplicationDbContext>(x =>
 {
@@ -108,7 +109,17 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(
            Path.Combine(builder.Environment.ContentRootPath, "./App_Media/logos")),
     RequestPath = "/logos"
+
 });
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "./App_Media/owners")),
+    RequestPath = "/owners"
+
+});
+
 app.UseAuthorization();
 
 app.MapControllers();

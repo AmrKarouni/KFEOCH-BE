@@ -1,10 +1,13 @@
 ﻿using KFEOCH.Models;
 using KFEOCH.Models.Views;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KFEOCH.Services.Interfaces
 {
     public interface IFileService
     {
         Task<ResultWithMessage> UploadFile(FileModel model,string path);
+        Task<ResultWithMessage> UploadFile(OwnerFileModel model, string path);
+        FilePathModel GetFilePath(string fileurl);
     }
 }

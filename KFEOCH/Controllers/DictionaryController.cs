@@ -408,5 +408,69 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet("office-document-types")]
+        public IActionResult GetAllOfficeDocumentTypes()
+        {
+            var result = _dictionaryService.GetAllOfficeDocumentTypes();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Office Document Type Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("add-office-document-type")]
+        public async Task<ActionResult> PostOfficeDocumentTypeAsync(OfficeDocumentType model)
+        {
+            var result = await _dictionaryService.PostOfficeDocumentTypeAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        [HttpDelete("delete-office-document-type/{id}")]
+        public IActionResult DeleteOfficeDocumentTypeAsync(int id)
+        {
+            var result = _dictionaryService.DeleteOfficeDocumentTypeAsync(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Office Document Type Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("owner-document-types")]
+        public IActionResult GetAllOwnerDocumentTypes()
+        {
+            var result = _dictionaryService.GetAllOwnerDocumentTypes();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Owner Document Type Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("add-owner-document-type")]
+        public async Task<ActionResult> PostOwnerDocumentTypeAsync(OwnerDocumentType model)
+        {
+            var result = await _dictionaryService.PostOwnerDocumentTypeAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        [HttpDelete("delete-owner-document-type/{id}")]
+        public IActionResult DeleteOwnerDocumentTypeAsync(int id)
+        {
+            var result = _dictionaryService.DeleteOwnerDocumentTypeAsync(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Owner Document Type Found!!!" });
+            }
+            return Ok(result);
+        }
     }
 }

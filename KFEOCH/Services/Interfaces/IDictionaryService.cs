@@ -74,5 +74,16 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> PostOfficeTypeAsync(OfficeType model);
         Task<ResultWithMessage> DeleteOfficeTypeAsync(int id);
         List<OfficeType> GetAllOfficeTypesWithDetials(int id);
+
+        //OfficeDocumentType
+        List<OfficeDocumentType> GetAllOfficeDocumentTypes();
+        Task<ResultWithMessage> PostOfficeDocumentTypeAsync(OfficeDocumentType model);
+        Task<ResultWithMessage> DeleteOfficeDocumentTypeAsync(int id);
+
+        //OwnerDocumentType
+        List<OwnerDocumentType> GetAllOwnerDocumentTypes();
+        Task<ResultWithMessage> PostOwnerDocumentTypeAsync(OwnerDocumentType model);
+        Task<ResultWithMessage> DeleteOwnerDocumentTypeAsync(int id);
+
     }
 }
