@@ -4,6 +4,8 @@ using KFEOCH.Models.Binding;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace KFEOCH.Services
 {
@@ -12,12 +14,15 @@ namespace KFEOCH.Services
         private readonly ApplicationDbContext _db;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFileService _fileService;
+        private readonly IConfiguration _configuration;
 
-        public OwnerDocumentService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor, IFileService fileService)
+        public OwnerDocumentService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor,
+                                    IFileService fileService, IConfiguration configuration)
         {
             _db = db;
             _httpContextAccessor = httpContextAccessor;
             _fileService = fileService;
+            _configuration = configuration;
         }
 
         public OfficeOwnerWithDocuments GetAllDocumentsByOwnerId(int ownerid)
@@ -70,13 +75,12 @@ namespace KFEOCH.Services
                 olddocument.IsActive = false;
                 _db.Entry(olddocument).State = EntityState.Modified;
             }
-            var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
             var uploadResult = await _fileService.UploadFile(model, "owners");
             if (!uploadResult.Success)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Upload Document Failed !!!" };
             }
-            var documentUrl = hostpath + uploadResult.Message ;
+            var documentUrl = uploadResult.Message;
             var document = new OwnerDocument()
             {
                 OwnerId = model.OwnerId,
@@ -94,7 +98,7 @@ namespace KFEOCH.Services
 
         public FilePathModel GetDocumentUrl(int documentid)
         {
-            var result= new FilePathModel();
+            var result = new FilePathModel();
             string docurl;
             var doc = _db.OwnerDocuments?.Find(documentid);
             if (doc == null)
@@ -109,5 +113,28 @@ namespace KFEOCH.Services
             return result;
         }
 
+        public FileBytesModel GetDocument(int documentid)
+        {
+            FileBytesModel result = new FileBytesModel();
+            try
+            {
+                var url = GetDocumentUrl(documentid);
+                var host = _configuration.GetValue<string>("FileHostServer");
+
+                if (url == null || url.Path == null)
+                {
+                    return result;
+                }
+                result.Bytes = File.ReadAllBytes(host + url.Path);
+                result.FileName = url.Path.Substring(url.Path.LastIndexOf('/') + 1).ToLower();
+                result.ContentType = url.ContentType;
+                return result;
+            }
+            catch (Exception e)
+            {
+                return result = new FileBytesModel();
+                throw;
+            }
+        }
     }
 }

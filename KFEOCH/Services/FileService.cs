@@ -1,6 +1,7 @@
 ﻿using KFEOCH.Models;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
+using System.IO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KFEOCH.Services
@@ -64,7 +65,8 @@ namespace KFEOCH.Services
                           + DateTime.UtcNow.Month + ""
                           + DateTime.UtcNow.Day + ""
                           + DateTime.UtcNow.Hour + ""
-                          + DateTime.UtcNow.Minute;
+                          + DateTime.UtcNow.Minute + ""
+                          + DateTime.UtcNow.Second;
             var filePath = Path.Combine(path + "/" + model.OwnerId +
                 "/" + model.TypeId +
                 "/" + filename +
@@ -83,7 +85,6 @@ namespace KFEOCH.Services
         public FilePathModel GetFilePath(string fileurl)
         {
             var path = new FilePathModel();
-            var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
             var ContentList = new List<ContentType>();
             ContentList.Add(new ContentType { Extension = "jpg", cType = "image/jpeg" });
             ContentList.Add(new ContentType { Extension = "jpeg", cType = "image/jpeg" });
@@ -125,10 +126,8 @@ namespace KFEOCH.Services
             //ContentList.Add(new ContentType { Extension = "mpeg", cType = "video/mpeg" });
             //ContentList.Add(new ContentType { Extension = "mpg", cType = "video/mpeg" });
             //ContentList.Add(new ContentType { Extension = "qt", cType = "video/quicktime" });
-            //var newurl = fileurl.Replace(hostpath, "./App_Media/");
-            var newurl = fileurl;
-            var extension = newurl.Substring(newurl.LastIndexOf('.') + 1).ToLower();
-            path.Path = newurl;
+            var extension = fileurl.Substring(fileurl.LastIndexOf('.') + 1).ToLower();
+            path.Path = fileurl;
             path.ContentType = ContentList.FirstOrDefault(x => x.Extension == extension)?.cType;
             return path;
         }

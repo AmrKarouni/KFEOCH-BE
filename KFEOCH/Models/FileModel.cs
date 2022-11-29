@@ -11,6 +11,13 @@
         public string? Path { get; set; }
         public string? ContentType { get; set; }
     }
+
+    public class FileBytesModel
+    {
+        public byte[]? Bytes { get; set; } = null;
+        public string? FileName { get; set; }
+        public string? ContentType { get; set; }
+    }
     public class ContentType
     {
         public string? Extension { get; set; }

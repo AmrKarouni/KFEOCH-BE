@@ -12,6 +12,7 @@ namespace KFEOCH.Controllers
     {
         private readonly IOfficeOwnerService _officeOwnerService;
         private readonly IOwnerDocumentService _ownerDocumentService;
+
         public OfficeOwnerController(IOfficeOwnerService officeOwnerService, IOwnerDocumentService ownerDocumentService)
         {
             _officeOwnerService = officeOwnerService;
@@ -76,20 +77,18 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
         [HttpGet("Document/View/{documentid}")]
         public IActionResult ViewDocumentByUrl(int documentid)
         {
-            var url = _ownerDocumentService.GetDocumentUrl(documentid);
-            if (url == null || url.Path == null)
+            var result = _ownerDocumentService.GetDocument(documentid);
+            if (result.Bytes == null)
             {
-                return BadRequest(new { message = "No File Found!!!" });
+                return BadRequest(new { message = "Bad Request" });
             }
-            //var fs = new FileStream(url.Path, FileMode.Open);
-            //var file = File(fs, url.ContentType);
-            var file = PhysicalFile(url.Path, url.ContentType);
-            return Ok(file);
-        }
+            return File(result.Bytes, result.ContentType,result.FileName);
 
+        }
         [HttpPost("Document")]
         public async Task<ActionResult> PostOwnerDocumentAsync([FromForm] OwnerFileModel model)
         {

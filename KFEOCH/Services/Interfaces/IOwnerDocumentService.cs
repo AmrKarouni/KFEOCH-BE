@@ -9,5 +9,6 @@ namespace KFEOCH.Services.Interfaces
         OfficeOwnerWithDocuments GetAllDocumentsByOwnerId(int ownerid);
         Task<ResultWithMessage> PostOwnerDocumentAsync(OwnerFileModel model);
         FilePathModel GetDocumentUrl(int documentid);
+        FileBytesModel GetDocument(int documentid);
     }
 }
