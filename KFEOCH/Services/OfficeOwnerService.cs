@@ -37,12 +37,14 @@ namespace KFEOCH.Services
             };
             return result ?? new OfficeOwnerWithDocuments();
         }
-        public List<OfficeOwner> GetAllOfficeOwnersByOfficeId(int id)
+        public List<OfficeOwnerViewModel> GetAllOfficeOwnersByOfficeId(int id)
         {
-            var list = new List<OfficeOwner>();
-            list = _db.OfficeOwners?.Where(a => a.OfficeId == id && a.IsDeleted == false)
+            var q = _db.OfficeOwners?.Include(g => g.Gender)
+                                      .Include(s => s.Speciality)
+                                     .Where(a => a.OfficeId == id && a.IsDeleted == false)
+                                     .Select(x => new OfficeOwnerViewModel(x))
                                     .ToList();
-            return list ?? new List<OfficeOwner>();
+            return q;
         }
         public async Task<ResultWithMessage> PostOfficeOwnerAsync(OfficeOwner model)
         {
