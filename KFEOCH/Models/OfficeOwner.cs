@@ -46,6 +46,7 @@ namespace KFEOCH.Models
         public bool IsDeleted { get; set; }
         public virtual Office? Office { get; set; }
         public virtual Gender? Gender { get; set; }
+
         public virtual OfficeOwnerSpeciality? Speciality { get; set; }
         public virtual ICollection<OwnerDocument>? Documents { get; set; }
     }
