@@ -53,6 +53,8 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Owner {model.NameArabic} | {model.NameEnglish} Already Exist !!!" };
             }
+            model.IsApproved = true;
+            model.IsDeleted = false;
             await _db.OfficeOwners.AddAsync(model);
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = model };
@@ -70,6 +72,8 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false, Message = $@"Owner Not Found !!!" };
             }
             owner = model;
+            owner.IsApproved = true;
+            owner.IsDeleted = false;
             _db.Entry(owner).State = EntityState.Modified;
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = owner };
@@ -81,6 +85,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Owner Not Found !!!" };
             }
+            owner.IsApproved = true;
             owner.IsDeleted = true;
             _db.Entry(owner).State = EntityState.Modified;
             _db.SaveChanges();
