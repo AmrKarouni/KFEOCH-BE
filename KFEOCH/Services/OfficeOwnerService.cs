@@ -31,8 +31,16 @@ namespace KFEOCH.Services
             var result = new OfficeOwnerWithDocuments()
             {
                 Id = officeOwner.Id,
+                OfficeId = officeOwner.OfficeId,
                 NameArabic = officeOwner.NameArabic,
                 NameEnglish = officeOwner.NameEnglish,
+                GenderId = officeOwner.GenderId,
+                NationalId = officeOwner.NationalId,
+                SemId = officeOwner.SemId,
+                SpecialityId = officeOwner.SpecialityId,
+                ExperienceYears = officeOwner.ExperienceYears,
+                IsApproved = officeOwner.IsApproved,
+                IsDeleted = officeOwner.IsDeleted,
                 Documents = types
             };
             return result ?? new OfficeOwnerWithDocuments();
