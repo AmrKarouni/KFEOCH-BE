@@ -472,5 +472,37 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet("contact-types")]
+        public IActionResult GetAllContactTypes()
+        {
+            var result = _dictionaryService.GetAllContactTypes();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Contact Type Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("add-contact-type")]
+        public async Task<ActionResult> PostContactTypeAsync(ContactType model)
+        {
+            var result = await _dictionaryService.PostContactTypeAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        [HttpDelete("delete-contact-type/{id}")]
+        public async Task<IActionResult> DeleteContactTypeAsync(int id)
+        {
+            var result = await _dictionaryService.DeleteContactTypeAsync(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Contact Type Found!!!" });
+            }
+            return Ok(result);
+        }
     }
 }

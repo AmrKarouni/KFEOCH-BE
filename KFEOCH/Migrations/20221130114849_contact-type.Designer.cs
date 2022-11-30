@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221130114849_contact-type")]
+    partial class contacttype
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -885,41 +887,6 @@ namespace KFEOCH.Migrations
                     b.ToTable("OfficeActivities");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.OfficeContact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime?>("AddedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ContactId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("OfficeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContactId");
-
-                    b.HasIndex("OfficeId");
-
-                    b.ToTable("OfficeContacts");
-                });
-
             modelBuilder.Entity("KFEOCH.Models.OfficeOwner", b =>
                 {
                     b.Property<int>("Id")
@@ -1373,21 +1340,6 @@ namespace KFEOCH.Migrations
                         .HasForeignKey("OfficeId");
 
                     b.Navigation("Activity");
-
-                    b.Navigation("Office");
-                });
-
-            modelBuilder.Entity("KFEOCH.Models.OfficeContact", b =>
-                {
-                    b.HasOne("KFEOCH.Models.Dictionaries.ContactType", "Contact")
-                        .WithMany()
-                        .HasForeignKey("ContactId");
-
-                    b.HasOne("KFEOCH.Models.Office", "Office")
-                        .WithMany()
-                        .HasForeignKey("OfficeId");
-
-                    b.Navigation("Contact");
 
                     b.Navigation("Office");
                 });

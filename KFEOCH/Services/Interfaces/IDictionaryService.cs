@@ -85,5 +85,10 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> PostOwnerDocumentTypeAsync(OwnerDocumentType model);
         Task<ResultWithMessage> DeleteOwnerDocumentTypeAsync(int id);
 
+        //Contact Type
+        List<ContactType> GetAllContactTypes();
+        Task<ResultWithMessage> PostContactTypeAsync(ContactType model);
+        Task<ResultWithMessage> DeleteContactTypeAsync(int id);
+
     }
 }

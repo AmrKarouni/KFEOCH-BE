@@ -33,6 +33,8 @@ namespace KFEOCH.Contexts
         public DbSet<OfficeDocumentType>? OfficeDocumentTypes { get; set; }
         public DbSet<OwnerDocumentType>? OwnerDocumentTypes { get; set; }
         public DbSet<OwnerDocument>? OwnerDocuments { get; set; }
+        public DbSet<ContactType>? ContactTypes { get; set; }
+        public DbSet<OfficeContact>? OfficeContacts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             
@@ -194,6 +196,15 @@ namespace KFEOCH.Contexts
                 .IsUnique();
             });
             modelBuilder.Entity<OwnerDocumentType>(entity => {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<ContactType>(entity => {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<ContactType>(entity => {
                 entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();
             });

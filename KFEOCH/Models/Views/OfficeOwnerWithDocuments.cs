@@ -6,7 +6,6 @@
         public int OfficeId { get; set; }
         public string? NameArabic { get; set; }
         public string? NameEnglish { get; set; }
-
         public int GenderId { get; set; }
         public string? NationalId { get; set; }
         public string? SemId { get; set; }

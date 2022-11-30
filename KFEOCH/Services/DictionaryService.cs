@@ -9,7 +9,7 @@ namespace KFEOCH.Services
     public class DictionaryService : IDictionaryService
     {
         private readonly ApplicationDbContext _db;
-        public DictionaryService( ApplicationDbContext db)
+        public DictionaryService(ApplicationDbContext db)
         {
             _db = db;
         }
@@ -37,7 +37,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteAreaAsync(int id)
         {
             var area = _db.Areas.Find(id);
-            if(area == null)
+            if (area == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Area Not Found !!!" };
             }
@@ -87,7 +87,7 @@ namespace KFEOCH.Services
         }
         public List<Governorate> GetGovernoratesByCountryId(int id)
         {
-            var list = new List<Governorate>(); 
+            var list = new List<Governorate>();
             list = _db.Governorates?.Include(a => a.Areas)
                         .Where(a => a.CountryId == id && a.IsDeleted == false)
                         .ToList();
@@ -168,7 +168,7 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Certificate Entity {cEntity.NameArabic} Deleted !!!" };
         }
-       
+
         //CourseCategory
         public List<CourseCategory> GetAllCourseCategories()
         {
@@ -207,7 +207,7 @@ namespace KFEOCH.Services
         {
             var list = new List<Gender>();
             list = _db.Genders?.Where(x => x.IsDeleted == false).ToList();
-            
+
             return list ?? new List<Gender>();
         }
 
@@ -215,7 +215,7 @@ namespace KFEOCH.Services
         public List<Activity> GetAllOfficeActivities()
         {
             var list = new List<Activity>();
-            list  = _db.Activities?.Where(x => x.IsDeleted == false).ToList();
+            list = _db.Activities?.Where(x => x.IsDeleted == false).ToList();
             return list ?? new List<Activity>();
         }
         public async Task<ResultWithMessage> PostOfficeActivityAsync(Activity model)
@@ -246,7 +246,7 @@ namespace KFEOCH.Services
         public List<Activity> GetAllOfficeActivitiesByOfficeTypeId(int id)
         {
             var list = new List<Activity>();
-            list = _db.Activities?.Where(x => (x.IsDeleted == false)&& (x.OfficeTypeId == id)).ToList();
+            list = _db.Activities?.Where(x => (x.IsDeleted == false) && (x.OfficeTypeId == id)).ToList();
             return list ?? new List<Activity>();
         }
 
@@ -427,7 +427,7 @@ namespace KFEOCH.Services
         public List<OfficeType> GetAllOfficeTypes()
         {
             var list = new List<OfficeType>();
-            list = _db.OfficeTypes?.Where(x => (x.IsDeleted == false) && (x.IsAdmin == false) ).ToList();
+            list = _db.OfficeTypes?.Where(x => (x.IsDeleted == false) && (x.IsAdmin == false)).ToList();
             return list ?? new List<OfficeType>();
         }
         public async Task<ResultWithMessage> PostOfficeTypeAsync(OfficeType model)
@@ -535,6 +535,42 @@ namespace KFEOCH.Services
             _db.OwnerDocumentTypes.Remove(ownerDocumentType);
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Owner Document Type {ownerDocumentType.NameEnglish} | {ownerDocumentType.NameArabic} Deleted !!!" };
+        }
+
+        //Contact Type
+        public List<ContactType> GetAllContactTypes()
+        {
+            var list = new List<ContactType>();
+            var contacttypes = _db.ContactTypes?.Where(x => x.IsDeleted == false).ToList();
+            if (contacttypes == null)
+            {
+                return list;
+            }
+            return contacttypes;
+        }
+        public async Task<ResultWithMessage> PostContactTypeAsync(ContactType model)
+        {
+            var contacttype = _db.ContactTypes?.Where(x => (x.NameArabic == model.NameArabic)
+                                  || (x.NameEnglish == model.NameEnglish)
+                                  ).FirstOrDefault();
+            if (contacttype != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Contact Type {model.NameArabic} Already Exist !!!" };
+            }
+            await _db.ContactTypes.AddAsync(model);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = model };
+        }
+        public async Task<ResultWithMessage> DeleteContactTypeAsync(int id)
+        {
+            var contacttype = _db.ContactTypes.Find(id);
+            if (contacttype == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Contact Type Not Found !!!" };
+            }
+            _db.ContactTypes.Remove(contacttype);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = $@"Contact Type {contacttype.NameArabic} Deleted !!!" };
         }
     }
 }
