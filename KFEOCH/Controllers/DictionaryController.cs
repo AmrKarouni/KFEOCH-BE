@@ -291,6 +291,41 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("office-owner-specialities")]
+        public IActionResult GetAllOfficeOwnerSpecialities()
+        {
+            var result = _dictionaryService.GetAllOfficeOwnerSpecialities();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Owner Speciality Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("add-office-owner-speciality")]
+        public async Task<ActionResult> PostOfficeOwnerSpecialityAsync(OfficeOwnerSpeciality model)
+        {
+            var result = await _dictionaryService.PostOfficeOwnerSpecialityAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        [HttpDelete("delete-office-owner-speciality/{id}")]
+        public IActionResult DeleteOfficeOwnerSpecialityAsync(int id)
+        {
+            var result = _dictionaryService.DeleteOfficeOwnerSpecialityAsync(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Office Legal Entity Found!!!" });
+            }
+            return Ok(result);
+        }
+
+
+
         [HttpGet("office-specialities")]
         public IActionResult GetAllOfficeSpecialities()
         {
