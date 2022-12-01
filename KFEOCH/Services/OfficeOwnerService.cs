@@ -13,9 +13,14 @@ namespace KFEOCH.Services
         {
             _db = db;
         }
-        public OfficeOwnerWithDocuments GetById(int id)
+        public ResultWithMessage GetById(int id)
         {
+            var result = new OfficeOwnerWithDocuments();
             var officeOwner = _db.OfficeOwners?.Include(x => x.Documents).FirstOrDefault(x => x.Id == id);
+            if (officeOwner == null)
+            {
+                return new ResultWithMessage { Success = false, Message = "No Owner Found !!", Result = result };
+            }
             var types = _db.OwnerDocumentTypes.ToList().Select(x => new OfficeOwnerDocumentTypeView
             {
                 Id = x.Id,
@@ -28,7 +33,7 @@ namespace KFEOCH.Services
                     AddedDate = d.AddedDate
                 }).ToList()
             });
-            var result = new OfficeOwnerWithDocuments()
+            result = new OfficeOwnerWithDocuments()
             {
                 Id = officeOwner.Id,
                 OfficeId = officeOwner.OfficeId,
@@ -43,7 +48,7 @@ namespace KFEOCH.Services
                 IsDeleted = officeOwner.IsDeleted,
                 Documents = types
             };
-            return result ?? new OfficeOwnerWithDocuments();
+             return new ResultWithMessage { Success = true, Result = result };
         }
         public List<OfficeOwnerViewModel> GetAllOfficeOwnersByOfficeId(int id)
         {

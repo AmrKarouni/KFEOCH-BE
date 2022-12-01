@@ -5,7 +5,7 @@ namespace KFEOCH.Services.Interfaces
 {
     public interface IOfficeOwnerService
     {
-        OfficeOwnerWithDocuments GetById(int id);
+        ResultWithMessage GetById(int id);
         List<OfficeOwnerViewModel> GetAllOfficeOwnersByOfficeId(int id);
         Task<ResultWithMessage> PostOfficeOwnerAsync(OfficeOwner model);
         Task<ResultWithMessage> PutOfficeOwnerAsync(int id ,OfficeOwner model);

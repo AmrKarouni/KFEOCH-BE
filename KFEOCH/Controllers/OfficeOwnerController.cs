@@ -23,11 +23,11 @@ namespace KFEOCH.Controllers
         public IActionResult GetById(int id)
         {
             var result = _officeOwnerService.GetById(id);
-            if (result == null)
+            if (result.Success == false)
             {
                 return BadRequest(new { message = "No Owner Found!!!" });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
 
         [HttpPost]
