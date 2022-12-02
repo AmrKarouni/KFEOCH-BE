@@ -29,6 +29,7 @@ namespace KFEOCH.Services
                 Files = officeOwner.Documents.Where(d => (d.TypeId ?? 0) == x.Id && d.IsActive == true).Select(d => new OfficeOwnerDocumentView
                 {
                     Id = d.Id,
+                    Name = d.DocumentUrl.Substring(d.DocumentUrl.LastIndexOf('/')+1).ToLower(),
                     DocumentUrl = d.DocumentUrl,
                     AddedDate = d.AddedDate
                 }).ToList()

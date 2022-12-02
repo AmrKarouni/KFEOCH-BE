@@ -25,6 +25,7 @@
     public class OfficeOwnerDocumentView
     {
         public int Id { get; set; }
+        public string? Name { get; set; }
         public string? DocumentUrl { get; set; }
         public DateTime? AddedDate { get; set; }
     }

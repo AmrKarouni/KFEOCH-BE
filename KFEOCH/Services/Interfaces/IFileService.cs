@@ -9,5 +9,6 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> UploadFile(FileModel model,string path);
         Task<ResultWithMessage> UploadFile(OwnerFileModel model, string path);
         FilePathModel GetFilePath(string fileurl);
+        Task<ResultWithMessage> DeleteFile(string fileurl);
     }
 }

@@ -93,7 +93,14 @@ namespace KFEOCH.Services
             };
             await _db.OwnerDocuments.AddAsync(document);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Result = document };
+            var result = new OfficeOwnerDocumentView
+                {
+                Id = document.Id,
+                Name = document.DocumentUrl.Substring(document.DocumentUrl.LastIndexOf('/') + 1).ToLower(),
+                DocumentUrl = document.DocumentUrl,
+                AddedDate = document.AddedDate
+            };
+            return new ResultWithMessage { Success = true, Result = result };
         }
 
         public FilePathModel GetDocumentUrl(int documentid)

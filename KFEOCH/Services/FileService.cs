@@ -9,15 +9,18 @@ namespace KFEOCH.Services
     public class FileService : IFileService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
 
-        public FileService(IHttpContextAccessor httpContextAccessor)
+        public FileService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
         }
         public async Task<ResultWithMessage> UploadFile(FileModel model, string path)
         {
             int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB
             IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".png", ".pdf" };
+            var fileHostServer = _configuration.GetValue<string>("FileHostServer");
             if (model.File == null)
             {
                 return new ResultWithMessage { Success = false, Message = "No File Found !!" };
@@ -32,15 +35,15 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false, Message = "Max Size Allowed is 5 M.B" };
             }
             var filePath = Path.Combine(path + "/" + model.FileName + extension);
-            var fullfilePath = Path.Combine(@"./App_Media/", filePath);
+            var fullfilePath = Path.Combine(fileHostServer + "/", filePath);
             string directory = Path.GetDirectoryName(fullfilePath);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            FileStream FS = new FileStream(fullfilePath, FileMode.Create);
-            await model.File.CopyToAsync(FS);
-            FS.Close();
+            FileStream stream = new FileStream(fullfilePath, FileMode.Create);
+            await model.File.CopyToAsync(stream);
+            stream.Close();
             return new ResultWithMessage { Success = true, Message = "/" + filePath };
         }
 
@@ -48,6 +51,7 @@ namespace KFEOCH.Services
         {
             int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB
             IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".jpeg", ".png", ".pdf" };
+            var fileHostServer = _configuration.GetValue<string>("FileHostServer");
             if (model.File == null)
             {
                 return new ResultWithMessage { Success = false, Message = "No File Found !!" };
@@ -71,15 +75,15 @@ namespace KFEOCH.Services
                 "/" + model.TypeId +
                 "/" + filename +
                 extension);
-            var fullfilePath = Path.Combine(@"./App_Media/", filePath);
+            var fullfilePath = Path.Combine(fileHostServer + "/", filePath);
             string directory = Path.GetDirectoryName(fullfilePath);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            FileStream FS = new FileStream(fullfilePath, FileMode.Create);
-            await model.File.CopyToAsync(FS);
-            FS.Close();
+            FileStream stream = new FileStream(fullfilePath, FileMode.Create);
+            await model.File.CopyToAsync(stream);
+            stream.Close();
             return new ResultWithMessage { Success = true, Message = "/" + filePath };
         }
         public FilePathModel GetFilePath(string fileurl)
@@ -130,6 +134,18 @@ namespace KFEOCH.Services
             path.Path = fileurl;
             path.ContentType = ContentList.FirstOrDefault(x => x.Extension == extension)?.cType;
             return path;
+        }
+
+        public async Task<ResultWithMessage> DeleteFile(string fileurl)
+        {
+            var fileHostServer = _configuration.GetValue<string>("FileHostServer");
+            var fullfilePath = Path.Combine(fileHostServer + "/", fileurl);
+            if (File.Exists(fullfilePath))
+            {
+                File.Delete(fullfilePath);
+                return new ResultWithMessage { Success = true, Message = $@"File {fileurl} Deleted !!!" };
+            }
+            return new ResultWithMessage { Success = false, Message = $@"File {fileurl} Not Found !!!" };
         }
     }
 }
