@@ -143,5 +143,18 @@ namespace KFEOCH.Services
                 throw;
             }
         }
+
+        public async Task<ResultWithMessage> DeleteDocumentAsync(int documentid)
+        {
+            var doc = _db.OwnerDocuments?.Find(documentid);
+            if (doc == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Owner Document Not Found !!!" };
+            }
+            var deletedfile = await _fileService.DeleteFile(doc.DocumentUrl);
+            _db.OwnerDocuments.Remove(doc);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = "Owner Document Deleted !!!" };
+        }
     }
 }

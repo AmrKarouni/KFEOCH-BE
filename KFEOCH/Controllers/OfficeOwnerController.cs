@@ -99,5 +99,16 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
+
+        [HttpDelete("Document/{documentid}")]
+        public async Task<ActionResult> DeleteDocumentAsync(int documentid)
+        {
+            var result = await _ownerDocumentService.DeleteDocumentAsync(documentid);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
     }
 }

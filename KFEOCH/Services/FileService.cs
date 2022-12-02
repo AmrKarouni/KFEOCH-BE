@@ -139,7 +139,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> DeleteFile(string fileurl)
         {
             var fileHostServer = _configuration.GetValue<string>("FileHostServer");
-            var fullfilePath = Path.Combine(fileHostServer + "/", fileurl);
+            var fullfilePath = Path.Combine(fileHostServer + "/" + fileurl);
             if (File.Exists(fullfilePath))
             {
                 File.Delete(fullfilePath);

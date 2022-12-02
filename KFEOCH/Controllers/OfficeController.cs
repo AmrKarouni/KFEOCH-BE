@@ -55,6 +55,17 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
+        [HttpDelete("delete-logo/{id}")]
+        public async Task<IActionResult> DeleteLogoAsync(int id)
+        {
+            var result = await _officeService.DeleteLogoAsync(id);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Success);
+        }
+
         [HttpGet("Owners/{officeId}")]
         public IActionResult GetAllOfficeOwnersByOfficeId(int officeId)
         {

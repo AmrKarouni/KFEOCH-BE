@@ -62,5 +62,24 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Result = result };
         }
 
+
+        public async Task<ResultWithMessage> DeleteLogoAsync(int id)
+        {
+            var office = _db.Offices.Find(id);
+            if (office == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
+            }
+            var deletedfile = await _fileService.DeleteFile(office.LogoUrl);
+            if (deletedfile == null || deletedfile.Success == false)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Delete Logo Failed !!!" };
+            }
+            office.LogoUrl = null;
+            await PutOfficeAsync(office.Id, office);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = "Owner Document Deleted !!!" };
+        }
+
     }
 }
