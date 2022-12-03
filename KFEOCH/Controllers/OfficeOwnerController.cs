@@ -108,7 +108,7 @@ namespace KFEOCH.Controllers
             {
                 return BadRequest(new { message = result.Message });
             }
-            return Ok(result.Result);
+            return Ok(result.Success);
         }
     }
 }
