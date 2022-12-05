@@ -52,7 +52,7 @@ namespace KFEOCH.Controllers
         public IActionResult GetOfficeById(int officeid)
         {
             var result = _officeContactService.GetAllOfficeContactsByOfficeId(officeid);
-            if (result == null || result.Count == 0)
+            if (result == null)
             {
                 return BadRequest(new { message = "No Contact Found!!!" });
             }

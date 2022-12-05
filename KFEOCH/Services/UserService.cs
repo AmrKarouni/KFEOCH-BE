@@ -330,7 +330,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> OfficeChangePasswordAsync(OfficeChangePasswordModel model)
         {
 
-            var user = await _userManager.FindByNameAsync("T" + model.OfficeTypeId + "L" + model.LicenseId);
+            var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Unavailable Or Deactivated Account!!!" };
