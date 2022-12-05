@@ -49,10 +49,10 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
         [HttpGet("{officeid}")]
-        public IActionResult GetOfficeById(int officeId)
+        public IActionResult GetOfficeById(int officeid)
         {
-            var result = _officeContactService.GetAllOfficeContactsByOfficeId(officeId);
-            if (result == null)
+            var result = _officeContactService.GetAllOfficeContactsByOfficeId(officeid);
+            if (result == null || result.Count == 0)
             {
                 return BadRequest(new { message = "No Contact Found!!!" });
             }

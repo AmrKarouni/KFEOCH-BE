@@ -18,11 +18,16 @@ namespace KFEOCH.Services
 
         public List<OfficeContactViewModel> GetAllOfficeContactsByOfficeId(int officeid)
         {
-            var list = _db.OfficeContacts?.Include(c => c.Contact)
-                                     .Where(a => a.OfficeId == officeid && a.IsDeleted == false)
-                                     .Select(x => new OfficeContactViewModel(x))
-                                    .ToList();
-            return list;
+            var result = new List<OfficeContactViewModel>();
+            var office = _db.Offices?.Find(officeid);
+            if (office == null)
+            {
+                return result;
+            }
+            var contactlist = _db.OfficeContacts?.Include(c => c.Contact)
+                                     .Where(a => a.OfficeId == officeid && a.IsDeleted == false);
+            result = contactlist?.Select(x => new OfficeContactViewModel(x)).ToList();
+            return result ?? new List<OfficeContactViewModel>();
 
         }
         public async Task<ResultWithMessage> PostOfficeContactAsync(OfficeContactBindingModel model)
@@ -84,7 +89,8 @@ namespace KFEOCH.Services
             }
             _db.OfficeContacts?.Remove(contact);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Result = "Contact Deleted !!!" };
+            var viewmode = new OfficeContactViewModel(contact);
+            return new ResultWithMessage { Success = true, Result = viewmode };
         }
     }
 }
