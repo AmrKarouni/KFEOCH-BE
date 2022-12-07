@@ -14,7 +14,7 @@ namespace KFEOCH.Controllers
         {
             _dictionaryService = dictionaryService;
         }
-        [HttpPost("add-country")]
+        [HttpPost("countries")]
         public async Task<ActionResult> PostCountryAsync(Country model)
         {
             var result = await _dictionaryService.PostCountryAsync(model);
@@ -45,7 +45,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-governorate")]
+        [HttpPost("governorates")]
         public async Task<ActionResult> PostGovernorateAsync(Governorate model)
         {
             var result = await _dictionaryService.PostGovernorateAsync(model);
@@ -55,7 +55,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpGet("Governorates")]
+        [HttpGet("governorates")]
         public IActionResult GetAllGovernorates()
         {
             var result = _dictionaryService.GetAllGovernorates();
@@ -77,7 +77,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-Area")]
+        [HttpPost("areas")]
         public async Task<ActionResult> PostAreaAsync(Area model)
         {
             var result = await _dictionaryService.PostAreaAsync(model);
@@ -87,8 +87,8 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpGet("GetAllAreas")]
-        public IActionResult GetallA()
+        [HttpGet("areas")]
+        public IActionResult GetAllAreas()
         {
             var result = _dictionaryService.GetAllAreas();
             if (result == null)
@@ -120,7 +120,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-certificate-entity")]
+        [HttpPost("certificate-entities")]
         public async Task<ActionResult> PostCertificateEntityAsync(CertificateEntity model)
         {
             var result = await _dictionaryService.PostCertificateEntityAsync(model);
@@ -130,7 +130,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpGet("delete-certificate-entity/{id}")]
+        [HttpDelete("certificate-entities/{id}")]
         public IActionResult DeleteCertificateEntityAsync(int id)
         {
             var result = _dictionaryService.DeleteCertificateEntityAsync(id);
@@ -152,7 +152,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-course-category")]
+        [HttpPost("course-categories")]
         public async Task<ActionResult> PostCourseCategoryAsync(CourseCategory model)
         {
             var result = await _dictionaryService.PostCourseCategoryAsync(model);
@@ -162,7 +162,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-course-category/{id}")]
+        [HttpDelete("course-categories/{id}")]
         public IActionResult DeleteCourseCategoryAsync(int id)
         {
             var result = _dictionaryService.DeleteCourseCategoryAsync(id);
@@ -195,7 +195,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-office-activity")]
+        [HttpPost("office-activities")]
         public async Task<ActionResult> PostOfficeActivityAsync(Activity model)
         {
             var result = await _dictionaryService.PostOfficeActivityAsync(model);
@@ -205,7 +205,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-office-activity/{id}")]
+        [HttpDelete("office-activities/{id}")]
         public IActionResult DeleteOfficeActivityAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeActivityAsync(id);
@@ -238,7 +238,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-office-entity")]
+        [HttpPost("office-entities")]
         public async Task<ActionResult> PostOfficeEntityAsync(OfficeEntity model)
         {
             var result = await _dictionaryService.PostOfficeEntityAsync(model);
@@ -248,7 +248,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-office-entity/{id}")]
+        [HttpDelete("office-entities/{id}")]
         public IActionResult DeleteOfficeEntityAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeEntityAsync(id);
@@ -270,7 +270,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-office-legal-entity")]
+        [HttpPost("office-legal-entities")]
         public async Task<ActionResult> PostOfficeLegalEntityAsync(OfficeLegalEntity model)
         {
             var result = await _dictionaryService.PostOfficeLegalEntityAsync(model);
@@ -280,7 +280,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-office-legal-entity/{id}")]
+        [HttpDelete("office-legal-entities/{id}")]
         public IActionResult DeleteOfficeLegalEntityAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeLegalEntityAsync(id);
@@ -303,7 +303,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-office-owner-speciality")]
+        [HttpPost("office-owner-specialities")]
         public async Task<ActionResult> PostOfficeOwnerSpecialityAsync(OfficeOwnerSpeciality model)
         {
             var result = await _dictionaryService.PostOfficeOwnerSpecialityAsync(model);
@@ -313,7 +313,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-office-owner-speciality/{id}")]
+        [HttpDelete("office-owner-specialities/{id}")]
         public IActionResult DeleteOfficeOwnerSpecialityAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeOwnerSpecialityAsync(id);
@@ -323,8 +323,6 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
-
-
 
         [HttpGet("office-specialities")]
         public IActionResult GetAllOfficeSpecialities()
@@ -337,7 +335,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-office-speciality")]
+        [HttpPost("office-owner-specialities")]
         public async Task<ActionResult> PostOfficeSpecialityAsync(Speciality model)
         {
             var result = await _dictionaryService.PostOfficeSpecialityAsync(model);
@@ -347,7 +345,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-office-speciality/{id}")]
+        [HttpDelete("office-owner-specialities/{id}")]
         public IActionResult DeleteOfficeSpecialityAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeSpecialityAsync(id);
@@ -380,7 +378,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-office-status")]
+        [HttpPost("office-statuses")]
         public async Task<ActionResult> PostOfficeStatusAsync(OfficeStatus model)
         {
             var result = await _dictionaryService.PostOfficeStatusAsync(model);
@@ -390,7 +388,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-office-status/{id}")]
+        [HttpDelete("office-statuses/{id}")]
         public IActionResult DeleteOfficeStatusAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeStatusAsync(id);
@@ -412,7 +410,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-office-type")]
+        [HttpPost("office-types")]
         public async Task<ActionResult> PostOfficeTypeAsync(OfficeType model)
         {
             var result = await _dictionaryService.PostOfficeTypeAsync(model);
@@ -422,7 +420,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-office-type/{id}")]
+        [HttpDelete("office-types/{id}")]
         public IActionResult DeleteOfficeTypeAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeTypeAsync(id);
@@ -455,7 +453,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-office-document-type")]
+        [HttpPost("office-document-types")]
         public async Task<ActionResult> PostOfficeDocumentTypeAsync(OfficeDocumentType model)
         {
             var result = await _dictionaryService.PostOfficeDocumentTypeAsync(model);
@@ -465,7 +463,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-office-document-type/{id}")]
+        [HttpDelete("office-document-types/{id}")]
         public IActionResult DeleteOfficeDocumentTypeAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeDocumentTypeAsync(id);
@@ -487,7 +485,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-owner-document-type")]
+        [HttpPost("owner-document-types")]
         public async Task<ActionResult> PostOwnerDocumentTypeAsync(OwnerDocumentType model)
         {
             var result = await _dictionaryService.PostOwnerDocumentTypeAsync(model);
@@ -497,7 +495,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-owner-document-type/{id}")]
+        [HttpDelete("owner-document-types/{id}")]
         public IActionResult DeleteOwnerDocumentTypeAsync(int id)
         {
             var result = _dictionaryService.DeleteOwnerDocumentTypeAsync(id);
@@ -519,7 +517,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-contact-type")]
+        [HttpPost("contact-types")]
         public async Task<ActionResult> PostContactTypeAsync(ContactType model)
         {
             var result = await _dictionaryService.PostContactTypeAsync(model);
@@ -529,7 +527,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("delete-contact-type/{id}")]
+        [HttpDelete("contact-types/{id}")]
         public async Task<IActionResult> DeleteContactTypeAsync(int id)
         {
             var result = await _dictionaryService.DeleteContactTypeAsync(id);
