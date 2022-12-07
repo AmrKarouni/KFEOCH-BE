@@ -335,7 +335,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("office-owner-specialities")]
+        [HttpPost("office-specialities")]
         public async Task<ActionResult> PostOfficeSpecialityAsync(Speciality model)
         {
             var result = await _dictionaryService.PostOfficeSpecialityAsync(model);
@@ -345,7 +345,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-owner-specialities/{id}")]
+        [HttpDelete("office-specialities/{id}")]
         public IActionResult DeleteOfficeSpecialityAsync(int id)
         {
             var result = _dictionaryService.DeleteOfficeSpecialityAsync(id);

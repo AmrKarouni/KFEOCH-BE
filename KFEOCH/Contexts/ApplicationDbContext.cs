@@ -37,11 +37,8 @@ namespace KFEOCH.Contexts
         public DbSet<OfficeContact>? OfficeContacts { get; set; }
 
         //public DbSet<RequestType>? RequestTypes { get; set; }
-
         //public DbSet<PaymentMethod>? PaymentMethods { get; set; }
-
         //public DbSet<Payment>? Payments { get; set; }
-
         //public DbSet<OfficeRequest>? OfficeRequests { get; set; }
 
 
