@@ -15,7 +15,7 @@ namespace KFEOCH.Controllers
             _dictionaryService = dictionaryService;
         }
         [HttpPost("add-country")]
-        public async Task<ActionResult> AdminRegistrationAsync(Country model)
+        public async Task<ActionResult> PostCountryAsync(Country model)
         {
             var result = await _dictionaryService.PostCountryAsync(model);
             if (!result.Success)
