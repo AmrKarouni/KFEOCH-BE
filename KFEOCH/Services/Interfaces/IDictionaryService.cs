@@ -6,13 +6,13 @@ namespace KFEOCH.Services.Interfaces
     public interface IDictionaryService
     {
         //Area
-        List<Area> GetAllAreas();
+        List<AreaViewModel> GetAllAreas();
         Task<ResultWithMessage> PostAreaAsync(Area model);
         Task<ResultWithMessage> DeleteAreaAsync(int id);
         List<Area> GetAreasByGovernorateId(int id);
 
         //Governorate
-        List<Governorate> GetAllGovernorates();
+        List<GovernorateViewModel> GetAllGovernorates();
         Task<ResultWithMessage> PostGovernorateAsync(Governorate model);
         Task<ResultWithMessage> DeleteGovernorateAsync(int id);
         List<Governorate> GetGovernoratesByCountryId(int id);
@@ -37,10 +37,10 @@ namespace KFEOCH.Services.Interfaces
         List<Gender> GetAllGenders();
 
         //OfficeActivity
-        List<Activity> GetAllOfficeActivities();
+        List<ActivityViewModel> GetAllOfficeActivities();
         Task<ResultWithMessage> PostOfficeActivityAsync(Activity model);
         Task<ResultWithMessage> DeleteOfficeActivityAsync(int id);
-        List<Activity> GetAllOfficeActivitiesByOfficeTypeId(int id);
+        List<ActivityViewModel> GetAllOfficeActivitiesByOfficeTypeId(int id);
 
         //OfficeEntity
         List<OfficeEntity> GetAllOfficeEntities();
@@ -53,10 +53,10 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> DeleteOfficeLegalEntityAsync(int id);
 
         //OfficeSpeciality
-        List<Speciality> GetAllOfficeSpecialities();
+        List<SpecialityViewModel> GetAllOfficeSpecialities();
         Task<ResultWithMessage> PostOfficeSpecialityAsync(Speciality model);
         Task<ResultWithMessage> DeleteOfficeSpecialityAsync(int id);
-        List<Speciality> GetAllOfficeSpecialitiesByOfficeTypeId(int id);
+        List<SpecialityViewModel> GetAllOfficeSpecialitiesByOfficeTypeId(int id);
 
         //OfficeOwnerSpeciality
         List<OfficeOwnerSpeciality> GetAllOfficeOwnerSpecialities();

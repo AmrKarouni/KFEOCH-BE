@@ -14,9 +14,27 @@ namespace KFEOCH.Models.Dictionaries
         public string? NameEnglish { get; set; }
         public string? DescriptionArabic { get; set; }
         public string? DescriptionEnglish { get; set; }
-        [ForeignKey("OfficeType")]
-        public int OfficeTypeId { get; set; }
+        [ForeignKey("Parent")]
+        public int ParentId { get; set; }
         public bool IsDeleted { get; set; }
-        public virtual OfficeType? OfficeType { get; set; }
+        public virtual OfficeType? Parent { get; set; }
+    }
+
+    public class ActivityViewModel : Activity
+    {
+        public string? ParentNameArabic { get; set; }
+        public string? ParentNameEnglish { get; set; }
+        public ActivityViewModel(Activity model)
+        {
+            Id = model.Id;
+            NameArabic = model.NameArabic;
+            NameEnglish = model.NameEnglish;
+            DescriptionArabic = model.DescriptionArabic;
+            DescriptionEnglish = model.DescriptionEnglish;
+            IsDeleted = model.IsDeleted;
+            ParentId = model.ParentId;
+            ParentNameArabic = model.Parent?.NameArabic;
+            ParentNameEnglish = model.Parent?.NameEnglish;
+        }
     }
 }

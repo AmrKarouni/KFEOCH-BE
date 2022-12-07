@@ -32,7 +32,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Activity Already Added !!!" };
             }
-            if (office.TypeId != activity.OfficeTypeId)
+            if (office.TypeId != activity.ParentId)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Activity Can't be Added !!!" };
             }

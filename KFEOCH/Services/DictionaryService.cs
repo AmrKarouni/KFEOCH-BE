@@ -14,16 +14,17 @@ namespace KFEOCH.Services
             _db = db;
         }
         //Area
-        public List<Area> GetAllAreas()
+        public List<AreaViewModel> GetAllAreas()
         {
-            var list = new List<Area>();
-            list = _db.Areas?.Where(x => x.IsDeleted == false).ToList();
-            return list ?? new List<Area>();
+            var list = new List<AreaViewModel>();
+            list = _db.Areas?.Include(x => x.Parent).Where(x => x.IsDeleted == false)
+                .Select(x => new AreaViewModel(x)).ToList();
+            return list ?? new List<AreaViewModel>();
         }
         public async Task<ResultWithMessage> PostAreaAsync(Area model)
         {
-            var a = _db.Areas.Where(x => (x.NameArabic == model.NameArabic && x.GovernorateId == model.GovernorateId)
-                                    || (x.NameEnglish == model.NameEnglish && x.GovernorateId == model.GovernorateId)
+            var a = _db.Areas.Where(x => (x.NameArabic == model.NameArabic && x.ParentId == model.ParentId)
+                                    || (x.NameEnglish == model.NameEnglish && x.ParentId == model.ParentId)
                                     ).FirstOrDefault();
             if (a != null)
             {
@@ -49,16 +50,17 @@ namespace KFEOCH.Services
         public List<Area> GetAreasByGovernorateId(int id)
         {
             var list = new List<Area>();
-            list = _db.Areas?.Where(a => a.GovernorateId == id).ToList();
+            list = _db.Areas?.Where(a => a.ParentId == id).ToList();
             return list ?? new List<Area>();
         }
 
         //Governorate
-        public List<Governorate> GetAllGovernorates()
+        public List<GovernorateViewModel> GetAllGovernorates()
         {
-            var list = new List<Governorate>();
-            list = _db.Governorates?.Where(x => x.IsDeleted == false).ToList();
-            return list ?? new List<Governorate>();
+            var list = new List<GovernorateViewModel>();
+            list = _db.Governorates?.Include(x=> x.Parent).Where(x => x.IsDeleted == false)
+                .Select(x => new GovernorateViewModel(x)).ToList();
+            return list ?? new List<GovernorateViewModel>();
         }
         public async Task<ResultWithMessage> PostGovernorateAsync(Governorate model)
         {
@@ -88,9 +90,7 @@ namespace KFEOCH.Services
         public List<Governorate> GetGovernoratesByCountryId(int id)
         {
             var list = new List<Governorate>();
-            list = _db.Governorates?.Include(a => a.Areas)
-                        .Where(a => a.CountryId == id && a.IsDeleted == false)
-                        .ToList();
+            list = _db.Governorates?.Where(a => a.ParentId == id).ToList();
             return list ?? new List<Governorate>();
         }
 
@@ -212,11 +212,12 @@ namespace KFEOCH.Services
         }
 
         //OfficeActivity
-        public List<Activity> GetAllOfficeActivities()
+        public List<ActivityViewModel> GetAllOfficeActivities()
         {
-            var list = new List<Activity>();
-            list = _db.Activities?.Where(x => x.IsDeleted == false).ToList();
-            return list ?? new List<Activity>();
+            var list = new List<ActivityViewModel>();
+            list = _db.Activities?.Include(x => x.Parent).Where(x => x.IsDeleted == false).Select(x => new ActivityViewModel(x)).ToList();
+            return list ?? new List<ActivityViewModel>();
+
         }
         public async Task<ResultWithMessage> PostOfficeActivityAsync(Activity model)
         {
@@ -243,11 +244,11 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Office Activity {officeactivity.NameArabic} Deleted !!!" };
         }
-        public List<Activity> GetAllOfficeActivitiesByOfficeTypeId(int id)
+        public List<ActivityViewModel> GetAllOfficeActivitiesByOfficeTypeId(int id)
         {
-            var list = new List<Activity>();
-            list = _db.Activities?.Where(x => (x.IsDeleted == false) && (x.OfficeTypeId == id)).ToList();
-            return list ?? new List<Activity>();
+            var list = new List<ActivityViewModel>();
+            list = _db.Activities?.Include(x => x.Parent).Where(x => x.IsDeleted == false && (x.ParentId == id)).Select(x => new ActivityViewModel(x)).ToList();
+            return list ?? new List<ActivityViewModel>();
         }
 
         //OfficeEntity
@@ -321,11 +322,11 @@ namespace KFEOCH.Services
         }
 
         //OfficeSpeciality
-        public List<Speciality> GetAllOfficeSpecialities()
+        public List<SpecialityViewModel> GetAllOfficeSpecialities()
         {
-            var list = new List<Speciality>();
-            list = _db.Specialities?.Where(x => x.IsDeleted == false).ToList();
-            return list ?? new List<Speciality>();
+            var list = new List<SpecialityViewModel>();
+            list = _db.Specialities?.Include(x => x.Parent).Where(x => x.IsDeleted == false).Select(x => new SpecialityViewModel(x)).ToList();
+            return list ?? new List<SpecialityViewModel>();
         }
         public async Task<ResultWithMessage> PostOfficeSpecialityAsync(Speciality model)
         {
@@ -351,11 +352,11 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Office Speciality {OfficeSpeciality.NameArabic} Deleted !!!" };
         }
-        public List<Speciality> GetAllOfficeSpecialitiesByOfficeTypeId(int id)
+        public List<SpecialityViewModel> GetAllOfficeSpecialitiesByOfficeTypeId(int id)
         {
-            var list = new List<Speciality>();
-            list = _db.Specialities?.Where(x => (x.IsDeleted == false) && (x.OfficeTypeId == id)).ToList();
-            return list ?? new List<Speciality>();
+            var list = new List<SpecialityViewModel>();
+            list = _db.Specialities?.Include(x => x.Parent).Where(x => x.IsDeleted == false && (x.ParentId == id)).Select(x => new SpecialityViewModel(x)).ToList();
+            return list ?? new List<SpecialityViewModel>();
         }
 
         //OfficeOwnerSpeciality

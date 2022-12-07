@@ -32,7 +32,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Speciality Already Added !!!" };
             }
-            if (office.TypeId != speciality.OfficeTypeId)
+            if (office.TypeId != speciality.ParentId)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Speciality Can't be Added !!!" };
             }
