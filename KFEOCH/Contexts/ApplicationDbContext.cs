@@ -35,6 +35,16 @@ namespace KFEOCH.Contexts
         public DbSet<OwnerDocument>? OwnerDocuments { get; set; }
         public DbSet<ContactType>? ContactTypes { get; set; }
         public DbSet<OfficeContact>? OfficeContacts { get; set; }
+
+        //public DbSet<RequestType>? RequestTypes { get; set; }
+
+        //public DbSet<PaymentMethod>? PaymentMethods { get; set; }
+
+        //public DbSet<Payment>? Payments { get; set; }
+
+        //public DbSet<OfficeRequest>? OfficeRequests { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             
@@ -66,11 +76,11 @@ namespace KFEOCH.Contexts
                 .IsUnique();
             });
             modelBuilder.Entity<Area>(entity => {
-                entity.HasIndex(e => new { e.NameArabic })
+                entity.HasIndex(e => new { e.NameArabic,e.ParentId })
                 .IsUnique();
             });
             modelBuilder.Entity<Area>(entity => {
-                entity.HasIndex(e => new { e.NameEnglish })
+                entity.HasIndex(e => new { e.NameEnglish, e.ParentId })
                 .IsUnique();
             });
             modelBuilder.Entity<CertificateEntity>(entity => {
@@ -106,19 +116,19 @@ namespace KFEOCH.Contexts
                 .IsUnique();
             });
             modelBuilder.Entity<Governorate>(entity => {
-                entity.HasIndex(e => new { e.NameArabic })
+                entity.HasIndex(e => new { e.NameArabic, e.ParentId })
                 .IsUnique();
             });
             modelBuilder.Entity<Governorate>(entity => {
-                entity.HasIndex(e => new { e.NameEnglish })
+                entity.HasIndex(e => new { e.NameEnglish, e.ParentId })
                 .IsUnique();
             });
             modelBuilder.Entity<Activity>(entity => {
-                entity.HasIndex(e => new { e.NameArabic })
+                entity.HasIndex(e => new { e.NameArabic,e.ParentId })
                 .IsUnique();
             });
             modelBuilder.Entity<Activity>(entity => {
-                entity.HasIndex(e => new { e.NameEnglish })
+                entity.HasIndex(e => new { e.NameEnglish, e.ParentId })
                 .IsUnique();
             });
             modelBuilder.Entity<OfficeEntity>(entity => {
@@ -138,11 +148,11 @@ namespace KFEOCH.Contexts
                 .IsUnique();
             });
             modelBuilder.Entity<Speciality>(entity => {
-                entity.HasIndex(e => new { e.NameArabic,e.OfficeTypeId })
+                entity.HasIndex(e => new { e.NameArabic,e.ParentId })
                 .IsUnique();
             });
             modelBuilder.Entity<Speciality>(entity => {
-                entity.HasIndex(e => new { e.NameEnglish, e.OfficeTypeId })
+                entity.HasIndex(e => new { e.NameEnglish, e.ParentId })
                 .IsUnique();
             });
 
