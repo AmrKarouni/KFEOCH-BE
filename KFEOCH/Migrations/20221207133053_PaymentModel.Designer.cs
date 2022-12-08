@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221207133053_PaymentModel")]
+    partial class PaymentModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1097,15 +1099,10 @@ namespace KFEOCH.Migrations
                     b.Property<string>("PaymentUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RequestId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RequestId");
 
                     b.HasIndex("TypeId");
 
@@ -1150,6 +1147,9 @@ namespace KFEOCH.Migrations
                     b.Property<int>("OfficeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PaymentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("RejectDate")
                         .HasColumnType("datetime2");
 
@@ -1162,6 +1162,8 @@ namespace KFEOCH.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OfficeId");
+
+                    b.HasIndex("PaymentId");
 
                     b.HasIndex("RequestTypeId");
 
@@ -1614,19 +1616,11 @@ namespace KFEOCH.Migrations
 
             modelBuilder.Entity("KFEOCH.Models.OfficePayment", b =>
                 {
-                    b.HasOne("KFEOCH.Models.OfficeRequest", "Request")
-                        .WithMany()
-                        .HasForeignKey("RequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KFEOCH.Models.Dictionaries.PaymentType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Request");
 
                     b.Navigation("Type");
                 });
@@ -1639,6 +1633,12 @@ namespace KFEOCH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("KFEOCH.Models.OfficePayment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KFEOCH.Models.Dictionaries.RequestType", "RequestType")
                         .WithMany()
                         .HasForeignKey("RequestTypeId")
@@ -1646,6 +1646,8 @@ namespace KFEOCH.Migrations
                         .IsRequired();
 
                     b.Navigation("Office");
+
+                    b.Navigation("Payment");
 
                     b.Navigation("RequestType");
                 });

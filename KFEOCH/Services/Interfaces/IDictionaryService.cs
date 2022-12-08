@@ -90,5 +90,15 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> PostContactTypeAsync(ContactType model);
         Task<ResultWithMessage> DeleteContactTypeAsync(int id);
 
+        //PaymentType
+        List<PaymentType> GetAllPaymentTypes();
+        Task<ResultWithMessage> PostPaymentTypeAsync(PaymentType model);
+        Task<ResultWithMessage> DeletePaymentTypeAsync(int id);
+
+        //Request Type
+        List<RequestTypeViewModel> GetAllRequestTypes();
+        Task<ResultWithMessage> PostRequestTypeAsync(RequestType model);
+        Task<ResultWithMessage> DeleteRequestTypeAsync(int id);
+        List<RequestTypeViewModel> GetAllRequestTypesByOfficeTypeId(int id);
     }
 }

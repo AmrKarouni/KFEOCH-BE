@@ -32,7 +32,8 @@ namespace KFEOCH.Services
             }
             await _db.Areas.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Result = model };
+            var result = new AreaViewModel(model);
+            return new ResultWithMessage { Success = true, Result = result };
 
         }
         public async Task<ResultWithMessage> DeleteAreaAsync(int id)
@@ -73,7 +74,8 @@ namespace KFEOCH.Services
             }
             await _db.Governorates.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Result = model };
+            var result = new GovernorateViewModel(model);
+            return new ResultWithMessage { Success = true, Result = result };
         }
         public async Task<ResultWithMessage> DeleteGovernorateAsync(int id)
         {
@@ -230,7 +232,8 @@ namespace KFEOCH.Services
             }
             await _db.Activities.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Result = model };
+            var result = new ActivityViewModel(model);
+            return new ResultWithMessage { Success = true, Result = result };
         }
         public async Task<ResultWithMessage> DeleteOfficeActivityAsync(int id)
         {
@@ -338,7 +341,8 @@ namespace KFEOCH.Services
             }
             await _db.Specialities.AddAsync(model);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Result = model };
+            var result = new SpecialityViewModel(model);
+            return new ResultWithMessage { Success = true, Result = result };
         }
         public async Task<ResultWithMessage> DeleteOfficeSpecialityAsync(int id)
         {
@@ -572,6 +576,83 @@ namespace KFEOCH.Services
             _db.ContactTypes.Remove(contacttype);
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Contact Type {contacttype.NameArabic} Deleted !!!" };
+        }
+
+        //PaymentType
+        public List<PaymentType> GetAllPaymentTypes()
+        {
+            var list = new List<PaymentType>();
+            list = _db.PaymentTypes?.Where(x => x.IsDeleted == false).ToList();
+            return list ?? new List<PaymentType>();
+        }
+        public async Task<ResultWithMessage> PostPaymentTypeAsync(PaymentType model)
+        {
+            var paymenttype = _db.PaymentTypes?.Where(x => (x.NameArabic == model.NameArabic)
+                                  || (x.NameEnglish == model.NameEnglish)
+                                  ).FirstOrDefault();
+            if (paymenttype != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Payment Type {model.NameArabic} Already Exist !!!" };
+            }
+            await _db.PaymentTypes.AddAsync(model);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = model };
+        }
+        public async Task<ResultWithMessage> DeletePaymentTypeAsync(int id)
+        {
+            var paymenttype = _db.PaymentTypes.Find(id);
+            if (paymenttype == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Payment Type Not Found !!!" };
+            }
+            paymenttype.IsDeleted = true;
+            _db.Entry(paymenttype).State = EntityState.Modified;
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = $@"Payment Type {paymenttype.NameArabic} Deleted !!!" };
+        }
+
+
+        //Request Type
+        public List<RequestTypeViewModel> GetAllRequestTypes()
+        {
+            var list = new List<RequestTypeViewModel>();
+            list = _db.RequestTypes?.Include(x => x.Parent).Where(x => x.IsDeleted == false)
+                                    .Select(x => new RequestTypeViewModel(x))
+                                    .ToList();
+            return list ?? new List<RequestTypeViewModel>();
+        }
+        public async Task<ResultWithMessage> PostRequestTypeAsync(RequestType model)
+        {
+            var requesttype = _db.RequestTypes?.FirstOrDefault(x => (x.NameArabic == model.NameArabic)
+                                   || (x.NameEnglish == model.NameEnglish));
+            if (requesttype != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Request Type {model.NameArabic} Already Exist !!!" };
+            }
+            await _db.RequestTypes.AddAsync(model);
+            _db.SaveChanges();
+            var result = new RequestTypeViewModel(model);
+            return new ResultWithMessage { Success = true, Result = result };
+        }
+        public async Task<ResultWithMessage> DeleteRequestTypeAsync(int id)
+        {
+            var requesttype = _db.RequestTypes?.Find(id);
+            if (requesttype == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Request Type Not Found !!!" };
+            }
+            requesttype.IsDeleted = true;
+            _db.Entry(requesttype).State = EntityState.Modified;
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = $@"Request Type {requesttype.NameArabic} Deleted !!!" };
+        }
+        public List<RequestTypeViewModel> GetAllRequestTypesByOfficeTypeId(int id)
+        {
+            var list = new List<RequestTypeViewModel>();
+            list = _db.RequestTypes?.Include(x => x.Parent).Where(x => x.IsDeleted == false && x.ParentId == id)
+                                    .Select(x => new RequestTypeViewModel(x))
+                                    .ToList();
+            return list ?? new List<RequestTypeViewModel>();
         }
     }
 }

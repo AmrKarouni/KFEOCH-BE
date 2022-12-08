@@ -537,5 +537,80 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet("payment-types")]
+        public IActionResult GetAllPaymentTypes()
+        {
+            var result = _dictionaryService.GetAllPaymentTypes();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Payment Type Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("payment-types")]
+        public async Task<ActionResult> PostPaymentTypeAsync(PaymentType model)
+        {
+            var result = await _dictionaryService.PostPaymentTypeAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        [HttpDelete("payment-types/{id}")]
+        public IActionResult DeletePaymentTypeAsync(int id)
+        {
+            var result = _dictionaryService.DeletePaymentTypeAsync(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Payment Type Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("request-types")]
+        public IActionResult GetAllRequestTypes()
+        {
+            var result = _dictionaryService.GetAllRequestTypes();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Request Type Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("request-types")]
+        public async Task<ActionResult> PostRequestTypeAsync(RequestType model)
+        {
+            var result = await _dictionaryService.PostRequestTypeAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        [HttpDelete("request-types/{id}")]
+        public IActionResult DeleteRequestTypeAsync(int id)
+        {
+            var result = _dictionaryService.DeleteRequestTypeAsync(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Request Type Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("request-types/{typeid}")]
+        public IActionResult GetAllRequestTypesByOfficeTypeId(int typeid)
+        {
+            var result = _dictionaryService.GetAllRequestTypesByOfficeTypeId(typeid);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Request Type Found!!!" });
+            }
+            return Ok(result);
+        }
     }
 }
