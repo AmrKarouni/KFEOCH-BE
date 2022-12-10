@@ -44,8 +44,12 @@ namespace KFEOCH.Services
             office.LogoUrl = logourl;
             _db.Entry(office).State = EntityState.Modified;
             _db.SaveChanges();
-            var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
-            office.LogoUrl = hostpath + office.LogoUrl;
+            if (office.LogoUrl != null)
+            {
+                var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+                office.LogoUrl = hostpath + office.LogoUrl;
+            }
+            
             return new ResultWithMessage { Success = true, Result = office };
         }
 
@@ -83,7 +87,7 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false, Message = $@"Delete Logo Failed !!!" };
             }
             office.LogoUrl = null;
-            await PutOfficeAsync(office.Id, office);
+            _db.Entry(office).State = EntityState.Modified;
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = "Logo Deleted !!!" };
         }
