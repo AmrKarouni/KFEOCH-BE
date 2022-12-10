@@ -41,6 +41,8 @@ namespace KFEOCH.Services
             office.LogoUrl = logourl;
             _db.Entry(office).State = EntityState.Modified;
             _db.SaveChanges();
+            var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+            office.LogoUrl = hostpath + office.LogoUrl;
             return new ResultWithMessage { Success = true, Result = office };
         }
 
