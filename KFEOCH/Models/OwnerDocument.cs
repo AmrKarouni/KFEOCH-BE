@@ -28,7 +28,7 @@ namespace KFEOCH.Models
         public DateTime? AddedDate { get; set; }
         public bool? IsActive { get; set; }
         public bool? IsApproved { get; set; }
-        public bool? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; } = false;
         public virtual OfficeOwner? Owner { get; set; }
         public virtual OwnerDocumentType? Type { get; set; }
     }

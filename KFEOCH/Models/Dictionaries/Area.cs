@@ -16,7 +16,7 @@ namespace KFEOCH.Models.Dictionaries
         public string? DescriptionEnglish { get; set; }
         [ForeignKey("Parent")]
         public int ParentId { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public virtual Governorate? Parent { get; set; }
     }
 

@@ -43,7 +43,7 @@ namespace KFEOCH.Models
         public string? CvUrl { get; set; }
         public string? CertificateUrl { get; set; }
         public bool IsApproved { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public virtual Office? Office { get; set; }
         public virtual Gender? Gender { get; set; }
 

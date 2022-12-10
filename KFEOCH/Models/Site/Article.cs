@@ -11,6 +11,6 @@
         public DateTime? NewsDate { get; set; }
         public DateTime? PublishDate { get; set; }
         public bool? ShowInHome { get; set; }
-        public bool? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; } = false;
     }
 }

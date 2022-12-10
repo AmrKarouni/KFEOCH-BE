@@ -18,8 +18,8 @@ namespace KFEOCH.Models.Dictionaries
         public int? ParentId { get; set; }
         public double Amount { get; set; }
         public bool NeedAdminApproval { get; set; }
-        public bool IsActive { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool IsActive { get; set; } = true;
+        public bool IsDeleted { get; set; } = false;
         public virtual OfficeType? Parent { get; set; }
     }
     public class RequestTypeViewModel : RequestType
