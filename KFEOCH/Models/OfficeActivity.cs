@@ -23,7 +23,7 @@ namespace KFEOCH.Models
         [ForeignKey("Activity")]
         public int? ActivityId { get; set; }
         public DateTime? AddedDate { get; set; }
-        public bool IsApproved { get; set; }
+        public bool IsApproved { get; set; } = true;
         public bool IsDeleted { get; set; } = false;
         public virtual Office? Office { get; set; }
         public virtual Activity? Activity { get; set; }

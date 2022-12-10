@@ -26,9 +26,9 @@ namespace KFEOCH.Models
         public int? TypeId { get; set; }
         public string? DocumentUrl { get; set; }
         public DateTime? AddedDate { get; set; }
-        public bool? IsActive { get; set; }
-        public bool? IsApproved { get; set; }
-        public bool? IsDeleted { get; set; } = false;
+        public bool IsActive { get; set; } = true;
+        public bool IsApproved { get; set; } = true;
+        public bool IsDeleted { get; set; } = false;
         public virtual OfficeOwner? Owner { get; set; }
         public virtual OwnerDocumentType? Type { get; set; }
     }
