@@ -31,12 +31,14 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false, Message = $@"Bad Request" };
             }
             var office = _db.Offices.Find(id);
+            var logourl = office.LogoUrl;
             _db.Entry(office).State = EntityState.Detached;
             if (office == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
             } 
             office = model;
+            office.LogoUrl = logourl;
             _db.Entry(office).State = EntityState.Modified;
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = office };
