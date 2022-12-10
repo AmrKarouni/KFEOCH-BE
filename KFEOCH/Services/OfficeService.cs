@@ -21,7 +21,10 @@ namespace KFEOCH.Services
         {
             var office = _db.Offices?.Find(id);
             var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
-            office.LogoUrl = hostpath + office.LogoUrl ;
+            if (office.LogoUrl != null)
+            {
+                office.LogoUrl = hostpath + office.LogoUrl;
+            }
             return office ?? new Office();
         }
         public async Task<ResultWithMessage> PutOfficeAsync(int id, Office model)
@@ -82,7 +85,7 @@ namespace KFEOCH.Services
             office.LogoUrl = null;
             await PutOfficeAsync(office.Id, office);
             _db.SaveChanges();
-            return new ResultWithMessage { Success = true, Message = "Owner Document Deleted !!!" };
+            return new ResultWithMessage { Success = true, Message = "Logo Deleted !!!" };
         }
 
     }
