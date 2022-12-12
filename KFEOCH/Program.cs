@@ -27,6 +27,8 @@ builder.Services.AddScoped<IOfficeSpecialityService, OfficeSpecialityService>();
 builder.Services.AddScoped<IOfficeActivityService, OfficeActivityService>();
 builder.Services.AddScoped<IOwnerDocumentService, OwnerDocumentService>();
 builder.Services.AddScoped<IOfficeContactService, OfficeContactService>();
+builder.Services.AddScoped<IOfficeRequestService, OfficeRequestService>();
+builder.Services.AddScoped<IOfficeDocumentService, OfficeDocumentService>();
 builder.Services.AddTransient<ApplicationDbContextSeed>();
 builder.Services.AddDbContext<ApplicationDbContext>(x =>
 {
@@ -118,6 +120,14 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(
            Path.Combine(builder.Environment.ContentRootPath, "./App_Media/owners")),
     RequestPath = "/owners"
+
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "./App_Media/offices")),
+    RequestPath = "/offices"
 
 });
 

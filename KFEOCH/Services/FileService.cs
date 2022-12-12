@@ -86,6 +86,47 @@ namespace KFEOCH.Services
             stream.Close();
             return new ResultWithMessage { Success = true, Message = "/" + filePath };
         }
+
+        public async Task<ResultWithMessage> UploadFile(OfficeFileModel model, string path)
+        {
+            int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB
+            IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".jpeg", ".png", ".pdf" };
+            var fileHostServer = _configuration.GetValue<string>("FileHostServer");
+            if (model.File == null)
+            {
+                return new ResultWithMessage { Success = false, Message = "No File Found !!" };
+            }
+            var extension = model.File.FileName.Substring(model.File.FileName.LastIndexOf('.')).ToLower();
+            if (!AllowedFileExtensions.Contains(extension))
+            {
+                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .png , .pdf" };
+            }
+            if (model.File.Length > MaxContentLength)
+            {
+                return new ResultWithMessage { Success = false, Message = "Max Size Allowed is 5 M.B" };
+            }
+            var filename = DateTime.UtcNow.Year + ""
+                          + DateTime.UtcNow.Month + ""
+                          + DateTime.UtcNow.Day + ""
+                          + DateTime.UtcNow.Hour + ""
+                          + DateTime.UtcNow.Minute + ""
+                          + DateTime.UtcNow.Second;
+            var filePath = Path.Combine(path + "/" + model.OfficeId +
+                "/" + model.TypeId +
+                "/" + filename +
+                extension);
+            var fullfilePath = Path.Combine(fileHostServer + "/", filePath);
+            string directory = Path.GetDirectoryName(fullfilePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            FileStream stream = new FileStream(fullfilePath, FileMode.Create);
+            await model.File.CopyToAsync(stream);
+            stream.Close();
+            return new ResultWithMessage { Success = true, Message = "/" + filePath };
+        }
+
         public FilePathModel GetFilePath(string fileurl)
         {
             var path = new FilePathModel();

@@ -39,6 +39,7 @@ namespace KFEOCH.Contexts
         public DbSet<PaymentType>? PaymentTypes { get; set; }
         public DbSet<OfficePayment>? OfficePayments { get; set; }
         public DbSet<OfficeRequest>? OfficeRequests { get; set; }
+        public DbSet<OfficeDocument>? OfficeDocuments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

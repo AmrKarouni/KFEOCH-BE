@@ -12,11 +12,13 @@ namespace KFEOCH.Controllers
     {
         private readonly IOfficeService _officeService;
         private readonly IOfficeOwnerService _officeOwnerService;
+        private readonly IOfficeDocumentService _officeDocumentService;
 
-        public OfficeController(IOfficeService officeService, IOfficeOwnerService officeOwnerService)
+        public OfficeController(IOfficeService officeService, IOfficeOwnerService officeOwnerService, IOfficeDocumentService officeDocumentService)
         {
             _officeService = officeService;
             _officeOwnerService = officeOwnerService;
+            _officeDocumentService = officeDocumentService;
         }
 
         [HttpGet("{id}")]
@@ -75,6 +77,50 @@ namespace KFEOCH.Controllers
                 return BadRequest(new { message = "No Owner Found!!!" });
             }
             return Ok(result);
+        }
+
+        [HttpGet("Document/{officeid}")]
+        public IActionResult GetAllDocumentsByOfficeId(int officeid)
+        {
+            var result = _officeDocumentService.GetAllDocumentsByOfficeId(officeid);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Office Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("Document/View/{documentid}")]
+        public IActionResult ViewDocumentByUrl(int documentid)
+        {
+            var result = _officeDocumentService.GetDocument(documentid);
+            if (result.Bytes == null)
+            {
+                return BadRequest(new { message = "Bad Request" });
+            }
+            return File(result.Bytes, result.ContentType, result.FileName);
+
+        }
+        [HttpPost("Document")]
+        public async Task<ActionResult> PostOfficeDocumentAsync([FromForm] OfficeFileModel model)
+        {
+            var result = await _officeDocumentService.PostOfficeDocumentAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+
+        [HttpDelete("Document/{documentid}")]
+        public async Task<ActionResult> DeleteDocumentAsync(int documentid)
+        {
+            var result = await _officeDocumentService.DeleteDocumentAsync(documentid);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Success);
         }
     }
 }

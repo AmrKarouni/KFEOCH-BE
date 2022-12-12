@@ -82,5 +82,6 @@ namespace KFEOCH.Models
 
         public virtual OfficeEntity? Entity { get; set; }
         public virtual OfficeLegalEntity? LegalEntity { get; set; }
+        public virtual ICollection<OfficeDocument>? Documents { get; set; }
     }
 }

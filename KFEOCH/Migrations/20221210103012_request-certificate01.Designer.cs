@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221210103012_request-certificate01")]
+    partial class requestcertificate01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1017,44 +1019,6 @@ namespace KFEOCH.Migrations
                     b.ToTable("OfficeContacts");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.OfficeDocument", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime?>("AddedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DocumentUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("OfficeId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OfficeId");
-
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("OfficeDocuments");
-                });
-
             modelBuilder.Entity("KFEOCH.Models.OfficeOwner", b =>
                 {
                     b.Property<int>("Id")
@@ -1636,21 +1600,6 @@ namespace KFEOCH.Migrations
                     b.Navigation("Office");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.OfficeDocument", b =>
-                {
-                    b.HasOne("KFEOCH.Models.Office", "Office")
-                        .WithMany("Documents")
-                        .HasForeignKey("OfficeId");
-
-                    b.HasOne("KFEOCH.Models.Dictionaries.OfficeDocumentType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId");
-
-                    b.Navigation("Office");
-
-                    b.Navigation("Type");
-                });
-
             modelBuilder.Entity("KFEOCH.Models.OfficeOwner", b =>
                 {
                     b.HasOne("KFEOCH.Models.Dictionaries.Gender", "Gender")
@@ -1810,11 +1759,6 @@ namespace KFEOCH.Migrations
                     b.Navigation("OfficeActivities");
 
                     b.Navigation("OfficeSpecialities");
-                });
-
-            modelBuilder.Entity("KFEOCH.Models.Office", b =>
-                {
-                    b.Navigation("Documents");
                 });
 
             modelBuilder.Entity("KFEOCH.Models.OfficeOwner", b =>
