@@ -249,8 +249,15 @@ namespace KFEOCH.Services
         }
         public List<ActivityViewModel> GetAllOfficeActivitiesByOfficeTypeId(int id)
         {
+            var office = _db.Offices?.Find(id);
+            if (office == null)
+            {
+                return new List<ActivityViewModel>();
+            }
             var list = new List<ActivityViewModel>();
-            list = _db.Activities?.Include(x => x.Parent).Where(x => x.IsDeleted == false && (x.ParentId == id)).Select(x => new ActivityViewModel(x)).ToList();
+            list = _db.Activities?.Include(x => x.Parent)
+                                  .Where(x => x.IsDeleted == false && (x.ParentId == office.TypeId))
+                                  .Select(x => new ActivityViewModel(x)).ToList();
             return list ?? new List<ActivityViewModel>();
         }
 
@@ -358,8 +365,15 @@ namespace KFEOCH.Services
         }
         public List<SpecialityViewModel> GetAllOfficeSpecialitiesByOfficeTypeId(int id)
         {
+            var office = _db.Offices?.Find(id);
+            if (office == null)
+            {
+                return new List<SpecialityViewModel>();
+            }
             var list = new List<SpecialityViewModel>();
-            list = _db.Specialities?.Include(x => x.Parent).Where(x => x.IsDeleted == false && (x.ParentId == id)).Select(x => new SpecialityViewModel(x)).ToList();
+            list = _db.Specialities?.Include(x => x.Parent)
+                                    .Where(x => x.IsDeleted == false && (x.ParentId == office.TypeId))
+                                    .Select(x => new SpecialityViewModel(x)).ToList();
             return list ?? new List<SpecialityViewModel>();
         }
 

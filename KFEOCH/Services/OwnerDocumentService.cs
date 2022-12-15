@@ -69,12 +69,14 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Document Type Not Found !!!" };
             }
-            var olddocument = _db.OwnerDocuments.FirstOrDefault(x => x.OwnerId == model.OwnerId && x.TypeId == model.TypeId);
-            if (olddocument != null)
+            var olddocument = _db.OwnerDocuments.Where(x => x.OwnerId == model.OwnerId && x.TypeId == model.TypeId && x.IsActive == true).ToList();
+
+            foreach (var doc in olddocument)
             {
-                olddocument.IsActive = false;
-                _db.Entry(olddocument).State = EntityState.Modified;
+                doc.IsActive = false;
+                _db.Entry(doc).State = EntityState.Modified;
             }
+
             var uploadResult = await _fileService.UploadFile(model, "owners");
             if (!uploadResult.Success)
             {
@@ -94,7 +96,7 @@ namespace KFEOCH.Services
             await _db.OwnerDocuments.AddAsync(document);
             _db.SaveChanges();
             var result = new OfficeOwnerDocumentView
-                {
+            {
                 Id = document.Id,
                 Name = document.DocumentUrl.Substring(document.DocumentUrl.LastIndexOf('/') + 1).ToLower(),
                 DocumentUrl = document.DocumentUrl,

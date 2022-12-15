@@ -63,11 +63,11 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Document Type Not Found !!!" };
             }
-            var olddocument = _db.OfficeDocuments.FirstOrDefault(x => x.OfficeId == model.OfficeId && x.TypeId == model.TypeId);
-            if (olddocument != null)
+            var olddocument = _db.OfficeDocuments.Where(x => x.OfficeId == model.OfficeId && x.TypeId == model.TypeId && x.IsActive == true).ToList();
+            foreach (var doc in olddocument)
             {
-                olddocument.IsActive = false;
-                _db.Entry(olddocument).State = EntityState.Modified;
+                doc.IsActive = false;
+                _db.Entry(doc).State = EntityState.Modified;
             }
             var uploadResult = await _fileService.UploadFile(model, "offices");
             if (!uploadResult.Success)
