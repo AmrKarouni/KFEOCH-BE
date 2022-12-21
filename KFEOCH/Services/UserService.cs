@@ -141,8 +141,10 @@ namespace KFEOCH.Services
                 office = null;
                 return "English Name Already Exist";
             }
+            var type = _db.OfficeTypes?.Find(model.OfficeTypeId);
             office = new Office(model);
-            _db.Offices.Add(office);
+            office.IsLocal = type?.IsLocal;
+            _db.Offices?.Add(office);
             return "";
         }
 
@@ -184,8 +186,10 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = isOfficeCreated };
             }
+            var type = _db.OfficeTypes?.Find(model.OfficeTypeId);
             var office = new Office(model);
-            _db.Offices.Add(office);
+            office.IsLocal = type?.IsLocal;
+            _db.Offices?.Add(office);
             _db.SaveChanges();
             var user = new ApplicationUser
             {

@@ -43,6 +43,7 @@ namespace KFEOCH.Contexts
         public DbSet<PostType>? PostTypes { get; set; }
         public DbSet<Post>? Posts { get; set; }
         public DbSet<Section>? Sections { get; set; }
+        public DbSet<OwnerPositionType>? OwnerPositionTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -313,7 +314,16 @@ namespace KFEOCH.Contexts
                 entity.HasIndex(e => new { e.TitleEnglish })
                 .IsUnique();
             });
-
+            modelBuilder.Entity<OwnerPositionType>(entity =>
+            {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<OwnerPositionType>(entity =>
+            {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
             base.OnModelCreating(modelBuilder);
         }
     }

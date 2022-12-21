@@ -612,5 +612,37 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet("office-owner-positions")]
+        public IActionResult GetAllOwnerPositionTypes()
+        {
+            var result = _dictionaryService.GetAllOwnerPositionTypes ();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Owner Speciality Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("office-owner-positions")]
+        public async Task<ActionResult> PostOwnerPositionTypeAsync(OwnerPositionType model)
+        {
+            var result = await _dictionaryService.PostOwnerPositionTypeAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        [HttpDelete("office-owner-positions/{id}")]
+        public IActionResult DeleteOwnerPositionTypeAsync(int id)
+        {
+            var result = _dictionaryService.DeleteOwnerPositionTypeAsync(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Owner Position Type Found!!!" });
+            }
+            return Ok(result);
+        }
     }
 }

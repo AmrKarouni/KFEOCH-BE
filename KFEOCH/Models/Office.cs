@@ -17,6 +17,7 @@ namespace KFEOCH.Models
             Email = model.Email;
             PhoneNumber = model.PhoneNumber;
             RegistrationDate = DateTime.UtcNow;
+            IsLocal = null;
             IsActive = true;
         }
         public Office(Office model)
@@ -40,6 +41,7 @@ namespace KFEOCH.Models
             ShowInHome = model.ShowInHome;
             AutoNumberOne = model.AutoNumberOne;
             AutoNumberTwo = model.AutoNumberTwo;
+            IsLocal = model.Type?.IsLocal;
         }
 
         public int Id { get; set; }
@@ -82,6 +84,7 @@ namespace KFEOCH.Models
         public bool? ShowInHome { get; set; }
         public string? AutoNumberOne{ get; set; }
         public string? AutoNumberTwo { get; set; }
+        public bool? IsLocal { get; set; }
         public virtual OfficeType? Type { get; set; }
         public virtual Area? Area { get; set; }
         public virtual Governorate? Governorate { get; set; }

@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221221112847_office-country")]
+    partial class officecountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -613,44 +615,6 @@ namespace KFEOCH.Migrations
                     b.ToTable("OwnerDocumentTypes");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Dictionaries.OwnerPositionType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("DescriptionArabic")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DescriptionEnglish")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NameArabic")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("NameEnglish")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NameArabic")
-                        .IsUnique();
-
-                    b.HasIndex("NameEnglish")
-                        .IsUnique();
-
-                    b.ToTable("OwnerPositionTypes");
-                });
-
             modelBuilder.Entity("KFEOCH.Models.Dictionaries.PaymentType", b =>
                 {
                     b.Property<int>("Id")
@@ -1150,9 +1114,6 @@ namespace KFEOCH.Migrations
                     b.Property<int>("OfficeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PositionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SemId")
                         .HasColumnType("nvarchar(max)");
 
@@ -1167,8 +1128,6 @@ namespace KFEOCH.Migrations
                     b.HasIndex("GenderId");
 
                     b.HasIndex("OfficeId");
-
-                    b.HasIndex("PositionId");
 
                     b.HasIndex("SpecialityId");
 
@@ -1883,10 +1842,6 @@ namespace KFEOCH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KFEOCH.Models.Dictionaries.OwnerPositionType", "Position")
-                        .WithMany()
-                        .HasForeignKey("PositionId");
-
                     b.HasOne("KFEOCH.Models.Dictionaries.OfficeOwnerSpeciality", "Speciality")
                         .WithMany()
                         .HasForeignKey("SpecialityId");
@@ -1894,8 +1849,6 @@ namespace KFEOCH.Migrations
                     b.Navigation("Gender");
 
                     b.Navigation("Office");
-
-                    b.Navigation("Position");
 
                     b.Navigation("Speciality");
                 });

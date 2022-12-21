@@ -668,5 +668,42 @@ namespace KFEOCH.Services
                                     .ToList();
             return list ?? new List<RequestTypeViewModel>();
         }
+
+
+        //OwnerPositionType
+        public List<OwnerPositionType> GetAllOwnerPositionTypes()
+        {
+            var list = new List<OwnerPositionType>();
+            var ownerPositionType = _db.OwnerPositionTypes?.Where(x => x.IsDeleted == false).ToList();
+            if (ownerPositionType == null)
+            {
+                return list;
+            }
+            return ownerPositionType;
+        }
+        public async Task<ResultWithMessage> PostOwnerPositionTypeAsync(OwnerPositionType model)
+        {
+            var ownerPositionType = _db.OwnerPositionTypes?.Where(x => (x.NameArabic == model.NameArabic)
+                                  || (x.NameEnglish == model.NameEnglish)
+                                  ).FirstOrDefault();
+            if (ownerPositionType != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Owner Position Type {model.NameEnglish} | {model.NameArabic} Already Exist !!!" };
+            }
+            await _db.OwnerPositionTypes.AddAsync(model);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = model };
+        }
+        public async Task<ResultWithMessage> DeleteOwnerPositionTypeAsync(int id)
+        {
+            var ownerPositionType = _db.OwnerPositionTypes?.Find(id);
+            if (ownerPositionType == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Owner Position Type Not Found !!!" };
+            }
+            _db.OwnerPositionTypes.Remove(ownerPositionType);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = $@"Office Document Type {ownerPositionType.NameArabic} Deleted !!!" };
+        }
     }
 }

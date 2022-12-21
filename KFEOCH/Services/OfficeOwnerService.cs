@@ -54,10 +54,11 @@ namespace KFEOCH.Services
         public List<OfficeOwnerViewModel> GetAllOfficeOwnersByOfficeId(int id)
         {
             var q = _db.OfficeOwners?.Include(g => g.Gender)
-                                      .Include(s => s.Speciality)
+                                     .Include(s => s.Speciality)
+                                     .Include(s => s.Position)
                                      .Where(a => a.OfficeId == id && a.IsDeleted == false)
                                      .Select(x => new OfficeOwnerViewModel(x))
-                                    .ToList();
+                                     .ToList();
             return q;
         }
         public async Task<ResultWithMessage> PostOfficeOwnerAsync(OfficeOwner model)

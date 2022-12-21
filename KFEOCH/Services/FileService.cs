@@ -19,7 +19,7 @@ namespace KFEOCH.Services
         public async Task<ResultWithMessage> UploadFile(FileModel model, string path)
         {
             int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB
-            IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".png", ".pdf" };
+            IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".jpeg", ".png", ".pdf" };
             var fileHostServer = _configuration.GetValue<string>("FileHostServer");
             if (model.File == null)
             {
@@ -28,7 +28,7 @@ namespace KFEOCH.Services
             var extension = model.File.FileName.Substring(model.File.FileName.LastIndexOf('.')).ToLower();
             if (!AllowedFileExtensions.Contains(extension))
             {
-                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .png , .pdf" };
+                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .jpeg, .png , .pdf" };
             }
             if (model.File.Length > MaxContentLength)
             {
@@ -59,7 +59,7 @@ namespace KFEOCH.Services
             var extension = model.File.FileName.Substring(model.File.FileName.LastIndexOf('.')).ToLower();
             if (!AllowedFileExtensions.Contains(extension))
             {
-                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .png , .pdf" };
+                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .jpeg, .png , .pdf" };
             }
             if (model.File.Length > MaxContentLength)
             {
@@ -99,7 +99,7 @@ namespace KFEOCH.Services
             var extension = model.File.FileName.Substring(model.File.FileName.LastIndexOf('.')).ToLower();
             if (!AllowedFileExtensions.Contains(extension))
             {
-                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .png , .pdf" };
+                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .jpeg, .png , .pdf" };
             }
             if (model.File.Length > MaxContentLength)
             {

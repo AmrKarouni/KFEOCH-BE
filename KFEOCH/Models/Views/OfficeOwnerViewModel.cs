@@ -17,6 +17,8 @@
             SpecialityNameArabic = model.Speciality?.NameArabic;
             SpecialityNameEnglish = model.Speciality?.NameEnglish;
             ExperienceYears = model.ExperienceYears;
+            PositionNameArabic = model.Position?.NameArabic;
+            PositionNameEnglish = model.Position?.NameEnglish;
             IsApproved = model.IsApproved;
             IsDeleted = model.IsDeleted;
         }
@@ -33,6 +35,8 @@
         public string? SpecialityNameArabic { get; set; }
         public string? SpecialityNameEnglish { get; set; }
         public int? ExperienceYears { get; set; }
+        public string? PositionNameArabic { get; set; }
+        public string? PositionNameEnglish { get; set; }
         public bool IsApproved { get; set; }
         public bool IsDeleted { get; set; }
     }

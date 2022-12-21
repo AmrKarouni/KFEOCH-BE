@@ -100,5 +100,10 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> PostRequestTypeAsync(RequestType model);
         Task<ResultWithMessage> DeleteRequestTypeAsync(int id);
         List<RequestTypeViewModel> GetAllRequestTypesByOfficeTypeId(int id);
+
+        //OwnerPositionType
+        List<OwnerPositionType> GetAllOwnerPositionTypes();
+        Task<ResultWithMessage> PostOwnerPositionTypeAsync(OwnerPositionType model);
+        Task<ResultWithMessage> DeleteOwnerPositionTypeAsync(int id);
     }
 }

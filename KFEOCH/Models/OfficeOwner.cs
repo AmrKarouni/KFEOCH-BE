@@ -38,6 +38,8 @@ namespace KFEOCH.Models
         public string? SemId { get; set; }
         [ForeignKey("Speciality")]
         public int? SpecialityId { get; set; }
+        [ForeignKey("Position")]
+        public int? PositionId { get; set; }
         public int? ExperienceYears { get; set; }
         public string? SignatureUrl { get; set; }
         public string? CvUrl { get; set; }
@@ -48,6 +50,7 @@ namespace KFEOCH.Models
         public virtual Gender? Gender { get; set; }
 
         public virtual OfficeOwnerSpeciality? Speciality { get; set; }
+        public virtual OwnerPositionType? Position { get; set; }
         public virtual ICollection<OwnerDocument>? Documents { get; set; }
     }
 }
