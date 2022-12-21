@@ -49,5 +49,32 @@ namespace KFEOCH.Services
             list = offices?.Select(x => new SiteOfficeViewModel(x)).ToList();
             return list ?? new List<SiteOfficeViewModel>();
         }
+
+        public async Task<ResultWithMessage> PostPostTypeAsync(PostType model)
+        {
+            var type = _db.PostTypes?.FirstOrDefault(x => (x.NameArabic == model.NameArabic)
+                                   || (x.NameEnglish == model.NameEnglish));
+            if (type != null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Post Type {model.NameArabic} Already Exist !!!" };
+            }
+            await _db.PostTypes.AddAsync(model);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = model };
+        }
+
+        public async Task<ResultWithMessage> DeletePostTypeAsync(int id)
+        {
+            var type = _db.PostTypes?.Find(id);
+            if (type == null)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Post Type Not Found !!!" };
+            }
+            _db.PostTypes?.Remove(type);
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Message = $@"Post Type Deleted !!!" };
+        }
+
+
     }
 }

@@ -16,7 +16,17 @@ var localConnectionString = "LocalConnection";
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString(localConnectionString);
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
+{
+    opt.Password.RequiredLength = int.Parse(builder.Configuration["PasswordConfig:RequiredLength"]);
+    opt.Password.RequireNonAlphanumeric = bool.Parse(builder.Configuration["PasswordConfig:RequireNonAlphanumeric"]);
+    opt.Password.RequireDigit = bool.Parse(builder.Configuration["PasswordConfig:RequireDigit"]);
+    opt.Password.RequireUppercase = bool.Parse(builder.Configuration["PasswordConfig:RequireUppercase"]);
+    opt.Password.RequireLowercase = bool.Parse(builder.Configuration["PasswordConfig:RequireLowercase"]);
+    opt.Password.RequiredUniqueChars = int.Parse(builder.Configuration["PasswordConfig:RequiredUniqueChars"]);
+}
+).
+AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDictionaryService, DictionaryService>();
 builder.Services.AddScoped<ISiteService, SiteService>();

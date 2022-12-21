@@ -26,6 +26,7 @@ namespace KFEOCH.Models
             EstablishmentDate = model.EstablishmentDate;
             LicenseEndDate = model.LicenseEndDate;
             Email = model.Email;
+            EmailTwo = model.EmailTwo;
             PhoneNumber = model.PhoneNumber;
             FaxNumber = model.FaxNumber;
             MailBox = model.MailBox;
@@ -37,6 +38,8 @@ namespace KFEOCH.Models
             AgreeToTerms = model.AgreeToTerms;
             LogoUrl = model.LogoUrl;
             ShowInHome = model.ShowInHome;
+            AutoNumberOne = model.AutoNumberOne;
+            AutoNumberTwo = model.AutoNumberTwo;
         }
 
         public int Id { get; set; }
@@ -55,6 +58,8 @@ namespace KFEOCH.Models
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
+        [EmailAddress]
+        public string? EmailTwo { get; set; }
         public string? PhoneNumber { get; set; }
         public string? FaxNumber { get; set; }
         public string? MailBox { get; set; }
@@ -75,11 +80,12 @@ namespace KFEOCH.Models
         public bool AgreeToTerms { get; set; }
         public string? LogoUrl { get; set; }
         public bool? ShowInHome { get; set; }
+        public string? AutoNumberOne{ get; set; }
+        public string? AutoNumberTwo { get; set; }
         public virtual OfficeType? Type { get; set; }
         public virtual Area? Area { get; set; }
         public virtual Governorate? Governorate { get; set; }
         public virtual Country? Country { get; set; }
-
         public virtual OfficeEntity? Entity { get; set; }
         public virtual OfficeLegalEntity? LegalEntity { get; set; }
         public virtual ICollection<OfficeDocument>? Documents { get; set; }

@@ -40,6 +40,9 @@ namespace KFEOCH.Contexts
         public DbSet<OfficePayment>? OfficePayments { get; set; }
         public DbSet<OfficeRequest>? OfficeRequests { get; set; }
         public DbSet<OfficeDocument>? OfficeDocuments { get; set; }
+        public DbSet<PostType>? PostTypes { get; set; }
+        public DbSet<Post>? Posts { get; set; }
+        public DbSet<Section>? Sections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -274,6 +277,40 @@ namespace KFEOCH.Contexts
             modelBuilder.Entity<PaymentType>(entity =>
             {
                 entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<PostType>(entity =>
+            {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<PostType>(entity =>
+            {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<Post>(entity =>
+            {
+                entity.HasIndex(e => new { e.TitleArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Post>(entity =>
+            {
+                entity.HasIndex(e => new { e.TitleEnglish })
+                .IsUnique();
+            });
+
+
+            modelBuilder.Entity<Section>(entity =>
+            {
+                entity.HasIndex(e => new { e.TitleArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Section>(entity =>
+            {
+                entity.HasIndex(e => new { e.TitleEnglish })
                 .IsUnique();
             });
 

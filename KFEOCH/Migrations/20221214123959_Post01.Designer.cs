@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221214123959_Post01")]
+    partial class Post01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -854,21 +856,12 @@ namespace KFEOCH.Migrations
                     b.Property<int?>("AreaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("AutoNumberOne")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AutoNumberTwo")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("EmailTwo")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("EntityId")
                         .HasColumnType("int");
@@ -1340,12 +1333,6 @@ namespace KFEOCH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("BodyArabic")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BodyEnglish")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -1379,9 +1366,6 @@ namespace KFEOCH.Migrations
 
                     b.Property<int>("TypeId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("thumbnailUrl")
                         .HasColumnType("nvarchar(max)");
@@ -1425,9 +1409,6 @@ namespace KFEOCH.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

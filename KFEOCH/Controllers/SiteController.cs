@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using KFEOCH.Services;
 using KFEOCH.Models;
-
+using KFEOCH.Models.Site;
 
 namespace KFEOCH.Controllers
 {
@@ -38,6 +38,28 @@ namespace KFEOCH.Controllers
                 return BadRequest(new { message = "No Office Found!!!" });
             }
             return Ok(result);
+        }
+
+        [HttpPost("post-type")]
+        public async Task<IActionResult> PostPostTypeAsync(PostType model)
+        {
+            var result = await _siteService.PostPostTypeAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+
+        [HttpDelete("post-type/{id}")]
+        public async Task<IActionResult> DeletePostTypeAsync(int id)
+        {
+            var result = await _siteService.DeletePostTypeAsync(id);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
         }
     }
 }
