@@ -35,11 +35,17 @@ namespace KFEOCH.Models
         [ForeignKey("Gender")]
         public int GenderId { get; set; }
         public string? NationalId { get; set; }
+        [ForeignKey("Nationality")]
+        public int? NationalityId { get; set; }
         public string? SemId { get; set; }
         [ForeignKey("Speciality")]
         public int? SpecialityId { get; set; }
         [ForeignKey("Position")]
         public int? PositionId { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? PhoneNumberTwo { get; set; }
+        [EmailAddress]
+        public string? Email { get; set; }
         public int? ExperienceYears { get; set; }
         public string? SignatureUrl { get; set; }
         public string? CvUrl { get; set; }
@@ -48,9 +54,9 @@ namespace KFEOCH.Models
         public bool IsDeleted { get; set; } = false;
         public virtual Office? Office { get; set; }
         public virtual Gender? Gender { get; set; }
-
         public virtual OfficeOwnerSpeciality? Speciality { get; set; }
         public virtual OwnerPositionType? Position { get; set; }
+        public virtual Nationality? Nationality { get; set; }
         public virtual ICollection<OwnerDocument>? Documents { get; set; }
     }
 }

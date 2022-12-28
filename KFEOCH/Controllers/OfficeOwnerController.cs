@@ -87,8 +87,19 @@ namespace KFEOCH.Controllers
                 return BadRequest(new { message = "Bad Request" });
             }
             return File(result.Bytes, result.ContentType,result.FileName);
-
         }
+
+        [HttpGet("Form/View/{typeid}")]
+        public IActionResult GetForm(int typeid)
+        {
+            var result = _ownerDocumentService.GetForm(typeid);
+            if (result.Bytes == null)
+            {
+                return BadRequest(new { message = "Bad Request" });
+            }
+            return File(result.Bytes, result.ContentType, result.FileName);
+        }
+
         [HttpPost("Document")]
         public async Task<ActionResult> PostOwnerDocumentAsync([FromForm] OwnerFileModel model)
         {

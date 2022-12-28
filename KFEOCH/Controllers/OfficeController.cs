@@ -101,6 +101,18 @@ namespace KFEOCH.Controllers
             return File(result.Bytes, result.ContentType, result.FileName);
 
         }
+
+        [HttpGet("Form/View/{typeid}")]
+        public IActionResult ViewFormByUrl(int typeid)
+        {
+            var result = _officeDocumentService.GetForm(typeid);
+            if (result.Bytes == null)
+            {
+                return BadRequest(new { message = "Bad Request" });
+            }
+            return File(result.Bytes, result.ContentType, result.FileName);
+        }
+
         [HttpPost("Document")]
         public async Task<ActionResult> PostOfficeDocumentAsync([FromForm] OfficeFileModel model)
         {

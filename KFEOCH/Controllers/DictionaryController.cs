@@ -644,5 +644,16 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet("nationalities")]
+        public IActionResult GetAllNationalities()
+        {
+            var result = _dictionaryService.GetAllNationalities();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Nationality Found!!!" });
+            }
+            return Ok(result);
+        }
     }
 }

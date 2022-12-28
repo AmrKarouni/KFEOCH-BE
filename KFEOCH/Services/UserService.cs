@@ -22,12 +22,18 @@ namespace KFEOCH.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
         private readonly ApplicationDbContext _db;
-        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, ApplicationDbContext db)
+        private readonly IConfiguration _configuration;
+        public UserService(UserManager<ApplicationUser> userManager, 
+                           RoleManager<IdentityRole> roleManager,
+                           IOptions<JWT> jwt,
+                           ApplicationDbContext db,
+                           IConfiguration configuration)
         {
             _userManager = userManager;
             _jwt = jwt.Value;
             _roleManager = roleManager;
             _db = db;
+            _configuration = configuration;
         }
         public ApplicationUser GetById(string id)
         {
@@ -141,10 +147,14 @@ namespace KFEOCH.Services
                 office = null;
                 return "English Name Already Exist";
             }
+            var localcountry = _configuration.GetValue<string>("LocalCountry");
             var type = _db.OfficeTypes?.Find(model.OfficeTypeId);
+            var countryid = _db.Countries?.FirstOrDefault(x => x.NameEnglish == localcountry)?.Id;
             office = new Office(model);
             office.IsLocal = type?.IsLocal;
+            office.CountryId = countryid;
             _db.Offices?.Add(office);
+            _db.SaveChanges();
             return "";
         }
 
@@ -186,9 +196,16 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = isOfficeCreated };
             }
+            
             var type = _db.OfficeTypes?.Find(model.OfficeTypeId);
             var office = new Office(model);
             office.IsLocal = type?.IsLocal;
+            if ((bool)type?.IsLocal)
+            {
+                var localcountry = _configuration.GetValue<string>("LocalCountry");
+                var countryid = _db.Countries?.FirstOrDefault(x => x.NameEnglish == localcountry)?.Id;
+                office.CountryId = countryid;
+            }
             _db.Offices?.Add(office);
             _db.SaveChanges();
             var user = new ApplicationUser
@@ -208,10 +225,26 @@ namespace KFEOCH.Services
 
                 await _userManager.AddToRoleAsync(user, Authorization.office_role.ToString());
                 return new ResultWithMessage { Success = true, Message = $@"User { model.NameEnglish } has been registered!!"};
+
+                //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                //var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, email = user.Email }, Request.Scheme);
+
+                //var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink, null);
+                //await _emailSender.SendEmailAsync(message);
             }
             return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault().Description };
 
         }
+
+        //public async Task<ResultWithMessage> ConfirmEmail(string token, string email)
+        //{
+        //    var user = await _userManager.FindByEmailAsync(email);
+        //    if (user == null)
+        //        return new ResultWithMessage { Success = false, Message = "Error" };
+
+        //    var result = await _userManager.ConfirmEmailAsync(user, token);
+        //    return new ResultWithMessage { Success = false, Message =  result.Succeeded ? nameof(ConfirmEmail) : "Error" };
+        //}
 
         public async Task<AuthenticationModel> AdminLoginAsync(AdminLoginModel model)
         {

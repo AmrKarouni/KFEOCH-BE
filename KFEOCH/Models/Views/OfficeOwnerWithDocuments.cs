@@ -8,6 +8,10 @@
         public string? NameEnglish { get; set; }
         public int GenderId { get; set; }
         public string? NationalId { get; set; }
+        public int? NationalityId { get; set; }
+        public int? PositionId { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Email { get; set; }
         public string? SemId { get; set; }
         public int? SpecialityId { get; set; }
         public int? ExperienceYears { get; set; }
@@ -20,6 +24,8 @@
         public int Id { get; set; }
         public string? NameArabic { get; set; }
         public string? NameEnglish { get; set; }
+        public bool? HasForm { get; set; }
+        public string? FormUrl { get; set; }
         public IEnumerable<OfficeOwnerDocumentView>? Files { get; set; }
     }
     public class OfficeOwnerDocumentView

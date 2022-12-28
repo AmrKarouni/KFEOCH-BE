@@ -44,6 +44,8 @@ namespace KFEOCH.Contexts
         public DbSet<Post>? Posts { get; set; }
         public DbSet<Section>? Sections { get; set; }
         public DbSet<OwnerPositionType>? OwnerPositionTypes { get; set; }
+        public DbSet<Nationality>? Nationalities { get; set; }
+        public DbSet<OfficeLicense>? OfficeLicenses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -324,6 +326,18 @@ namespace KFEOCH.Contexts
                 entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();
             });
+
+            modelBuilder.Entity<Nationality>(entity =>
+            {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Nationality>(entity =>
+            {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+
             base.OnModelCreating(modelBuilder);
         }
     }

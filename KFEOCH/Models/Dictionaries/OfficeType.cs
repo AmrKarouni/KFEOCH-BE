@@ -19,6 +19,7 @@ namespace KFEOCH.Models.Dictionaries
         public bool? IsLocal { get; set; }
         public bool IsAdmin { get; set; } = false;
         public bool IsDeleted { get; set; } = false;
+        public double YearlyFees { get; set; } = 100;
         public virtual ICollection<Activity> OfficeActivities { get; set; } = new List<Activity>();
         public virtual ICollection<Speciality> OfficeSpecialities { get; set; } = new List<Speciality>();
     }

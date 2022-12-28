@@ -12,6 +12,8 @@
         public int Id { get; set; }
         public string? NameArabic { get; set; }
         public string? NameEnglish { get; set; }
+        public bool? HasForm { get; set; }
+        public string? FormUrl { get; set; }
         public IEnumerable<OfficeDocumentView>? Files { get; set; }
     }
     public class OfficeDocumentView

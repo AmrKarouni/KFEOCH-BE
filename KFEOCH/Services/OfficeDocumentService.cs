@@ -34,6 +34,8 @@ namespace KFEOCH.Services
                 Id = x.Id,
                 NameArabic = x.NameArabic,
                 NameEnglish = x.NameEnglish,
+                HasForm = x.HasForm,
+                FormUrl = x.FormUrl,
                 Files = office.Documents.Where(d => (d.TypeId ?? 0) == x.Id && d.IsActive == true).Select(d => new OfficeDocumentView
                 {
                     Id = d.Id,
@@ -126,6 +128,35 @@ namespace KFEOCH.Services
                 {
                     return result;
                 }
+                result.Bytes = File.ReadAllBytes(host + url.Path);
+                result.FileName = url.Path.Substring(url.Path.LastIndexOf('/') + 1).ToLower();
+                result.ContentType = url.ContentType;
+                return result;
+            }
+            catch (Exception e)
+            {
+                return result = new FileBytesModel();
+                throw;
+            }
+        }
+
+        public FileBytesModel GetForm(int typeid)
+        {
+            FileBytesModel result = new FileBytesModel();
+            try
+            {
+                var doctype = _db.OfficeDocumentTypes.FirstOrDefault(x => x.Id == typeid);
+                
+                if (doctype == null || doctype.HasForm == false)
+                {
+                    return result;
+                }
+                var url = _fileService.GetFilePath(doctype.FormUrl);
+                if (url == null || url.Path == null)
+                {
+                    return result;
+                }
+                var host = _configuration.GetValue<string>("FileHostServer");
                 result.Bytes = File.ReadAllBytes(host + url.Path);
                 result.FileName = url.Path.Substring(url.Path.LastIndexOf('/') + 1).ToLower();
                 result.ContentType = url.ContentType;

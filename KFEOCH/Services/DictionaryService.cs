@@ -705,5 +705,15 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = $@"Office Document Type {ownerPositionType.NameArabic} Deleted !!!" };
         }
+
+
+        //Nationality
+        public List<Nationality> GetAllNationalities()
+        {
+            var list = new List<Nationality>();
+            list = _db.Nationalities?.Where(x => x.IsDeleted == false).ToList();
+
+            return list ?? new List<Nationality>();
+        }
     }
 }

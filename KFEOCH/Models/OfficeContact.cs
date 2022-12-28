@@ -19,6 +19,7 @@ namespace KFEOCH.Models
             AddedDate = DateTime.UtcNow;
             IsApproved = true;
             IsDeleted = false;
+            Visible = true;
         }
 
         public int Id { get; set; }
@@ -32,6 +33,7 @@ namespace KFEOCH.Models
         public DateTime? AddedDate { get; set; }
         public bool IsApproved { get; set; } = true;
         public bool IsDeleted { get; set; } = false;
+        public bool Visible { get; set; } = true;
         public virtual Office? Office { get; set; }
         public virtual ContactType? Contact { get; set; }
     }

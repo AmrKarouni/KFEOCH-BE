@@ -10,6 +10,7 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> PostOwnerDocumentAsync(OwnerFileModel model);
         FilePathModel GetDocumentUrl(int documentid);
         FileBytesModel GetDocument(int documentid);
+        FileBytesModel GetForm(int typeid);
         Task<ResultWithMessage> DeleteDocumentAsync(int documentid);
     }
 }

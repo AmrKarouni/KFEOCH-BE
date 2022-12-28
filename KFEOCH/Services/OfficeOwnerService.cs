@@ -42,6 +42,10 @@ namespace KFEOCH.Services
                 NameEnglish = officeOwner.NameEnglish,
                 GenderId = officeOwner.GenderId,
                 NationalId = officeOwner.NationalId,
+                NationalityId = officeOwner.NationalityId,
+                Email = officeOwner.Email,
+                PhoneNumber = officeOwner.PhoneNumber,
+                PositionId = officeOwner.PositionId,
                 SemId = officeOwner.SemId,
                 SpecialityId = officeOwner.SpecialityId,
                 ExperienceYears = officeOwner.ExperienceYears,
@@ -55,7 +59,8 @@ namespace KFEOCH.Services
         {
             var q = _db.OfficeOwners?.Include(g => g.Gender)
                                      .Include(s => s.Speciality)
-                                     .Include(s => s.Position)
+                                     .Include(p => p.Position)
+                                     .Include(n => n.Nationality)
                                      .Where(a => a.OfficeId == id && a.IsDeleted == false)
                                      .Select(x => new OfficeOwnerViewModel(x))
                                      .ToList();

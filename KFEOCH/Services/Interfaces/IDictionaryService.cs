@@ -105,5 +105,8 @@ namespace KFEOCH.Services.Interfaces
         List<OwnerPositionType> GetAllOwnerPositionTypes();
         Task<ResultWithMessage> PostOwnerPositionTypeAsync(OwnerPositionType model);
         Task<ResultWithMessage> DeleteOwnerPositionTypeAsync(int id);
+
+        //Nationality
+        List<Nationality> GetAllNationalities();
     }
 }

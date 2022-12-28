@@ -85,6 +85,7 @@ namespace KFEOCH.Models
         public string? AutoNumberOne{ get; set; }
         public string? AutoNumberTwo { get; set; }
         public bool? IsLocal { get; set; }
+        public int RenewYears { get; set; } = 3;
         public virtual OfficeType? Type { get; set; }
         public virtual Area? Area { get; set; }
         public virtual Governorate? Governorate { get; set; }
@@ -92,5 +93,6 @@ namespace KFEOCH.Models
         public virtual OfficeEntity? Entity { get; set; }
         public virtual OfficeLegalEntity? LegalEntity { get; set; }
         public virtual ICollection<OfficeDocument>? Documents { get; set; }
+        public virtual ICollection<OfficeLicense>? Licenses { get; set; }
     }
 }
