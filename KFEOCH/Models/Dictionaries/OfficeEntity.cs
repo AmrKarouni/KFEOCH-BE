@@ -18,6 +18,7 @@ namespace KFEOCH.Models.Dictionaries
         public string? NameEnglish { get; set; }
         public string? DescriptionArabic { get; set; }
         public string? DescriptionEnglish { get; set; }
+        public double YearlyFees { get; set; } = 100;
         public bool IsDeleted { get; set; } = false;
     }
 }

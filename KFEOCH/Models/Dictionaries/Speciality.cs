@@ -18,6 +18,7 @@ namespace KFEOCH.Models.Dictionaries
         public int ParentId { get; set; }
         public bool IsDeleted { get; set; } = false;
         public virtual OfficeType? Parent { get; set; }
+        public virtual ICollection<License>? Licenses { get; set; }
     }
     public class SpecialityViewModel: Speciality
     {

@@ -57,6 +57,7 @@ namespace KFEOCH.Models
         public DateTime? RegistrationDate { get; set; }
         public DateTime? EstablishmentDate { get; set; }
         public DateTime? LicenseEndDate { get; set; }
+        public DateTime? MembershipEndDate { get; set; }
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -93,6 +94,6 @@ namespace KFEOCH.Models
         public virtual OfficeEntity? Entity { get; set; }
         public virtual OfficeLegalEntity? LegalEntity { get; set; }
         public virtual ICollection<OfficeDocument>? Documents { get; set; }
-        public virtual ICollection<OfficeLicense>? Licenses { get; set; }
+        public virtual ICollection<License>? Licenses { get; set; }
     }
 }

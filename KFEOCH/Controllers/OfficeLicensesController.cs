@@ -8,30 +8,30 @@ namespace KFEOCH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OfficeLicenseController : ControllerBase
+    public class OfficeLicensesController : ControllerBase
     {
         private readonly IOfficeRegistrationService _officeRegistrationService;
-        public OfficeLicenseController(IOfficeRegistrationService officeRegistrationService)
+        public OfficeLicensesController(IOfficeRegistrationService officeRegistrationService)
         {
             _officeRegistrationService = officeRegistrationService;
         }
 
 
-        [HttpGet("fees/{id}")]
-        public IActionResult GetRnewFieldsByOfficeId(int id)
-        {
-            var result = _officeRegistrationService.GetRnewFieldsByOfficeId(id);
-            if (!result.Success)
-            {
-                return BadRequest(new { message = result.Message});
-            }
-            return Ok(result.Result);
-        }
+        //[HttpGet("fees/{id}")]
+        //public IActionResult GetRnewFieldsByOfficeId(int id)
+        //{
+        //    var result = _officeRegistrationService.GetRnewFieldsByOfficeId(id);
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(new { message = result.Message});
+        //    }
+        //    return Ok(result.Result);
+        //}
 
-        [HttpPost("renew-office")]
-        public IActionResult RenewOffice(OfficeRenewBindingModel model)
+        [HttpPost]
+        public IActionResult PostLicense(License model)
         {
-            var result = _officeRegistrationService.RenewOffice(model);
+            var result = _officeRegistrationService.PostLicense(model);
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
@@ -39,7 +39,29 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
-        [HttpGet("licenses/{id}")]
+        [HttpPut("{id}")]
+        public IActionResult PutLicense(int id,License model)
+        {
+            var result = _officeRegistrationService.PutLicense(id,model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetLicenseById(int id)
+        {
+            var result = _officeRegistrationService.GetLicenseById(id);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+
+        [HttpGet("Office/{id}")]
         public IActionResult GetLicenseByOfficeId(int id)
         {
             var result = _officeRegistrationService.GetLicenseByOfficeId(id);
@@ -82,5 +104,15 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
+        [HttpGet("first-fees")]
+        public IActionResult CalculationFeesForNewOffice(int officeid)
+        {
+            var result = _officeRegistrationService.CalculationFeesForNewOffice(officeid);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
     }
 }

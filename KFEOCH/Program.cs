@@ -14,7 +14,7 @@ using Microsoft.Extensions.FileProviders;
 var testConnectionString = "MochaConnection";
 var localConnectionString = "LocalConnection";
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString(localConnectionString);
+var connectionString = builder.Configuration.GetConnectionString(testConnectionString);
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
 {

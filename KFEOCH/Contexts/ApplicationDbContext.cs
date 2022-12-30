@@ -46,6 +46,8 @@ namespace KFEOCH.Contexts
         public DbSet<OwnerPositionType>? OwnerPositionTypes { get; set; }
         public DbSet<Nationality>? Nationalities { get; set; }
         public DbSet<OfficeLicense>? OfficeLicenses { get; set; }
+        public DbSet<License>? Licenses { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
