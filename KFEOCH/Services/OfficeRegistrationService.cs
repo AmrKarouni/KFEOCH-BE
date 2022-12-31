@@ -267,7 +267,7 @@ namespace KFEOCH.Services
             }
             var license = _db.Licenses?.Include(x => x.Specialities).Include(x => x.Office).FirstOrDefault(x => x.Id == id);
 
-            if (license == null)
+            if (license == null || license.IsFirst == false)
             {
                 return new ResultWithMessage { Success = false, Message = "License Not Found !!!" };
             }
@@ -344,8 +344,6 @@ namespace KFEOCH.Services
                 var firstlicense = _db.Licenses.Include(x => x.OfficeEntity)
                                             .FirstOrDefault(x => x.OfficeId == officeid
                                                             && x.IsFirst == true
-                                                            && x.IsPending == false
-                                                            && x.IsApproved == true
                                                             && x.IsRejected == false);
                 if (firstlicense == null)
                 {
