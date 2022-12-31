@@ -19,4 +19,12 @@ namespace KFEOCH.Models
         public string? PaymentNumber { get; set; }
         public virtual Office? Office { get; set; }
     }
+
+    public class OfficePaymentViewModel
+    {
+        public string? StatusNameArabic { get; set; }
+        public string? StatusNameEnglish { get; set; }
+        public DateTime? EndDate { get; set; }
+        public List<OfficePayment>? Payments { get; set; }  
+    }
 }

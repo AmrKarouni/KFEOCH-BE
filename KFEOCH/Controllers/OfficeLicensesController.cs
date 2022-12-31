@@ -16,18 +16,6 @@ namespace KFEOCH.Controllers
             _officeRegistrationService = officeRegistrationService;
         }
 
-
-        //[HttpGet("fees/{id}")]
-        //public IActionResult GetRnewFieldsByOfficeId(int id)
-        //{
-        //    var result = _officeRegistrationService.GetRnewFieldsByOfficeId(id);
-        //    if (!result.Success)
-        //    {
-        //        return BadRequest(new { message = result.Message});
-        //    }
-        //    return Ok(result.Result);
-        //}
-
         [HttpPost]
         public IActionResult PostLicense(License model)
         {
@@ -39,10 +27,10 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("ApproveLicense/{id}")]
         public IActionResult PutLicense(int id,License model)
         {
-            var result = _officeRegistrationService.PutLicense(id,model);
+            var result = _officeRegistrationService.ApproveLicense(id,model);
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
@@ -50,7 +38,7 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetLicenseById/{id}")]
         public IActionResult GetLicenseById(int id)
         {
             var result = _officeRegistrationService.GetLicenseById(id);
@@ -93,7 +81,7 @@ namespace KFEOCH.Controllers
             }
             return File(result.Bytes, result.ContentType, result.FileName);
         }
-        [HttpGet("admin-licenses")]
+        [HttpGet("GetPendingLicenses")]
         public IActionResult GetAllPendingLicenses()
         {
             var result = _officeRegistrationService.GetAllPendingLicenses();
@@ -104,15 +92,26 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
-        [HttpGet("first-fees")]
-        public IActionResult CalculationFeesForNewOffice(int officeid)
+        [HttpGet("GetPayments/{id}")]
+        public IActionResult CalculationFeesForNewOffice(int id)
         {
-            var result = _officeRegistrationService.CalculationFeesForNewOffice(officeid);
+            var result = _officeRegistrationService.CalculationFeesForNewOffice(id);
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
             }
             return Ok(result.Result);
+        }
+
+        [HttpGet("RejectLicense/{id}")]
+        public async Task<ActionResult> DeleteDocumentAsync(int id)
+        {
+            var result = await _officeRegistrationService.RejectLicense(id);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Success);
         }
     }
 }

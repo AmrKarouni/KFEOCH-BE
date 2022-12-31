@@ -12,12 +12,11 @@ namespace KFEOCH.Services.Interfaces
         ResultWithMessage GetLicenseByOfficeId(int id);
         Task<ResultWithMessage> UploadDocument(FileModel model);
         FileBytesModel GetDocument(int licenseid);
-        ResultWithMessage GetAllPendingLicenses();
-
         ResultWithMessage GetLicenseById(int id);
-
         ResultWithMessage PostLicense(License model);
-        ResultWithMessage PutLicense(int id, License model);
+        ResultWithMessage ApproveLicense(int id, License model);
         ResultWithMessage CalculationFeesForNewOffice(int officeid);
+        ResultWithMessage GetAllPendingLicenses();
+        Task<ResultWithMessage> RejectLicense(int id);
     }
 }

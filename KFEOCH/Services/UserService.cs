@@ -200,6 +200,8 @@ namespace KFEOCH.Services
             var type = _db.OfficeTypes?.Find(model.OfficeTypeId);
             var office = new Office(model);
             office.IsLocal = type?.IsLocal;
+            office.IsActive = false;
+            office.IsVerified = false;
             if ((bool)type?.IsLocal)
             {
                 var localcountry = _configuration.GetValue<string>("LocalCountry");
