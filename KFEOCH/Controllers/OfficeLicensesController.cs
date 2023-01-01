@@ -28,9 +28,20 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("ApproveLicense/{id}")]
-        public IActionResult PutLicense(int id,License model)
+        public IActionResult ApproveLicense(int id,License model)
         {
             var result = _officeRegistrationService.ApproveLicense(id,model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+
+        [HttpPut("PutLicense/{id}")]
+        public IActionResult PutLicense(int id, License model)
+        {
+            var result = _officeRegistrationService.PutLicense(id, model);
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
@@ -112,6 +123,35 @@ namespace KFEOCH.Controllers
                 return BadRequest(new { message = result.Message });
             }
             return Ok(result.Success);
+        }
+
+        [HttpGet("GetRenewPayments/{id}")]
+        public IActionResult CalculationFeesForRenew(int id)
+        {
+            var result = _officeRegistrationService.CalculationFeesForRenew(id,false);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message ,
+                                        messageArabic = result.MessageArabic ,
+                                        messageEnglish = result.MessageEnglish });
+            }
+            return Ok(result.Result);
+        }
+
+        [HttpPost("PostRenewPayments/{id}")]
+        public IActionResult PostFeesForRenew(int id)
+        {
+            var result = _officeRegistrationService.CalculationFeesForRenew(id, true) ;
+            if (!result.Success)
+            {
+                return BadRequest(new
+                {
+                    message = result.Message,
+                    messageArabic = result.MessageArabic,
+                    messageEnglish = result.MessageEnglish
+                });
+            }
+            return Ok(result.Result);
         }
     }
 }

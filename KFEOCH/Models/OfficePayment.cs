@@ -14,6 +14,7 @@ namespace KFEOCH.Models
         public string? RequestNameEnglish { get; set; }
         public DateTime PaymentDate { get; set; }
         public double Amount { get; set; }
+        public double YearsCount { get; set; } = 1;
         public bool IsPaid { get; set; } = true;
         public string? PaymentUrl { get; set; }
         public string? PaymentNumber { get; set; }

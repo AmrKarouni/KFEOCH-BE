@@ -21,6 +21,8 @@
         }
         public bool Success { get; set; }
         public string? Message { get; set; }
+        public string? MessageArabic { get; set; }
+        public string? MessageEnglish { get; set; }
         public Object? Result { get; set; }
     }
 }

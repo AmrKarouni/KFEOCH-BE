@@ -7,16 +7,16 @@ namespace KFEOCH.Services.Interfaces
 {
     public interface IOfficeRegistrationService
     {
-        //ResultWithMessage GetRnewFieldsByOfficeId(int id);
-        //ResultWithMessage RenewOffice(OfficeRenewBindingModel model);
         ResultWithMessage GetLicenseByOfficeId(int id);
         Task<ResultWithMessage> UploadDocument(FileModel model);
         FileBytesModel GetDocument(int licenseid);
         ResultWithMessage GetLicenseById(int id);
         ResultWithMessage PostLicense(License model);
         ResultWithMessage ApproveLicense(int id, License model);
+        ResultWithMessage PutLicense(int id, License model);
         ResultWithMessage CalculationFeesForNewOffice(int officeid);
         ResultWithMessage GetAllPendingLicenses();
         Task<ResultWithMessage> RejectLicense(int id);
+        ResultWithMessage CalculationFeesForRenew(int officeid, bool ispaid);
     }
 }
