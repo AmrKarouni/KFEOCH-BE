@@ -10,11 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.FileProviders;
+using User.Management.Service.Models;
+using User.Management.Service.Services;
 
 var testConnectionString = "MochaConnection";
 var localConnectionString = "LocalConnection";
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString(testConnectionString);
+var connectionString = builder.Configuration.GetConnectionString(localConnectionString);
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
 {
@@ -24,9 +26,16 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
     opt.Password.RequireUppercase = bool.Parse(builder.Configuration["PasswordConfig:RequireUppercase"]);
     opt.Password.RequireLowercase = bool.Parse(builder.Configuration["PasswordConfig:RequireLowercase"]);
     opt.Password.RequiredUniqueChars = int.Parse(builder.Configuration["PasswordConfig:RequiredUniqueChars"]);
+    opt.SignIn.RequireConfirmedEmail = true;
 }
 ).
-AddEntityFrameworkStores<ApplicationDbContext>();
+AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+//Add Configuration For Required Email 
+builder.Services.Configure<IdentityOptions>(
+    opts => opts.SignIn.RequireConfirmedEmail = true);
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDictionaryService, DictionaryService>();
 builder.Services.AddScoped<ISiteService, SiteService>();
@@ -40,11 +49,14 @@ builder.Services.AddScoped<IOfficeContactService, OfficeContactService>();
 builder.Services.AddScoped<IOfficeRequestService, OfficeRequestService>();
 builder.Services.AddScoped<IOfficeDocumentService, OfficeDocumentService>();
 builder.Services.AddScoped<IOfficeRegistrationService, OfficeRegistrationService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddTransient<ApplicationDbContextSeed>();
 builder.Services.AddDbContext<ApplicationDbContext>(x =>
 {
     x.UseSqlServer(connectionString);
 });
+
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -77,6 +89,10 @@ builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             .AllowCredentials();
 }));
 
+
+//Add Email Configurations
+var emailconfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailconfig);
 
 
 // Add services to the container.

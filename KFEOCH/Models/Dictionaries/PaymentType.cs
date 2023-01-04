@@ -14,5 +14,6 @@ namespace KFEOCH.Models.Dictionaries
         public string? DescriptionArabic { get; set; }
         public string? DescriptionEnglish { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public virtual ICollection<OfficePayment>? OfficePayments { get; set; }
     }
 }

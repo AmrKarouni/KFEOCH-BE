@@ -48,6 +48,19 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet("confirm-email")]
+        public async Task<ActionResult> OfficeRegistrationAsync(string token,string email)
+        {
+            var result = await _userService.ConfirmEmail(token,email);
+            if (result.Success == false)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Message);
+        }
+
+
         [HttpPost("admin-login")]
         public async Task<ActionResult> AdminLoginAsync(AdminLoginModel model)
         {
@@ -201,5 +214,6 @@ namespace KFEOCH.Controllers
             return Ok(response.Success);
         }
 
+        
     }
 }

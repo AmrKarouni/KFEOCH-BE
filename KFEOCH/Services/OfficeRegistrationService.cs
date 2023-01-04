@@ -43,12 +43,24 @@ namespace KFEOCH.Services
             var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
             if (license == null)
             {
-                return new ResultWithMessage { Success = false, Message = $@"License Not Found !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "License Not Found !!!",
+                    MessageEnglish = "License Not Found !!!",
+                    MessageArabic = "الترخيص غير موجود !!!"
+                };
             }
             var uploadResult = await _fileService.UploadPdfFile(model, "licenses");
             if (!uploadResult.Success)
             {
-                return new ResultWithMessage { Success = false, Message = $@"Upload Logo Failed !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Upload Document Failed !!!",
+                    MessageEnglish = "Upload Document Failed !!!",
+                    MessageArabic = "فشل في تحميل المستند "
+                };
                 _db.Licenses.Remove(license);
             }
             else
@@ -111,7 +123,13 @@ namespace KFEOCH.Services
                                              .FirstOrDefault(x => x.Id == id);
             if (license == null)
             {
-                return new ResultWithMessage { Success = false, Message = "License Not Found !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "License Not Found !!!",
+                    MessageEnglish = "License Not Found !!!",
+                    MessageArabic = "الترخيص غير موجود !!!"
+                };
             }
             return new ResultWithMessage { Success = true, Result = license };
         }
@@ -120,7 +138,13 @@ namespace KFEOCH.Services
         {
             if (!CheckLicense(model).Success)
             {
-                return new ResultWithMessage { Success = false, Message = CheckLicense(model).Message };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = CheckLicense(model).Message,
+                    MessageArabic = CheckLicense(model).MessageArabic,
+                    MessageEnglish = CheckLicense(model).MessageEnglish,
+                };
             }
             var pending = _db.Licenses.FirstOrDefault(x => x.OfficeId == model.OfficeId
                                                             && (x.IsPending == true || DateTime.UtcNow > x.EndDate && (x.IsApproved || x.IsPending))
@@ -128,7 +152,13 @@ namespace KFEOCH.Services
                                                             && x.IsRejected == false);
             if (pending != null)
             {
-                return new ResultWithMessage { Success = false, Message = "Office Has Pending License !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Office Has Pending License !!!",
+                    MessageEnglish = "Office Has Pending License !!!",
+                    MessageArabic = "المكتب لديه ترخيص معلق !!!"
+                };
             }
             var sp = _db.Specialities.Where(x => model.Specialities.Select(x => x.Id).ToList().Contains(x.Id)).ToList();
             var licenses = _db.Licenses.Where(x => x.OfficeId == model.OfficeId
@@ -161,23 +191,47 @@ namespace KFEOCH.Services
             var office = _db.Offices.FirstOrDefault(x => x.Id == model.OfficeId);
             if (office == null)
             {
-                return new ResultWithMessage { Success = false, Message = "Office Not Found !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Office Not Found !!!",
+                    MessageEnglish = "Office Not Found !!!",
+                    MessageArabic = "المكتب غير موجود !!!"
+                };
             }
             var entity = _db.OfficeEntities.FirstOrDefault(x => x.Id == model.OfficeEntityId);
             if (entity == null)
             {
-                return new ResultWithMessage { Success = false, Message = "Entity Not Found !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Entity Not Found !!!",
+                    MessageEnglish = "Entity Not Found !!!",
+                    MessageArabic = "الكيان غير موجود !!!"
+                };
             }
 
             if (model.StartDate >= model.EndDate)
             {
-                return new ResultWithMessage { Success = false, Message = "End Date Must Be Greater Than Start Date !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "End Date Must Be Greater Than Start Date !!!",
+                    MessageEnglish = "End Date Must Be Greater Than Start Date !!!",
+                    MessageArabic = "يجب أن يكون تاريخ بداية الترخيص قبل تاريخ المهاية !!!"
+                };
             }
 
             var sp = _db.Specialities.Where(x => model.Specialities.Select(x => x.Id).ToList().Contains(x.Id)).ToList();
             if (sp.Select(x => x.ParentId).Distinct().Count() != 1 || sp.Select(x => x.ParentId).FirstOrDefault() != office.TypeId)
             {
-                return new ResultWithMessage { Success = false, Message = "Not Eligible Speicality !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Not Eligible Speicality !!!",
+                    MessageEnglish = "Not Eligible Speicality !!!",
+                    MessageArabic = "تخصص غير مؤهل !!!"
+                };
             }
 
             var lastdate = _db.Licenses?.OrderByDescending(x => x.CreatedDate)
@@ -187,7 +241,13 @@ namespace KFEOCH.Services
                                                             && x.IsApproved == false);
             if (lastdate != null && lastdate.CreatedDate >= model.StartDate)
             {
-                return new ResultWithMessage { Success = false, Message = "Dates Overlap !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Dates Overlap !!!",
+                    MessageEnglish = "Dates Overlap !!!",
+                    MessageArabic = "تداخل التواريخ !!!"
+                };
             }
 
             return new ResultWithMessage { Success = true };
@@ -198,7 +258,13 @@ namespace KFEOCH.Services
 
             if (id != model.Id)
             {
-                return new ResultWithMessage { Success = false, Message = "Invalid Model !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Invalid Model !!!",
+                    MessageEnglish = "Invalid Model !!!",
+                    MessageArabic = "نموذج غير صالح !!!"
+                };
             }
             var license = _db.Licenses?.Include(x => x.Specialities)
                                        .Include(x => x.Office)
@@ -206,14 +272,26 @@ namespace KFEOCH.Services
                                        .Include(x => x.Office)
                                        .ThenInclude(x => x.OfficePayments).FirstOrDefault(x => x.Id == id);
 
-            if (license == null || license.IsFirst == false)
+            if (license == null)
             {
-                return new ResultWithMessage { Success = false, Message = "License Not Found !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "License Not Found !!!",
+                    MessageEnglish = "License Not Found !!!",
+                    MessageArabic = "الترخيص غير موجود !!!"
+                };
             }
 
             if (!CheckLicense(model).Success)
             {
-                return new ResultWithMessage { Success = false, Message = CheckLicense(model).Message };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = CheckLicense(model).Message,
+                    MessageArabic = CheckLicense(model).MessageArabic,
+                    MessageEnglish = CheckLicense(model).MessageEnglish,
+                };
             }
             var office = license?.Office;
             ////////
@@ -235,13 +313,19 @@ namespace KFEOCH.Services
             license.IsRejected = false;
             _db.Entry(license).State = EntityState.Modified;
             ///////////////
-            PostFeesForNewOffice(office,license);
+            ///
+            if (license.IsFirst == true)
+            {
+                PostFeesForNewOffice(office, license);
+                office.IsActive = true;
+                office.EstablishmentDate = model.StartDate;
+                office.MembershipEndDate = new DateTime(model.StartDate.Year, 12, 31).AddYears(2);
+
+            }
+
             ///////////////
             office.EntityId = model.OfficeEntityId;
-            office.EstablishmentDate = model.StartDate;
             office.LicenseEndDate = model.EndDate;
-            office.MembershipEndDate = new DateTime(model.StartDate.Year, 12, 31).AddYears(2);
-            office.IsActive = true;
             office.IsVerified = true;
             var officeSpecialities = _db.OfficeSpecialities.Where(x => x.OfficeId == office.Id).ToList();
             foreach (var speciality in officeSpecialities)
@@ -274,18 +358,36 @@ namespace KFEOCH.Services
 
             if (id != model.Id)
             {
-                return new ResultWithMessage { Success = false, Message = "Invalid Model !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Invalid Model !!!",
+                    MessageEnglish = "Invalid Model !!!",
+                    MessageArabic = "نموذج غير صالح !!!"
+                };
             }
             var license = _db.Licenses?.Include(x => x.Specialities).Include(x => x.Office).FirstOrDefault(x => x.Id == id);
 
-            if (license == null || license.IsFirst == false)
+            if (license == null)
             {
-                return new ResultWithMessage { Success = false, Message = "License Not Found !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "License Not Found !!!",
+                    MessageEnglish = "License Not Found !!!",
+                    MessageArabic = "الترخيص غير موجود !!!"
+                };
             }
 
             if (!CheckLicense(model).Success)
             {
-                return new ResultWithMessage { Success = false, Message = CheckLicense(model).Message };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = CheckLicense(model).Message,
+                    MessageArabic = CheckLicense(model).MessageArabic,
+                    MessageEnglish = CheckLicense(model).MessageEnglish
+                };
             }
             var office = license?.Office;
             ////////
@@ -315,7 +417,13 @@ namespace KFEOCH.Services
             var office = _db.Offices.FirstOrDefault(x => x.Id == officeid);
             if (office == null)
             {
-                return new ResultWithMessage { Success = false, Message = "Office Not Found !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Office Not Found !!!",
+                    MessageEnglish = "Office Not Found !!!",
+                    MessageArabic = "المكتب غير موجود !!!"
+                };
             }
             if (office.MembershipEndDate == null)
             {
@@ -325,7 +433,13 @@ namespace KFEOCH.Services
                                                             && x.IsRejected == false);
                 if (firstlicense == null)
                 {
-                    return new ResultWithMessage { Success = false, Message = "First License Not Found !!!" };
+                    return new ResultWithMessage
+                    {
+                        Success = false,
+                        Message = "First License Not Found !!!",
+                        MessageEnglish = "First License Not Found !!!",
+                        MessageArabic = "الترخيص الأول غير موجود !!!"
+                    };
                 }
                 var notfirstlicense = _db.Licenses.FirstOrDefault(x => x.OfficeId == officeid
                                                                 && x.IsFirst == false
@@ -334,7 +448,13 @@ namespace KFEOCH.Services
                                                                 && x.IsRejected == false);
                 if (notfirstlicense != null)
                 {
-                    return new ResultWithMessage { Success = false, Message = "Frist Fees Not Eligible !!!" };
+                    return new ResultWithMessage
+                    {
+                        Success = false,
+                        Message = "Frist Fees Not Eligible !!!",
+                        MessageEnglish = "Frist Fees Not Eligible !!!",
+                        MessageArabic = "الرسوم الأولى غير مؤهلة !!!"
+                    };
                 }
                 var DefaultFirstRegistrationYears = int.Parse(_configuration.GetValue<string>("DefaultFirstRegistrationYears"));
                 var fees = new List<OfficePayment>();
@@ -347,6 +467,8 @@ namespace KFEOCH.Services
                     PaymentDate = DateTime.UtcNow,
                     Amount = 100,
                     IsPaid = false,
+                    YearsCount = 0,
+                    MembershipEndDate = null,
                 });
                 var YearlyFees = firstlicense.OfficeEntity.YearlyFees;
                 var period = TimeZoneInfo.ConvertTimeFromUtc(firstlicense.StartDate, timezone).Month < 7 ? DefaultFirstRegistrationYears : DefaultFirstRegistrationYears - 0.5;
@@ -361,6 +483,7 @@ namespace KFEOCH.Services
                     Amount = fee,
                     IsPaid = false,
                     YearsCount = period,
+                    MembershipEndDate = new DateTime(firstlicense.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
                 });
                 return new ResultWithMessage
                 {
@@ -369,7 +492,9 @@ namespace KFEOCH.Services
                     {
                         StatusNameEnglish = "New",
                         StatusNameArabic = "مكتب جديد",
-                        EndDate = office.MembershipEndDate,
+                        CurrentMembershipEndDate = office.MembershipEndDate,
+                        NextMembershipEndDate = new DateTime(firstlicense.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
+                        TotalAmount = fees.Sum(x => x.Amount),
                         Payments = fees
                     }
                 };
@@ -383,7 +508,9 @@ namespace KFEOCH.Services
                     {
                         StatusNameEnglish = office.MembershipEndDate < DateTime.UtcNow ? "In Active" : "Active",
                         StatusNameArabic = office.MembershipEndDate < DateTime.UtcNow ? "غير فعال" : "فعال",
-                        EndDate = office.MembershipEndDate,
+                        CurrentMembershipEndDate = office.MembershipEndDate,
+                        NextMembershipEndDate = null,
+                        TotalAmount = 0,
                         Payments = new List<OfficePayment>()
                     }
                 };
@@ -391,17 +518,111 @@ namespace KFEOCH.Services
 
         }
 
-        private ResultWithMessage PostFeesForNewOffice(Office office,License license)
+        public ResultWithMessage CalculationFeesForNewOfficeByLisense(License model)
+        {
+            var office = _db.Offices.FirstOrDefault(x => x.Id == model.OfficeId);
+            var entity = _db.OfficeEntities.FirstOrDefault(x => x.Id == model.OfficeEntityId);
+            if (office == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Office Not Found !!!",
+                    MessageEnglish = "Office Not Found !!!",
+                    MessageArabic = "المكتب غير موجود !!!"
+                };
+            }
+            if (entity == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Entity Not Found !!!",
+                    MessageEnglish = "Entity Not Found !!!",
+                    MessageArabic = "الكيان غير موجود !!!"
+                };
+            }
+            if (office.MembershipEndDate == null)
+            {
+                var DefaultFirstRegistrationYears = int.Parse(_configuration.GetValue<string>("DefaultFirstRegistrationYears"));
+                var fees = new List<OfficePayment>();
+                fees.Add(new OfficePayment
+                {
+                    OfficeId = office.Id,
+                    TypeId = 1,
+                    RequestNameArabic = "رسم انتساب ",
+                    RequestNameEnglish = "Registration Fees",
+                    PaymentDate = DateTime.UtcNow,
+                    Amount = 100,
+                    IsPaid = false,
+                    YearsCount = 0,
+                    MembershipEndDate = null,
+                });
+                var YearlyFees = entity.YearlyFees;
+                var period = TimeZoneInfo.ConvertTimeFromUtc(model.StartDate, timezone).Month < 7 ? DefaultFirstRegistrationYears : DefaultFirstRegistrationYears - 0.5;
+                var fee = period * YearlyFees;
+                fees.Add(new OfficePayment
+                {
+                    OfficeId = office.Id,
+                    TypeId = 1,
+                    RequestNameArabic = "رسوم الاشتراك الأول لمدة (" + period + ") سنوات",
+                    RequestNameEnglish = "First Registration Fees For (" + period + ") Years",
+                    PaymentDate = DateTime.UtcNow,
+                    Amount = fee,
+                    IsPaid = false,
+                    YearsCount = period,
+                    MembershipEndDate = new DateTime(model.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
+                });
+                return new ResultWithMessage
+                {
+                    Success = true,
+                    Result = new OfficePaymentViewModel
+                    {
+                        StatusNameEnglish = "New",
+                        StatusNameArabic = "مكتب جديد",
+                        CurrentMembershipEndDate = office.MembershipEndDate,
+                        NextMembershipEndDate = new DateTime(model.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
+                        TotalAmount = fees.Sum(x => x.Amount),
+                        Payments = fees
+                    }
+                };
+            }
+            else
+            {
+                return new ResultWithMessage
+                {
+                    Success = true,
+                    Result = new OfficePaymentViewModel
+                    {
+                        StatusNameEnglish = office.MembershipEndDate < DateTime.UtcNow ? "In Active" : "Active",
+                        StatusNameArabic = office.MembershipEndDate < DateTime.UtcNow ? "غير فعال" : "فعال",
+                        CurrentMembershipEndDate = office.MembershipEndDate,
+                        NextMembershipEndDate = null,
+                        TotalAmount = 0,
+                        Payments = new List<OfficePayment>()
+                    }
+                };
+            }
+
+        }
+
+        private ResultWithMessage PostFeesForNewOffice(Office office, License license)
         {
             if (office.MembershipEndDate == null)
             {
-                var firstlicense =  license.IsFirst == true
+                var firstlicense = license.IsFirst == true
                                                             && license.IsPending == false
                                                             && license.IsApproved == true
                                                             && license.IsRejected == false;
                 if (!firstlicense)
                 {
-                    return new ResultWithMessage { Success = false, Message = "First License Not Found !!!" };
+                    return new ResultWithMessage
+                    {
+                        Success = false,
+                        Message = "First License Not Found !!!",
+                        MessageEnglish = "First License Not Found !!!",
+                        MessageArabic = "الترخيص الأول غير موجود !!!"
+                    };
                 }
                 var notfirstlicense = license.IsFirst == false
                                                                 && license.IsPending == false
@@ -409,7 +630,13 @@ namespace KFEOCH.Services
                                                                 && license.IsRejected == false;
                 if (notfirstlicense)
                 {
-                    return new ResultWithMessage { Success = false, Message = "First Fees Not Eligible !!!" };
+                    return new ResultWithMessage
+                    {
+                        Success = false,
+                        Message = "First License Not Found !!!",
+                        MessageEnglish = "First License Not Found !!!",
+                        MessageArabic = "الترخيص الأول غير موجود !!!"
+                    };
                 }
                 var DefaultFirstRegistrationYears = int.Parse(_configuration.GetValue<string>("DefaultFirstRegistrationYears"));
                 var fees = new List<OfficePayment>();
@@ -421,7 +648,8 @@ namespace KFEOCH.Services
                     RequestNameEnglish = "Registration Fees",
                     PaymentDate = DateTime.UtcNow,
                     Amount = 100,
-                    YearsCount = 1,
+                    YearsCount = 0,
+                    MembershipEndDate = null,
                     IsPaid = true,
                 });
                 var YearlyFees = license.OfficeEntity.YearlyFees;
@@ -436,16 +664,23 @@ namespace KFEOCH.Services
                     PaymentDate = DateTime.UtcNow,
                     Amount = fee,
                     YearsCount = period,
+                    MembershipEndDate = new DateTime(license.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
                     IsPaid = true,
+
                 });
                 office.OfficePayments = fees;
             }
             else
             {
-                return new ResultWithMessage { Success = false, Message = "No Fees Posted" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "No Fees Posted !!!",
+                    MessageEnglish = "No Fees Posted !!!",
+                    MessageArabic = "لم يتم إضافة أي رسوم !!!"
+                };
             }
-            //_db.SaveChanges();
-            return new ResultWithMessage { Success = true, Result = office};
+            return new ResultWithMessage { Success = true, Result = office };
         }
 
         public ResultWithMessage GetAllPendingLicenses()
@@ -458,16 +693,29 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Result = licenses };
 
         }
+
         public async Task<ResultWithMessage> RejectLicense(int id)
         {
             var license = _db.Licenses.Include(x => x.Specialities).FirstOrDefault(x => x.Id == id);
             if (license == null)
             {
-                return new ResultWithMessage { Success = false, Message = "License Not Found !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "License Not Found !!!",
+                    MessageEnglish = "License Not Found !!!",
+                    MessageArabic = "الترخيص غير موجود !!!"
+                };
             }
             if (license.IsPending == false)
             {
-                return new ResultWithMessage { Success = false, Message = "Cant Reject License !!!" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Can't Reject License !!!",
+                    MessageEnglish = "Can't Reject License !!!",
+                    MessageArabic = "لا يمكن رفض الترخيص !!!"
+                };
             }
             license.Specialities.Clear();
             license.IsRejected = true;
@@ -482,6 +730,7 @@ namespace KFEOCH.Services
             _db.SaveChanges();
             return new ResultWithMessage { Success = true };
         }
+
         public ResultWithMessage CalculationFeesForRenew(int officeid, bool ispaid)
         {
             var office = _db.Offices?.Include(x => x.Entity).FirstOrDefault(x => x.Id == officeid);
@@ -530,24 +779,34 @@ namespace KFEOCH.Services
                     Success = false,
                     Message = "Office Last Approved License Not Found !!!",
                     MessageEnglish = "Office Last Approved License Not Found !!!",
-                    MessageArabic = "أخر رخصة موافق عليها غي موجودة"
+                    MessageArabic = "أخر رخصة موافق عليها غير موجودة"
 
                 };
             }
             var fees = new List<OfficePayment>();
-            if (office.MembershipEndDate.Value.Date < lastLicense.EndDate.Date)
+
+
+            var membershipenddate = office.MembershipEndDate.Value;
+            var membershipenddateutc = TimeZoneInfo.ConvertTimeFromUtc(office.MembershipEndDate.Value, timezone);
+            var lastLicenseenddate = lastLicense.EndDate;
+            var currentdate = DateTime.UtcNow;
+            var newmembershipenddate = new DateTime();
+
+            if (membershipenddate.Date < lastLicenseenddate.Date
+                && membershipenddateutc.Year >= currentdate.Year)
             {
 
                 fees.Add(new OfficePayment
                 {
                     OfficeId = office.Id,
                     TypeId = 2,
-                    RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (lastLicense.EndDate.Year - office.MembershipEndDate.Value.Year) + ") سنوات",
-                    RequestNameEnglish = "Missing Period Registration Fees For (" + (lastLicense.EndDate.Year - office.MembershipEndDate.Value.Year) + ") Years",
+                    RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") سنوات",
+                    RequestNameEnglish = "Missing Period Registration Fees For (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") Years",
                     PaymentDate = DateTime.UtcNow,
-                    Amount = office.Entity.YearlyFees * (lastLicense.EndDate.Year - office.MembershipEndDate.Value.Year),
-                    YearsCount = office.RenewYears,
-                    IsPaid = true,
+                    Amount = office.Entity.YearlyFees * (lastLicenseenddate.Year - membershipenddate.Year),
+                    YearsCount = 0,
+                    MembershipEndDate = null,
+                    IsPaid = ispaid,
                 });
 
 
@@ -560,10 +819,44 @@ namespace KFEOCH.Services
                     PaymentDate = DateTime.UtcNow,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
-                    IsPaid = true,
+                    MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (lastLicenseenddate.Year - membershipenddate.Year)),
+                    IsPaid = ispaid,
                 });
+                newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (lastLicenseenddate.Year - membershipenddate.Year));
             }
-            else
+            else if (membershipenddate.Date < lastLicenseenddate.Date
+               && membershipenddateutc.Year < currentdate.Year)
+            {
+                fees.Add(new OfficePayment
+                {
+                    OfficeId = office.Id,
+                    TypeId = 2,
+                    RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
+                    RequestNameEnglish = "Missing Period Registration Fees For (" + (currentdate.Year - membershipenddateutc.Year) + ") Years",
+                    PaymentDate = DateTime.UtcNow,
+                    Amount = office.Entity.YearlyFees * (currentdate.Year - membershipenddateutc.Year),
+                    YearsCount = 0,
+                    MembershipEndDate = null,
+                    IsPaid = ispaid,
+                });
+
+
+                fees.Add(new OfficePayment
+                {
+                    OfficeId = office.Id,
+                    TypeId = 2,
+                    RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+                    RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
+                    PaymentDate = DateTime.UtcNow,
+                    Amount = office.Entity.YearlyFees * office.RenewYears,
+                    YearsCount = office.RenewYears,
+                    MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year)),
+                    IsPaid = ispaid,
+                });
+                newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year));
+            }
+            if(membershipenddate.Date >= lastLicenseenddate.Date
+                && membershipenddateutc.Year >= currentdate.Year)
             {
                 fees.Add(new OfficePayment
                 {
@@ -574,20 +867,74 @@ namespace KFEOCH.Services
                     PaymentDate = DateTime.UtcNow,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
-                    IsPaid = true,
+                    MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears),
+                    IsPaid = ispaid,
                 });
+                newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears);
             }
+            else if(membershipenddate.Date >= lastLicenseenddate.Date
+                && membershipenddateutc.Year < currentdate.Year)
+            {
+                fees.Add(new OfficePayment
+                {
+                    OfficeId = office.Id,
+                    TypeId = 2,
+                    RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
+                    RequestNameEnglish = "Missing Period Registration Fees For (" + (currentdate.Year - membershipenddateutc.Year) + ") Years",
+                    PaymentDate = DateTime.UtcNow,
+                    Amount = office.Entity.YearlyFees * (currentdate.Year - membershipenddateutc.Year),
+                    YearsCount = 0,
+                    MembershipEndDate = null,
+                    IsPaid = ispaid,
+                });
 
+
+                fees.Add(new OfficePayment
+                {
+                    OfficeId = office.Id,
+                    TypeId = 2,
+                    RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+                    RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
+                    PaymentDate = DateTime.UtcNow,
+                    Amount = office.Entity.YearlyFees * office.RenewYears,
+                    YearsCount = office.RenewYears,
+                    MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year)),
+                    IsPaid = ispaid,
+                });
+                newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year));
+            }
             if (ispaid == true)
             {
-                office.MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears);
+                office.MembershipEndDate = newmembershipenddate;
                 office.IsActive = true;
                 office.IsVerified = true;
                 _db.OfficePayments.AddRange(fees);
                 _db.Entry(office).State = EntityState.Modified;
                 _db.SaveChanges();
             }
-            return new ResultWithMessage { Success = true, Result = fees };
+
+            return new ResultWithMessage
+            {
+                Success = true,
+                Result = new OfficePaymentViewModel
+                {
+                    StatusNameEnglish = office.MembershipEndDate < DateTime.UtcNow ? "In Active" : "Active",
+                    StatusNameArabic = office.MembershipEndDate < DateTime.UtcNow ? "غير فعال" : "فعال",
+                    CurrentMembershipEndDate = office.MembershipEndDate.Value,
+                    NextMembershipEndDate = fees.FirstOrDefault(x => x.RequestNameEnglish.StartsWith("Renew Registration Fees For")).MembershipEndDate,
+                    TotalAmount = fees.Sum(x => x.Amount),
+                    Payments = fees
+                }
+            };
+        }
+
+        public ResultWithMessage GetAllOfficePayments(int officeid)
+        {
+            var officepayments = _db.OfficePayments?
+                                 .Include(x => x.Type)
+                                 .Where(x => x.OfficeId == officeid)
+                                 .OrderByDescending(x => x.PaymentDate).Select(x => new OfficePaymentWithTypeViewModel(x)).ToList();
+            return new ResultWithMessage { Success = true, Result = officepayments };
         }
     }
 }

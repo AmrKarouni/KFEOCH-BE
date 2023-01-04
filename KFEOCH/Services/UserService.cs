@@ -13,6 +13,12 @@ using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using User.Management.Service.Models;
+using User.Management.Service.Services;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.Web;
 
 namespace KFEOCH.Services
 {
@@ -23,17 +29,24 @@ namespace KFEOCH.Services
         private readonly JWT _jwt;
         private readonly ApplicationDbContext _db;
         private readonly IConfiguration _configuration;
-        public UserService(UserManager<ApplicationUser> userManager, 
+        private readonly IEmailService _emailService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public UserService(UserManager<ApplicationUser> userManager,
                            RoleManager<IdentityRole> roleManager,
                            IOptions<JWT> jwt,
                            ApplicationDbContext db,
-                           IConfiguration configuration)
+                           IConfiguration configuration,
+                           IEmailService emailService,
+                           IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _jwt = jwt.Value;
             _roleManager = roleManager;
             _db = db;
             _configuration = configuration;
+            _emailService = emailService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public ApplicationUser GetById(string id)
         {
@@ -89,7 +102,7 @@ namespace KFEOCH.Services
         {
             var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
             var officeTypeId = _db.OfficeTypes.Where(o => o.IsAdmin).Select(x => x.Id).FirstOrDefault();
-            var maxlicenseUser= _db.Users.Where(u => u.OfficeTypeId == officeTypeId).OrderByDescending(x => x.LicenseId).FirstOrDefault();
+            var maxlicenseUser = _db.Users.Where(u => u.OfficeTypeId == officeTypeId).OrderByDescending(x => x.LicenseId).FirstOrDefault();
             var licenseId = maxlicenseUser == null ? 0 : maxlicenseUser.LicenseId;
             if (userWithSameEmail != null)
             {
@@ -113,20 +126,24 @@ namespace KFEOCH.Services
             if (result.Succeeded)
             {
 
-                await _userManager.AddToRoleAsync(user, Authorization.admin_role.ToString());
+                await _userManager.AddToRoleAsync(user, KFEOCH.Constants.Authorization.admin_role.ToString());
                 return new ResultWithMessage { Success = true, Message = $@"User {model.UserName} has been registered!" };
             }
-            return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
+            else
+            {
+                return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
+            }
+            
 
         }
 
         private string InitialOfficeAsync(OfficeRegistrationModel model, out Office office)
         {
 
-            var emailExist =  CheckOfficeEmail(model.Email);
-            var userIdExist =  CheckOfficeUserId(model.OfficeTypeId.ToString(), model.LicenseId.ToString());
-            var nameArabicExist =  CheckOfficeNameArabic(model.NameArabic);
-            var nameEglishExist =  CheckOfficeNameEnglish(model.NameEnglish);
+            var emailExist = CheckOfficeEmail(model.Email);
+            var userIdExist = CheckOfficeUserId(model.OfficeTypeId.ToString(), model.LicenseId.ToString());
+            var nameArabicExist = CheckOfficeNameArabic(model.NameArabic);
+            var nameEglishExist = CheckOfficeNameEnglish(model.NameEnglish);
             if (emailExist.Result.Success)
             {
                 office = null;
@@ -196,7 +213,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = isOfficeCreated };
             }
-            
+
             var type = _db.OfficeTypes?.Find(model.OfficeTypeId);
             var office = new Office(model);
             office.IsLocal = type?.IsLocal;
@@ -226,27 +243,46 @@ namespace KFEOCH.Services
             {
 
                 await _userManager.AddToRoleAsync(user, Authorization.office_role.ToString());
-                return new ResultWithMessage { Success = true, Message = $@"User { model.NameEnglish } has been registered!!"};
 
-                //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                //var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, email = user.Email }, Request.Scheme);
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                string tokenHtmlVersion = HttpUtility.UrlEncode(token);
+                var request = _httpContextAccessor.HttpContext.Request;
+                string link = request.Scheme + "://" +
+                    request.Host + "/api/Account/confirm-email?email=" + user.Email +
+                    "&token="+ tokenHtmlVersion;
 
-                //var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink, null);
-                //await _emailSender.SendEmailAsync(message);
+                var body = (
+                    "Dear Mr. / Ms. "+  model.NameEnglish +", \n" +
+                    "You have been sent this email because you created an account on our website.\n" +
+                    "Please click on <a href =\"" + link + "\"> this link </a> to confirm your email address is correct. ");
+                var message =
+                            new Message(new string[]
+                            { user.Email! }, "Confirmation Email From KFEOCH", body);
+                            _emailService.SendEmail(message);
+
+                return new ResultWithMessage { Success = true, Message = $@"User {model.NameEnglish} has been registered!!" };
             }
-            return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault().Description };
+            else
+            {
+                return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault().Description };
+            }
 
         }
 
-        //public async Task<ResultWithMessage> ConfirmEmail(string token, string email)
-        //{
-        //    var user = await _userManager.FindByEmailAsync(email);
-        //    if (user == null)
-        //        return new ResultWithMessage { Success = false, Message = "Error" };
+        public async Task<ResultWithMessage> ConfirmEmail(string token, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return new ResultWithMessage { Success = false, Message = "User Not Found !!!" };
 
-        //    var result = await _userManager.ConfirmEmailAsync(user, token);
-        //    return new ResultWithMessage { Success = false, Message =  result.Succeeded ? nameof(ConfirmEmail) : "Error" };
-        //}
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                return new ResultWithMessage { Success = false, Message = result.ToString() };
+            }
+            return new ResultWithMessage { Success = true, Message = $"Email {email} Has Been Confirmed !!!" };
+        }
+
 
         public async Task<AuthenticationModel> AdminLoginAsync(AdminLoginModel model)
         {
@@ -301,10 +337,18 @@ namespace KFEOCH.Services
         {
             var authenticationModel = new AuthenticationModel();
             var user = await _userManager.FindByNameAsync("T" + model.OfficeTypeId + "L" + model.LicenseId);
+            
             if (user == null || !user.IsActive)
             {
                 authenticationModel.IsAuthenticated = false;
                 authenticationModel.Message = $@"Unavailable Or Deactivated Account!!!";
+                return authenticationModel;
+            }
+            var confimred = await _userManager.IsEmailConfirmedAsync(user);
+            if ( !confimred)
+            {
+                authenticationModel.IsAuthenticated = false;
+                authenticationModel.Message = $@"This Account Email Not Confirmed Yet !!!";
                 return authenticationModel;
             }
             if (await _userManager.CheckPasswordAsync(user, model.Password))
@@ -501,7 +545,7 @@ namespace KFEOCH.Services
             return new ResultWithMessage() { Success = true, Message = $@"Revoke Token Succeeded !!!" };
         }
 
-        public async Task<ResultWithMessage > AddNewRole(string roleName)
+        public async Task<ResultWithMessage> AddNewRole(string roleName)
         {
             var existRole = await _roleManager.FindByNameAsync(roleName);
             if (existRole != null)
@@ -522,7 +566,7 @@ namespace KFEOCH.Services
             var user = await _userManager.FindByNameAsync("T" + officeTypeId + "L" + LicenseId);
             if (user == null)
             {
-                return new ResultWithMessage { Success = false};
+                return new ResultWithMessage { Success = false };
             }
             return new ResultWithMessage { Success = true };
         }

@@ -23,5 +23,6 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> CheckOfficeNameArabic(string nameArbic);
         Task<ResultWithMessage> CheckOfficeNameEnglish(string nameEnglish);
         Task<ResultWithMessage> CheckOfficeEmail(string email);
+        Task<ResultWithMessage> ConfirmEmail(string token, string email);
     } 
 }
