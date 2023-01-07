@@ -19,6 +19,7 @@ namespace KFEOCH.Models
             RegistrationDate = DateTime.UtcNow;
             IsLocal = null;
             IsActive = true;
+            AgreeToTerms = model.AgreeToTerms;
         }
         public Office(Office model)
         {
@@ -86,7 +87,7 @@ namespace KFEOCH.Models
         public string? AutoNumberOne{ get; set; }
         public string? AutoNumberTwo { get; set; }
         public bool? IsLocal { get; set; }
-        public int RenewYears { get; set; } = 3;
+        public int RenewYears { get; set; } = 4;
         public virtual OfficeType? Type { get; set; }
         public virtual Area? Area { get; set; }
         public virtual Governorate? Governorate { get; set; }

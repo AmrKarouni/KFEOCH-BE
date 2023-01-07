@@ -9,6 +9,7 @@ namespace KFEOCH.Services.Interfaces
         ApplicationUser GetById(string id);
         Task<ResultWithMessage> AdminRegistrationAsync(AdminRegistrationModel model);
         Task<ResultWithMessage> OfficeRegistrationAsync(OfficeRegistrationModel model);
+        Task<ResultWithMessage> GenerateEmailConfirmTokenAsync(string email);
         Task<AuthenticationModel> AdminLoginAsync(AdminLoginModel model);
         Task<AuthenticationModel> OfficeLoginAsync(OfficeLoginModel model);
         Task<ResultWithMessage> AdminChangePasswordAsync(AdminChangePasswordModel model);

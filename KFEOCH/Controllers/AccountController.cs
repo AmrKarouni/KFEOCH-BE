@@ -3,6 +3,8 @@ using KFEOCH.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using User.Management.Service.Models;
+using User.Management.Service.Services;
 
 namespace KFEOCH.Controllers
 {
@@ -11,9 +13,11 @@ namespace KFEOCH.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
-        public AccountController(IUserService userService)
+        private readonly IEmailService _emailService;
+        public AccountController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
+            _emailService = emailService;
         }
         //[Authorize(Roles = "Admin, SuperUser")]
         [HttpPost("admin-register")]
@@ -46,11 +50,47 @@ namespace KFEOCH.Controllers
             {
                 return BadRequest(new { message = "Email Already Exist" });
             }
+            if (result.Success)
+            {
+                var res = await _userService.GenerateEmailConfirmTokenAsync(model.Email);
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token = res.Result, email = model.Email }, Request.Scheme);
+                var body = (
+                        "Dear Mr. / Ms. " + model.NameEnglish + ", \n" +
+                        "You have been sent this email because you created an account on our website.\n" +
+                        "Please click on <a href =\"" + confirmationLink + "\"> this link </a> to confirm your email address is correct. ");
+                var message =
+                            new Message(new string[]
+                            { model.Email! }, "Confirmation Email From KFEOCH", body);
+                _emailService.SendEmail(message);
+            }
+            
             return Ok(result);
         }
 
+        [HttpGet("resend-confirm-email")]
+        public async Task<ActionResult> ResendConfirmEmail(string email)
+        {
+            var generator = await _userService.GenerateEmailConfirmTokenAsync(email);
+            if (!generator.Success)
+            {
+                return BadRequest(generator.Message);
+            }
+            var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token = generator.Result, email = email }, Request.Scheme);
+            var body = (
+                    "Dear Mr. / Ms. , \n" +
+                    "You have been sent this email because you created an account on our website.\n" +
+                    "Please click on <a href =\"" + confirmationLink + "\"> this link </a> to confirm your email address is correct. ");
+            var message =
+                        new Message(new string[]
+                        { email! }, "Confirmation Email From KFEOCH", body);
+            _emailService.SendEmail(message);
+
+            return Ok();
+        }
+
+
         [HttpGet("confirm-email")]
-        public async Task<ActionResult> OfficeRegistrationAsync(string token,string email)
+        public async Task<ActionResult> ConfirmEmail(string token,string email)
         {
             var result = await _userService.ConfirmEmail(token,email);
             if (result.Success == false)

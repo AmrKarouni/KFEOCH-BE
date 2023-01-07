@@ -34,6 +34,17 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
+        [HttpPut("countries/{id}")]
+        public IActionResult PutCountry(int id, Country model)
+        {
+            var result = _dictionaryService.PutCountry(id, model);
+            if (result.Success == false)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
         [HttpGet("country-locations")]
         public IActionResult GetLocationsByCountryId(int id)
         {
@@ -64,6 +75,29 @@ namespace KFEOCH.Controllers
                 return BadRequest(new { message = "No Governorate Found!!!" });
             }
             return Ok(result);
+        }
+
+
+        //[HttpDelete("governorates/{id}")]
+        //public async Task<IActionResult> DeleteGovernorateAsync(int id)
+        //{
+        //    var result = await _dictionaryService.DeleteGovernorateAsync(id);
+        //    if (result.Success == false)
+        //    {
+        //        return BadRequest(new { message = result.Message });
+        //    }
+        //    return Ok(result.Message);
+        //}
+
+        [HttpPut("governorates/{id}")]
+        public IActionResult PutGovernorate(int id, Governorate model)
+        {
+            var result = _dictionaryService.PutGovernorate(id, model);
+            if (result.Success == false)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
         }
 
         [HttpGet("governorate-locations/{id}")]
@@ -98,6 +132,17 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
+        [HttpPut("areas/{id}")]
+        public IActionResult PutArea(int id,Area model)
+        {
+            var result = _dictionaryService.PutArea(id,model);
+            if (result.Success == false)
+            {
+                return BadRequest(new { message =result.Message });
+            }
+            return Ok(result.Result);
+        }
+
         [HttpGet("area-locations/{id}")]
         public IActionResult GetAreasByGovernorateId(int id)
         {
@@ -108,6 +153,8 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+        
+
 
         [HttpGet("certificate-entities")]
         public IActionResult GetAllCertificateEntity()
@@ -130,16 +177,29 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("certificate-entities/{id}")]
-        public IActionResult DeleteCertificateEntityAsync(int id)
+
+        [HttpPut("certificate-entities/{id}")]
+        public ActionResult PutCertificateEntity(int id,CertificateEntity model)
         {
-            var result = _dictionaryService.DeleteCertificateEntityAsync(id);
-            if (result == null)
+            var result =  _dictionaryService.PutCertificateEntity(id,model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Certificate Entity Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+
+
+        //[HttpDelete("certificate-entities/{id}")]
+        //public IActionResult DeleteCertificateEntityAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteCertificateEntityAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Certificate Entity Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("course-categories")]
         public IActionResult GetAllCourseCategories()
@@ -162,16 +222,26 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("course-categories/{id}")]
-        public IActionResult DeleteCourseCategoryAsync(int id)
+        [HttpPut("course-categories/{id}")]
+        public IActionResult PutCourseCategory(int id, CourseCategory model)
         {
-            var result = _dictionaryService.DeleteCourseCategoryAsync(id);
-            if (result == null)
+            var result =  _dictionaryService.PutCourseCategory(id, model);
+            if (result.Success == false)
             {
-                return BadRequest(new { message = "No Course Category Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("course-categories/{id}")]
+        //public IActionResult DeleteCourseCategoryAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteCourseCategoryAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Course Category Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("genders")]
         public IActionResult GetAllGenders()
@@ -205,16 +275,29 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-activities/{id}")]
-        public IActionResult DeleteOfficeActivityAsync(int id)
+
+        [HttpPut("office-activities/{id}")]
+        public IActionResult PutOfficeActivity(int id, Activity model)
         {
-            var result = _dictionaryService.DeleteOfficeActivityAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOfficeActivity(id, model);
+            if (result.Success == false)
             {
-                return BadRequest(new { message = "No Office Activity Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+
+
+        //[HttpDelete("office-activities/{id}")]
+        //public IActionResult DeleteOfficeActivityAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOfficeActivityAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Office Activity Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("office-type-activities/{id}")]
         public IActionResult GetAllOfficeActivitiesByOfficeTypeId(int id)
@@ -248,16 +331,27 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-entities/{id}")]
-        public IActionResult DeleteOfficeEntityAsync(int id)
+
+        [HttpPut("office-entities/{id}")]
+        public ActionResult PutOfficeEntity(int id, OfficeEntity model)
         {
-            var result = _dictionaryService.DeleteOfficeEntityAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOfficeEntity(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Office Entity Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("office-entities/{id}")]
+        //public IActionResult DeleteOfficeEntityAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOfficeEntityAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Office Entity Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("office-legal-entities")]
         public IActionResult GetAllOfficeLegalEntities()
@@ -280,16 +374,27 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-legal-entities/{id}")]
-        public IActionResult DeleteOfficeLegalEntityAsync(int id)
+        [HttpPut("office-legal-entities/{id}")]
+        public IActionResult PutOfficeLegalEntity(int id, OfficeLegalEntity model)
         {
-            var result = _dictionaryService.DeleteOfficeLegalEntityAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOfficeLegalEntity(id,model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Office Legal Entity Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+
+        //[HttpDelete("office-legal-entities/{id}")]
+        //public IActionResult DeleteOfficeLegalEntityAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOfficeLegalEntityAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Office Legal Entity Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
 
         [HttpGet("office-owner-specialities")]
@@ -313,16 +418,29 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-owner-specialities/{id}")]
-        public IActionResult DeleteOfficeOwnerSpecialityAsync(int id)
+
+        [HttpPut("office-owner-specialities/{id}")]
+        public ActionResult PutOfficeOwnerSpeciality(int id, OfficeOwnerSpeciality model)
         {
-            var result = _dictionaryService.DeleteOfficeOwnerSpecialityAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOfficeOwnerSpeciality(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Office Legal Entity Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+
+
+        //[HttpDelete("office-owner-specialities/{id}")]
+        //public IActionResult DeleteOfficeOwnerSpecialityAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOfficeOwnerSpecialityAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Office Legal Entity Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("office-specialities")]
         public IActionResult GetAllOfficeSpecialities()
@@ -345,16 +463,26 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-specialities/{id}")]
-        public IActionResult DeleteOfficeSpecialityAsync(int id)
+        [HttpPut("office-specialities/{id}")]
+        public ActionResult PutOfficeSpeciality(int id, Speciality model)
         {
-            var result = _dictionaryService.DeleteOfficeSpecialityAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOfficeSpeciality(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Office Speciality Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("office-specialities/{id}")]
+        //public IActionResult DeleteOfficeSpecialityAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOfficeSpecialityAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Office Speciality Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("office-type-specialities/{id}")]
         public IActionResult GetAllOfficeSpecialitiesByOfficeTypeId(int id)
@@ -388,16 +516,27 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-statuses/{id}")]
-        public IActionResult DeleteOfficeStatusAsync(int id)
+
+        [HttpPut("office-statuses/{id}")]
+        public ActionResult PutOfficeStatus(int id, OfficeStatus model)
         {
-            var result = _dictionaryService.DeleteOfficeStatusAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOfficeStatus(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Office Status Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("office-statuses/{id}")]
+        //public IActionResult DeleteOfficeStatusAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOfficeStatusAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Office Status Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("office-types")]
         public IActionResult GetAllOfficeTypes()
@@ -420,16 +559,27 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-types/{id}")]
-        public IActionResult DeleteOfficeTypeAsync(int id)
+
+        [HttpPut("office-types/{id}")]
+        public ActionResult PutOfficeType(int id, OfficeType model)
         {
-            var result = _dictionaryService.DeleteOfficeTypeAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOfficeType(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Office Type Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("office-types/{id}")]
+        //public IActionResult DeleteOfficeTypeAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOfficeTypeAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Office Type Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("office-type-details/{id}")]
         public IActionResult GetAllOfficeTypesWithDetials(int id)
@@ -441,6 +591,7 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
+
 
         [HttpGet("office-document-types")]
         public IActionResult GetAllOfficeDocumentTypes()
@@ -463,16 +614,27 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-document-types/{id}")]
-        public IActionResult DeleteOfficeDocumentTypeAsync(int id)
+
+        [HttpPut("office-document-types/{id}")]
+        public ActionResult PutOfficeDocumentType(int id, OfficeDocumentType model)
         {
-            var result = _dictionaryService.DeleteOfficeDocumentTypeAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOfficeDocumentType(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Office Document Type Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("office-document-types/{id}")]
+        //public IActionResult DeleteOfficeDocumentTypeAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOfficeDocumentTypeAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Office Document Type Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("owner-document-types")]
         public IActionResult GetAllOwnerDocumentTypes()
@@ -495,16 +657,29 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("owner-document-types/{id}")]
-        public IActionResult DeleteOwnerDocumentTypeAsync(int id)
+
+        [HttpPut("owner-document-types/{id}")]
+        public ActionResult PutOwnerDocumentType(int id, OwnerDocumentType model)
         {
-            var result = _dictionaryService.DeleteOwnerDocumentTypeAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOwnerDocumentType(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Owner Document Type Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+
+        //[HttpDelete("owner-document-types/{id}")]
+        //public IActionResult DeleteOwnerDocumentTypeAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOwnerDocumentTypeAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Owner Document Type Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
+
 
         [HttpGet("contact-types")]
         public IActionResult GetAllContactTypes()
@@ -527,16 +702,27 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("contact-types/{id}")]
-        public async Task<IActionResult> DeleteContactTypeAsync(int id)
+
+        [HttpPut("contact-types/{id}")]
+        public ActionResult PutContactType(int id, ContactType model)
         {
-            var result = await _dictionaryService.DeleteContactTypeAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutContactType(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Contact Type Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("contact-types/{id}")]
+        //public async Task<IActionResult> DeleteContactTypeAsync(int id)
+        //{
+        //    var result = await _dictionaryService.DeleteContactTypeAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Contact Type Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("payment-types")]
         public IActionResult GetAllPaymentTypes()
@@ -559,16 +745,27 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("payment-types/{id}")]
-        public IActionResult DeletePaymentTypeAsync(int id)
+
+        [HttpPut("payment-types/{id}")]
+        public ActionResult PutPaymentType(int id, PaymentType model)
         {
-            var result = _dictionaryService.DeletePaymentTypeAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutPaymentType(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Payment Type Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("payment-types/{id}")]
+        //public IActionResult DeletePaymentTypeAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeletePaymentTypeAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Payment Type Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
 
         [HttpGet("request-types")]
         public IActionResult GetAllRequestTypes()
@@ -591,10 +788,32 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("request-types/{id}")]
-        public IActionResult DeleteRequestTypeAsync(int id)
+
+        [HttpPut("request-types/{id}")]
+        public ActionResult PutRequestType(int id, RequestType model)
         {
-            var result = _dictionaryService.DeleteRequestTypeAsync(id);
+            var result = _dictionaryService.PutRequestType(id, model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        //[HttpDelete("request-types/{id}")]
+        //public IActionResult DeleteRequestTypeAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteRequestTypeAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Request Type Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
+
+        [HttpGet("request-types/{id}")]
+        public IActionResult GetAllRequestTypesByOfficeTypeId(int id)
+        {
+            var result = _dictionaryService.GetAllRequestTypesByOfficeTypeId(id);
             if (result == null)
             {
                 return BadRequest(new { message = "No Request Type Found!!!" });
@@ -602,16 +821,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpGet("request-types/{typeid}")]
-        public IActionResult GetAllRequestTypesByOfficeTypeId(int typeid)
-        {
-            var result = _dictionaryService.GetAllRequestTypesByOfficeTypeId(typeid);
-            if (result == null)
-            {
-                return BadRequest(new { message = "No Request Type Found!!!" });
-            }
-            return Ok(result);
-        }
+
 
         [HttpGet("office-owner-positions")]
         public IActionResult GetAllOwnerPositionTypes()
@@ -634,16 +844,29 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
-        [HttpDelete("office-owner-positions/{id}")]
-        public IActionResult DeleteOwnerPositionTypeAsync(int id)
+
+        [HttpPut("office-owner-positions/{id}")]
+        public ActionResult PutOwnerPositionType(int id, OwnerPositionType model)
         {
-            var result = _dictionaryService.DeleteOwnerPositionTypeAsync(id);
-            if (result == null)
+            var result = _dictionaryService.PutOwnerPositionType(id, model);
+            if (!result.Success)
             {
-                return BadRequest(new { message = "No Owner Position Type Found!!!" });
+                return BadRequest(new { message = result.Message });
             }
-            return Ok(result);
+            return Ok(result.Result);
         }
+        //[HttpDelete("office-owner-positions/{id}")]
+        //public IActionResult DeleteOwnerPositionTypeAsync(int id)
+        //{
+        //    var result = _dictionaryService.DeleteOwnerPositionTypeAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "No Owner Position Type Found!!!" });
+        //    }
+        //    return Ok(result);
+        //}
+
+
 
         [HttpGet("nationalities")]
         public IActionResult GetAllNationalities()

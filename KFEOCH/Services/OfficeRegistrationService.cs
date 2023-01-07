@@ -319,7 +319,7 @@ namespace KFEOCH.Services
                 PostFeesForNewOffice(office, license);
                 office.IsActive = true;
                 office.EstablishmentDate = model.StartDate;
-                office.MembershipEndDate = new DateTime(model.StartDate.Year, 12, 31).AddYears(2);
+                office.MembershipEndDate = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(license.StartDate, timezone).Year, 12, 31).AddYears(2);
 
             }
 
@@ -483,7 +483,7 @@ namespace KFEOCH.Services
                     Amount = fee,
                     IsPaid = false,
                     YearsCount = period,
-                    MembershipEndDate = new DateTime(firstlicense.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
+                    MembershipEndDate = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(firstlicense.StartDate, timezone).Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
                 });
                 return new ResultWithMessage
                 {
@@ -493,7 +493,7 @@ namespace KFEOCH.Services
                         StatusNameEnglish = "New",
                         StatusNameArabic = "مكتب جديد",
                         CurrentMembershipEndDate = office.MembershipEndDate,
-                        NextMembershipEndDate = new DateTime(firstlicense.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
+                        NextMembershipEndDate = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(firstlicense.StartDate, timezone).Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
                         TotalAmount = fees.Sum(x => x.Amount),
                         Payments = fees
                     }
@@ -571,7 +571,7 @@ namespace KFEOCH.Services
                     Amount = fee,
                     IsPaid = false,
                     YearsCount = period,
-                    MembershipEndDate = new DateTime(model.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
+                    MembershipEndDate = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(model.StartDate, timezone).Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
                 });
                 return new ResultWithMessage
                 {
@@ -581,7 +581,7 @@ namespace KFEOCH.Services
                         StatusNameEnglish = "New",
                         StatusNameArabic = "مكتب جديد",
                         CurrentMembershipEndDate = office.MembershipEndDate,
-                        NextMembershipEndDate = new DateTime(model.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
+                        NextMembershipEndDate = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(model.StartDate, timezone).Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
                         TotalAmount = fees.Sum(x => x.Amount),
                         Payments = fees
                     }
@@ -664,7 +664,7 @@ namespace KFEOCH.Services
                     PaymentDate = DateTime.UtcNow,
                     Amount = fee,
                     YearsCount = period,
-                    MembershipEndDate = new DateTime(license.StartDate.Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
+                    MembershipEndDate = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(license.StartDate, timezone).Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
                     IsPaid = true,
 
                 });

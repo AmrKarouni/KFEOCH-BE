@@ -52,7 +52,6 @@ namespace KFEOCH.Services
         {
             return _db.Users.Find(id);
         }
-
         private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
@@ -217,8 +216,8 @@ namespace KFEOCH.Services
             var type = _db.OfficeTypes?.Find(model.OfficeTypeId);
             var office = new Office(model);
             office.IsLocal = type?.IsLocal;
-            office.IsActive = false;
-            office.IsVerified = false;
+            office.IsActive = true;
+            office.IsVerified = true;
             if ((bool)type?.IsLocal)
             {
                 var localcountry = _configuration.GetValue<string>("LocalCountry");
@@ -244,21 +243,21 @@ namespace KFEOCH.Services
 
                 await _userManager.AddToRoleAsync(user, Authorization.office_role.ToString());
 
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                string tokenHtmlVersion = HttpUtility.UrlEncode(token);
-                var request = _httpContextAccessor.HttpContext.Request;
-                string link = request.Scheme + "://" +
-                    request.Host + "/api/Account/confirm-email?email=" + user.Email +
-                    "&token="+ tokenHtmlVersion;
+                //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                //string tokenHtmlVersion = HttpUtility.UrlEncode(token);
+                //var request = _httpContextAccessor.HttpContext.Request;
+                //string link = request.Scheme + "://" +
+                //    request.Host + "/api/Account/confirm-email?email=" + user.Email +
+                //    "&token="+ tokenHtmlVersion;
 
-                var body = (
-                    "Dear Mr. / Ms. "+  model.NameEnglish +", \n" +
-                    "You have been sent this email because you created an account on our website.\n" +
-                    "Please click on <a href =\"" + link + "\"> this link </a> to confirm your email address is correct. ");
-                var message =
-                            new Message(new string[]
-                            { user.Email! }, "Confirmation Email From KFEOCH", body);
-                            _emailService.SendEmail(message);
+                //var body = (
+                //    "Dear Mr. / Ms. "+  model.NameEnglish +", \n" +
+                //    "You have been sent this email because you created an account on our website.\n" +
+                //    "Please click on <a href =\"" + link + "\"> this link </a> to confirm your email address is correct. ");
+                //var message =
+                //            new Message(new string[]
+                //            { user.Email! }, "Confirmation Email From KFEOCH", body);
+                //            _emailService.SendEmail(message);
 
                 return new ResultWithMessage { Success = true, Message = $@"User {model.NameEnglish} has been registered!!" };
             }
@@ -267,6 +266,29 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault().Description };
             }
 
+        }
+        public async Task<ResultWithMessage> GenerateEmailConfirmTokenAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new ResultWithMessage { Success = false, Message = "User Not Found !!!",
+                MessageEnglish = "User Not Found !!!",
+                    MessageArabic = "البريد الالكتروني غير موجود !!!",
+                };
+            }
+            if (user.EmailConfirmed == true)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Already Email Confirmed !!!",
+                    MessageEnglish = "Already Email Confirmed !!!",
+                    MessageArabic = "البريد الالكتروني موثق سابقاً !!!",
+                };
+            }
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return new ResultWithMessage { Success = true, Result = token };
         }
 
         public async Task<ResultWithMessage> ConfirmEmail(string token, string email)
@@ -283,7 +305,6 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Message = $"Email {email} Has Been Confirmed !!!" };
         }
 
-
         public async Task<AuthenticationModel> AdminLoginAsync(AdminLoginModel model)
         {
             var authenticationModel = new AuthenticationModel();
@@ -291,12 +312,15 @@ namespace KFEOCH.Services
             if (user == null || !user.IsActive)
             {
                 authenticationModel.IsAuthenticated = false;
+                authenticationModel.IsEmailConfirmed = false;
                 authenticationModel.Message = $@"No accounts registered with {model.UserName}";
+                authenticationModel.Message = $@"لا توجد حسابات مسجلة مع {model.UserName}";
                 return authenticationModel;
             }
             if (await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 authenticationModel.IsAuthenticated = true;
+                authenticationModel.IsEmailConfirmed = user.EmailConfirmed;
                 authenticationModel.Email = user.Email;
                 authenticationModel.UserName = user.UserName;
                 var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
@@ -329,7 +353,9 @@ namespace KFEOCH.Services
 
             }
             authenticationModel.IsAuthenticated = false;
+            authenticationModel.IsEmailConfirmed = false;
             authenticationModel.Message = $"Incorrect Credentials for user {user.Email}.";
+            authenticationModel.MessageArabic = $"بيانات اعتماد غير صحيحة للمستخدم {user.Email}.";
             return authenticationModel;
         }
 
@@ -341,20 +367,25 @@ namespace KFEOCH.Services
             if (user == null || !user.IsActive)
             {
                 authenticationModel.IsAuthenticated = false;
+                authenticationModel.IsEmailConfirmed = false;
                 authenticationModel.Message = $@"Unavailable Or Deactivated Account!!!";
+                authenticationModel.MessageArabic = $@"حساب غير متوفر أو معطل !!!";
                 return authenticationModel;
             }
             var confimred = await _userManager.IsEmailConfirmedAsync(user);
             if ( !confimred)
             {
                 authenticationModel.IsAuthenticated = false;
+                authenticationModel.IsEmailConfirmed = false;
                 authenticationModel.Message = $@"This Account Email Not Confirmed Yet !!!";
+                authenticationModel.MessageArabic = "البريد الإلكتروني للحساب لم يتم تأكيده بعد !!!";
                 return authenticationModel;
             }
             if (await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var office = _db.Offices?.FirstOrDefault(x => x.LicenseId == model.LicenseId && x.TypeId == model.OfficeTypeId);
                 authenticationModel.IsAuthenticated = true;
+                authenticationModel.IsEmailConfirmed = user.EmailConfirmed;
                 authenticationModel.Email = user.Email;
                 authenticationModel.UserName = user.UserName;
                 authenticationModel.OfficeId = office.Id;
@@ -388,7 +419,9 @@ namespace KFEOCH.Services
                 return authenticationModel;
             }
             authenticationModel.IsAuthenticated = false;
+            authenticationModel.IsEmailConfirmed = false;
             authenticationModel.Message = $"Incorrect Credentials for user {user.Email}.";
+            authenticationModel.MessageArabic = $"بيانات اعتماد غير صحيحة للمستخدم {user.Email}.";
             return authenticationModel;
         }
 
@@ -452,7 +485,9 @@ namespace KFEOCH.Services
             if (user == null)
             {
                 authenticationModel.IsAuthenticated = false;
-                authenticationModel.Message = $"Token did not match any users.";
+                authenticationModel.IsEmailConfirmed = false;
+                authenticationModel.Message = $"Token did not match any user !!!";
+                authenticationModel.MessageArabic = "الرمز المميز لا يتطابق مع أي مستخدم !!!";
                 return authenticationModel;
             }
 
@@ -461,7 +496,9 @@ namespace KFEOCH.Services
             if (!refreshToken.IsActive)
             {
                 authenticationModel.IsAuthenticated = false;
-                authenticationModel.Message = $"Token Not Active.";
+                authenticationModel.IsEmailConfirmed = false;
+                authenticationModel.Message = $"Token Not Active !!!";
+                authenticationModel.MessageArabic = "الرمز غير نشط !!!";
                 return authenticationModel;
             }
 
@@ -473,19 +510,25 @@ namespace KFEOCH.Services
             user.RefreshTokens.Add(newRefreshToken);
             _db.Update(user);
             _db.SaveChanges();
-
+            var office = _db.Offices?.FirstOrDefault(x => x.Id == user.OfficeId);
             //Generates new jwt
             authenticationModel.IsAuthenticated = true;
+            authenticationModel.IsAuthenticated = user.EmailConfirmed;
             JwtSecurityToken jwtSecurityToken = await CreateJwtToken(user);
             authenticationModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authenticationModel.Email = user.Email;
+            authenticationModel.UserName = user.UserName;
             authenticationModel.NameEnglish = user.UserName;
+            authenticationModel.OfficeId = office.Id;
+            authenticationModel.NameArabic = office.NameArabic;
+            authenticationModel.NameEnglish = office.NameEnglish;
             var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
             authenticationModel.Roles = rolesList.ToList();
             authenticationModel.TokenDurationM = _jwt.DurationInMinutes;
             authenticationModel.RefreshToken = newRefreshToken.Token;
             authenticationModel.RefreshTokenDurationM = 10 * 24 * 60;
             authenticationModel.RefreshTokenExpiry = newRefreshToken.Expires;
+
             return authenticationModel;
         }
 

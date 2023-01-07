@@ -3,7 +3,9 @@
     public class AuthenticationModel
     {
         public string? Message { get; set; }
+        public string? MessageArabic { get; set; }
         public bool IsAuthenticated { get; set; }
+        public bool IsEmailConfirmed { get; set; }
         public int? OfficeId { get; set; }
         public string? UserName { get; set; }
         public string? NameArabic { get; set; }

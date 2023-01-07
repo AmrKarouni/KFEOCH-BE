@@ -1,5 +1,6 @@
 ﻿using KFEOCH.Contexts;
 using KFEOCH.Models;
+using KFEOCH.Models.Binding;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,27 +20,39 @@ namespace KFEOCH.Services
         }
         public Office GetById(int id)
         {
-            var office = _db.Offices?.Find(id);
+            var office = _db.Offices?.FirstOrDefault(x => x.Id == id);
             var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
-            if (office.LogoUrl != null)
+            if (office != null && office.LogoUrl != null)
             {
                 office.LogoUrl = hostpath + office.LogoUrl;
             }
             return office ?? new Office();
         }
-        public async Task<ResultWithMessage> PutOfficeAsync(int id, Office model)
+        public ResultWithMessage PutOfficeAsync(int id, Office model)
         {
             if (id != model.Id)
             {
-                return new ResultWithMessage { Success = false, Message = $@"Bad Request" };
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = $@"Invalid Model !!!",
+                    MessageEnglish = $@"Invalid Model !!!",
+                    MessageArabic = "نموذج غير صالح !!!"
+                };
             }
-            var office = _db.Offices.Find(id);
-            var logourl = office.LogoUrl;
-            _db.Entry(office).State = EntityState.Detached;
+            var office = _db.Offices?.FirstOrDefault(x => x.Id == id);
             if (office == null)
             {
-                return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
-            } 
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = $@"Office Not Found !!!",
+                    MessageEnglish = $@"Office Not Found !!!",
+                    MessageArabic = $@"المكتب غير مووجود!!!"
+                };
+            }
+            var logourl = office.LogoUrl;
+            _db.Entry(office).State = EntityState.Detached;
             office = model;
             office.LogoUrl = logourl;
             _db.Entry(office).State = EntityState.Modified;
@@ -52,6 +65,57 @@ namespace KFEOCH.Services
             
             return new ResultWithMessage { Success = true, Result = office };
         }
+
+        public ResultWithMessage PutOfficeInfo(int id, OfficePutBindingModel model)
+        {
+            if (id != model.Id)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = $@"Invalid Model !!!",
+                    MessageEnglish = $@"Invalid Model !!!",
+                    MessageArabic = "نموذج غير صالح !!!"
+                };
+            }
+            var office = _db.Offices?.FirstOrDefault(x => x.Id == id);
+            if (office == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = $@"Office Not Found !!!",
+                    MessageEnglish = $@"Office Not Found !!!",
+                    MessageArabic = $@"المكتب غير مووجود!!!"
+                };
+            }
+            var logourl = office.LogoUrl;
+            _db.Entry(office).State = EntityState.Detached;
+
+            office.NameArabic = model.NameArabic;
+            office.NameEnglish = model.NameEnglish;
+            office.EmailTwo = model.EmailTwo;
+            office.PhoneNumber = model.PhoneNumber;
+            office.FaxNumber = model.FaxNumber;
+            office.MailBox = model.MailBox;
+            office.PostalCode = model.PostalCode;
+            office.Address = model.Address;
+            office.AreaId = model.AreaId;
+            office.GovernorateId = model.GovernorateId;
+            office.AutoNumberOne = model.AutoNumberOne;
+            office.AutoNumberTwo = model.AutoNumberTwo;
+            office.LogoUrl = logourl;
+            _db.Entry(office).State = EntityState.Modified;
+            _db.SaveChanges();
+            if (office.LogoUrl != null)
+            {
+                var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+                office.LogoUrl = hostpath + office.LogoUrl;
+            }
+
+            return new ResultWithMessage { Success = true, Result = office };
+        }
+
 
         public async Task<ResultWithMessage> UploadLogo(FileModel model)
         {
@@ -68,7 +132,7 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false, Message = $@"Upload Logo Failed !!!" };
             }
             office.LogoUrl = uploadResult.Message;
-            await PutOfficeAsync(officeId, office);
+            PutOfficeAsync(officeId, office);
             var result = new { LogoUrl = hostpath + uploadResult.Message };
             return new ResultWithMessage { Success = true, Result = result };
         }

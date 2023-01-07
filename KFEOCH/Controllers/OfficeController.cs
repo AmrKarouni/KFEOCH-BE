@@ -1,4 +1,5 @@
 ﻿using KFEOCH.Models;
+using KFEOCH.Models.Binding;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -36,14 +37,28 @@ namespace KFEOCH.Controllers
         public IActionResult PutOffice(int id, Office model)
         {
             var result = _officeService.PutOfficeAsync(id, model);
-            if (!result.Result.Success)
+            if (!result.Success)
             {
                 return BadRequest(new
                 {
-                    message = result.Result.Message
+                    message = result.Message
                 });
             }
-            return Ok(result.Result.Result);
+            return Ok(result.Result);
+        }
+
+        [HttpPut("update-info/{id}")]
+        public IActionResult PutOfficeInfo(int id, OfficePutBindingModel model)
+        {
+            var result = _officeService.PutOfficeInfo(id, model);
+            if (!result.Success)
+            {
+                return BadRequest(new
+                {
+                    message = result.Message
+                });
+            }
+            return Ok(result.Result);
         }
 
         [HttpPost("upload-logo")]
