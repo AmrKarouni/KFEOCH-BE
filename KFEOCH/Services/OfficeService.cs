@@ -4,6 +4,7 @@ using KFEOCH.Models.Binding;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace KFEOCH.Services
 {
@@ -12,7 +13,7 @@ namespace KFEOCH.Services
         private readonly ApplicationDbContext _db;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFileService _fileService;
-        public OfficeService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor,IFileService fileService)
+        public OfficeService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor, IFileService fileService)
         {
             _db = db;
             _httpContextAccessor = httpContextAccessor;
@@ -62,7 +63,7 @@ namespace KFEOCH.Services
                 var hostpath = $@"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
                 office.LogoUrl = hostpath + office.LogoUrl;
             }
-            
+
             return new ResultWithMessage { Success = true, Result = office };
         }
 
@@ -154,6 +155,96 @@ namespace KFEOCH.Services
             _db.Entry(office).State = EntityState.Modified;
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Message = "Logo Deleted !!!" };
+        }
+
+
+        public ResultWithMessage GetOfficesForAdmin(FilterModel model)
+        {
+            var list = new List<OfficeAdminViewModel>();
+            var offices = _db.Offices?.Include(x => x.Type)
+                                        .Include(x => x.Area)
+                                        .Include(x => x.Governorate)
+                                        .Include(x => x.Country)
+                                        .Include(x => x.Entity)
+                                        .Include(x => x.LegalEntity)
+                                        .Include(x => x.OfficeSpecialities)
+                                        .Include(x => x.OfficeActivities)
+                                        .Where(x => true).ToList();
+            if (model.Types?.Count() > 0)
+            {
+                offices = offices?.Where(x => model.Types.Contains(x.TypeId)).ToList();
+            }
+
+            if (model.Entities?.Count() > 0)
+            {
+                offices = offices.Where(x => model.Entities.Contains((int)x.EntityId)).ToList();
+            }
+
+            if (model.LegalEntities?.Count() > 0)
+            {
+                offices = offices.Where(x => model.LegalEntities.Contains((int)x.LegalEntityId)).ToList();
+            }
+
+            if (model.Specialities?.Count() > 0)
+            {
+                offices = offices.Where(x => x.OfficeSpecialities.Select(x => x.Id).Intersect(model.Specialities).Any()).ToList();
+            }
+
+            if (model.Activities?.Count() > 0)
+            {
+                offices = offices.Where(x => x.OfficeActivities.Select(x => x.Id).Intersect(model.Activities).Any()).ToList();
+            }
+            if (model.IsActive != null)
+            {
+                offices = offices.Where(x => x.IsActive == model.IsActive).ToList();
+            }
+
+            if (model.IsVerified != null)
+            {
+                offices = offices.Where(x => x.IsVerified == model.IsVerified).ToList();
+            } 
+            if (!string.IsNullOrEmpty(model.SearchQuery))
+            {
+                if (long.TryParse(model.SearchQuery, out long license))
+                {
+                    offices = offices?.Where(x => x.LicenseId == license).ToList();
+                }
+                else
+                {
+                    offices = offices?.Where(x => x.NameArabic.ToLower().Contains(model.SearchQuery.ToLower()) ||
+                                                 x.NameEnglish.ToLower().Contains(model.SearchQuery.ToLower()) ||
+                                                 (x.Area != null &&
+                                                                    (x.Area.NameArabic.ToLower().Contains(model.SearchQuery.ToLower()) ||
+                                                                     x.Area.NameEnglish.ToLower().Contains(model.SearchQuery.ToLower()))) ||
+                                                 (x.Governorate != null &&
+                                                                    (x.Governorate.NameArabic.ToLower().Contains(model.SearchQuery.ToLower()) ||
+                                                                     x.Governorate.NameEnglish.ToLower().Contains(model.SearchQuery.ToLower()))) ||
+                                                 (x.Country != null &&
+                                                                    (x.Country.NameArabic.ToLower().Contains(model.SearchQuery.ToLower()) ||
+                                                                     x.Country.NameEnglish.ToLower().Contains(model.SearchQuery.ToLower()))) ||
+                                                 x.Email.ToLower().Contains(model.SearchQuery.ToLower()) ||
+                                                 x.PhoneNumber.ToLower().Contains(model.SearchQuery.ToLower())).ToList();
+                }
+            }
+
+            var dataSize = offices.Count();
+            var sortProperty = typeof(OfficeAdminViewModel).GetProperty(model?.Sort ?? "Id");
+            if (model?.Order == "desc")
+            {
+                list = offices?.Select(o => new OfficeAdminViewModel(o)).OrderByDescending(x => sortProperty.GetValue(x)).ToList();
+            }
+            else
+            {
+                list = offices?.Select(o => new OfficeAdminViewModel(o)).OrderBy(x => sortProperty.GetValue(x)).ToList();
+            }
+
+            var result = list.Skip(model.PageSize * model.PageIndex).Take(model.PageSize).ToList();
+            return new ResultWithMessage
+            {
+                Success = true,
+                Message = "",
+                Result = new ObservableData(result, dataSize)
+            };
         }
 
     }

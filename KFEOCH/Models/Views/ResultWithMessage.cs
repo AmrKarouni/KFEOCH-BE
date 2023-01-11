@@ -25,4 +25,19 @@
         public string? MessageEnglish { get; set; }
         public Object? Result { get; set; }
     }
+
+
+    public class ObservableData
+    {
+        public ObservableData() { }
+
+        public ObservableData(object? data, int dataSize)
+        {
+            Data = data;
+            DataSize = dataSize;
+        }
+
+        public Object? Data { get; set; }
+        public int DataSize { get; set; }
+    }
 }

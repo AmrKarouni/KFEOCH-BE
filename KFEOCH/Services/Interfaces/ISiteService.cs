@@ -5,9 +5,12 @@ namespace KFEOCH.Services.Interfaces
 {
     public interface ISiteService
     {
-        List<Article> GetPublishedArticles(FilterModel model);
         List<SiteOfficeViewModel> GetOffices(FilterModel model);
-        Task<ResultWithMessage> PostPostTypeAsync(PostType model);
+        ResultWithMessage GetAllPostTypes();
+        Task<ResultWithMessage> AddPostTypeAsync(PostType model);
         Task<ResultWithMessage> DeletePostTypeAsync(int id);
+        Task<ResultWithMessage> AddPostAsync(PostBindingModel model);
+        Post GetPostById(int id);
+        ResultWithMessage GetAllPostsByTypeId(int id);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using KFEOCH.Models;
+using KFEOCH.Models.Site;
 using KFEOCH.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> UploadPdfFile(FileModel model, string path);
         Task<ResultWithMessage> UploadFile(OwnerFileModel model, string path);
         Task<ResultWithMessage> UploadFile(OfficeFileModel model, string path);
+        Task<ResultWithMessage> UploadPostImage(PostFileModel model, string path);
         FilePathModel GetFilePath(string fileurl);
         Task<ResultWithMessage> DeleteFile(string fileurl);
     }

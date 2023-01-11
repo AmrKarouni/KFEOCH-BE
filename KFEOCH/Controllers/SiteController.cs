@@ -18,16 +18,7 @@ namespace KFEOCH.Controllers
         {
             _siteService = siteService;
         }
-        [HttpPost("Articles")]
-        public IActionResult GetPublishedArticles(FilterModel model)
-        {
-            var result = _siteService.GetPublishedArticles(model);
-            if (result == null)
-            {
-                return BadRequest(new { message = "No Article Found!!!" });
-            }
-            return Ok(result);
-        }
+ 
 
         [HttpPost("Offices")]
         public IActionResult GetOffices(FilterModel model)
@@ -40,10 +31,10 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("post-type")]
-        public async Task<IActionResult> PostPostTypeAsync(PostType model)
+        [HttpPost("post-types")]
+        public async Task<IActionResult> AddPostTypeAsync(PostType model)
         {
-            var result = await _siteService.PostPostTypeAsync(model);
+            var result = await _siteService.AddPostTypeAsync(model);
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
@@ -51,7 +42,15 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
-        [HttpDelete("post-type/{id}")]
+        [HttpGet("post-types")]
+        public IActionResult GetAllPostTypes()
+        {
+            var result = _siteService.GetAllPostTypes();
+            
+            return Ok(result);
+        }
+
+        [HttpDelete("post-types/{id}")]
         public async Task<IActionResult> DeletePostTypeAsync(int id)
         {
             var result = await _siteService.DeletePostTypeAsync(id);
@@ -60,6 +59,38 @@ namespace KFEOCH.Controllers
                 return BadRequest(new { message = result.Message });
             }
             return Ok(result.Result);
+        }
+
+        [HttpPost("posts")]
+        public async Task<IActionResult> AddPos([FromForm] PostBindingModel model)
+        {
+            var result = await _siteService.AddPostAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+        [HttpGet("posts/{id}")]
+        public IActionResult GetPostById(int id)
+        {
+            var result = _siteService.GetPostById(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Post Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("all-posts/{id}")]
+        public IActionResult GetAllPostsByTypeId(int id)
+        {
+            var result = _siteService.GetAllPostsByTypeId(id);
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Post Found!!!" });
+            }
+            return Ok(result);
         }
     }
 }

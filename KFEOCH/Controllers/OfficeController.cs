@@ -149,5 +149,17 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Success);
         }
+
+        //admin
+        [HttpPost("filter")]
+        public IActionResult GetOfficesForAdmin(FilterModel model)
+        {
+            var result = _officeService.GetOfficesForAdmin(model);
+            if (result.Success == false)
+            {
+                return BadRequest(new { message = result.Message});
+            }
+            return Ok(result.Result);
+        }
     }
 }

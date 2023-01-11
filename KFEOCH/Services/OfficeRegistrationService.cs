@@ -640,13 +640,14 @@ namespace KFEOCH.Services
                 }
                 var DefaultFirstRegistrationYears = int.Parse(_configuration.GetValue<string>("DefaultFirstRegistrationYears"));
                 var fees = new List<OfficePayment>();
+                var paymentdate = DateTime.UtcNow;
                 fees.Add(new OfficePayment
                 {
                     OfficeId = office.Id,
                     TypeId = 1,
                     RequestNameArabic = "رسم انتساب ",
                     RequestNameEnglish = "Registration Fees",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = 100,
                     YearsCount = 0,
                     MembershipEndDate = null,
@@ -661,7 +662,7 @@ namespace KFEOCH.Services
                     TypeId = 1,
                     RequestNameArabic = "رسوم الاشتراك الأول لمدة (" + period + ") سنوات",
                     RequestNameEnglish = "First Registration Fees For (" + period + ") Years",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = fee,
                     YearsCount = period,
                     MembershipEndDate = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(license.StartDate, timezone).Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
@@ -790,6 +791,7 @@ namespace KFEOCH.Services
             var membershipenddateutc = TimeZoneInfo.ConvertTimeFromUtc(office.MembershipEndDate.Value, timezone);
             var lastLicenseenddate = lastLicense.EndDate;
             var currentdate = DateTime.UtcNow;
+            var paymentdate = DateTime.UtcNow;
             var newmembershipenddate = new DateTime();
 
             if (membershipenddate.Date < lastLicenseenddate.Date
@@ -802,7 +804,7 @@ namespace KFEOCH.Services
                     TypeId = 2,
                     RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") سنوات",
                     RequestNameEnglish = "Missing Period Registration Fees For (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") Years",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * (lastLicenseenddate.Year - membershipenddate.Year),
                     YearsCount = 0,
                     MembershipEndDate = null,
@@ -816,7 +818,7 @@ namespace KFEOCH.Services
                     TypeId = 2,
                     RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
                     RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
                     MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (lastLicenseenddate.Year - membershipenddate.Year)),
@@ -833,7 +835,7 @@ namespace KFEOCH.Services
                     TypeId = 2,
                     RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
                     RequestNameEnglish = "Missing Period Registration Fees For (" + (currentdate.Year - membershipenddateutc.Year) + ") Years",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * (currentdate.Year - membershipenddateutc.Year),
                     YearsCount = 0,
                     MembershipEndDate = null,
@@ -847,7 +849,7 @@ namespace KFEOCH.Services
                     TypeId = 2,
                     RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
                     RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
                     MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year)),
@@ -864,7 +866,7 @@ namespace KFEOCH.Services
                     TypeId = 2,
                     RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
                     RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
                     MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears),
@@ -881,7 +883,7 @@ namespace KFEOCH.Services
                     TypeId = 2,
                     RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
                     RequestNameEnglish = "Missing Period Registration Fees For (" + (currentdate.Year - membershipenddateutc.Year) + ") Years",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * (currentdate.Year - membershipenddateutc.Year),
                     YearsCount = 0,
                     MembershipEndDate = null,
@@ -895,7 +897,7 @@ namespace KFEOCH.Services
                     TypeId = 2,
                     RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
                     RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
                     MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year)),

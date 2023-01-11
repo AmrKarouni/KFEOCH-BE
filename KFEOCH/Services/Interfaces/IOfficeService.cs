@@ -11,5 +11,6 @@ namespace KFEOCH.Services.Interfaces
         ResultWithMessage PutOfficeInfo(int id, OfficePutBindingModel model);
         Task<ResultWithMessage> UploadLogo(FileModel model);
         Task<ResultWithMessage> DeleteLogoAsync(int id);
+        ResultWithMessage GetOfficesForAdmin(FilterModel model);
     }
 }

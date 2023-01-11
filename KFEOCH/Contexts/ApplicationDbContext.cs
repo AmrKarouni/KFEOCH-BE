@@ -27,7 +27,6 @@ namespace KFEOCH.Contexts
         public DbSet<OfficeOwnerSpeciality>? OfficeOwnerSpecialities { get; set; }
         public DbSet<OfficeOwner>? OfficeOwners { get; set; }
         public DbSet<OfficeStatus>? Statuses { get; set; }
-        public DbSet<Article>? Articles { get; set; }
         public DbSet<OfficeSpeciality>? OfficeSpecialities { get; set; }
         public DbSet<OfficeActivity>? OfficeActivities { get; set; }
         public DbSet<OfficeDocumentType>? OfficeDocumentTypes { get; set; }
@@ -41,11 +40,10 @@ namespace KFEOCH.Contexts
         public DbSet<OfficeRequest>? OfficeRequests { get; set; }
         public DbSet<OfficeDocument>? OfficeDocuments { get; set; }
         public DbSet<PostType>? PostTypes { get; set; }
+        public DbSet<Page>? Pages { get; set; }
         public DbSet<Post>? Posts { get; set; }
-        public DbSet<Section>? Sections { get; set; }
         public DbSet<OwnerPositionType>? OwnerPositionTypes { get; set; }
         public DbSet<Nationality>? Nationalities { get; set; }
-        public DbSet<OfficeLicense>? OfficeLicenses { get; set; }
         public DbSet<License>? Licenses { get; set; }
 
 
@@ -296,6 +294,17 @@ namespace KFEOCH.Contexts
                 .IsUnique();
             });
 
+            modelBuilder.Entity<Page>(entity =>
+            {
+                entity.HasIndex(e => new { e.TitleArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<Page>(entity =>
+            {
+                entity.HasIndex(e => new { e.TitleEnglish })
+                .IsUnique();
+            });
+
             modelBuilder.Entity<Post>(entity =>
             {
                 entity.HasIndex(e => new { e.TitleArabic })
@@ -307,17 +316,6 @@ namespace KFEOCH.Contexts
                 .IsUnique();
             });
 
-
-            modelBuilder.Entity<Section>(entity =>
-            {
-                entity.HasIndex(e => new { e.TitleArabic })
-                .IsUnique();
-            });
-            modelBuilder.Entity<Section>(entity =>
-            {
-                entity.HasIndex(e => new { e.TitleEnglish })
-                .IsUnique();
-            });
             modelBuilder.Entity<OwnerPositionType>(entity =>
             {
                 entity.HasIndex(e => new { e.NameArabic })

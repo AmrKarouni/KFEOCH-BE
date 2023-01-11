@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230108140142_office-relations01")]
+    partial class officerelations01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1220,6 +1222,59 @@ namespace KFEOCH.Migrations
                     b.ToTable("OfficeDocuments");
                 });
 
+            modelBuilder.Entity("KFEOCH.Models.OfficeLicense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DocumentUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsCanceled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsRejected")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OfficeId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("PaymentAmount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PaymentNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RegistrationEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RegistrationStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfficeId");
+
+                    b.HasIndex("PaymentTypeId");
+
+                    b.ToTable("OfficeLicenses");
+                });
+
             modelBuilder.Entity("KFEOCH.Models.OfficeOwner", b =>
                 {
                     b.Property<int>("Id")
@@ -1479,7 +1534,7 @@ namespace KFEOCH.Migrations
                     b.ToTable("OwnerDocuments");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Site.Page", b =>
+            modelBuilder.Entity("KFEOCH.Models.Site.Article", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1493,8 +1548,11 @@ namespace KFEOCH.Migrations
                     b.Property<string>("BodyEnglish")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("HeadlineArabic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HeadlineEnglish")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
@@ -1502,48 +1560,18 @@ namespace KFEOCH.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsPublished")
-                        .HasColumnType("bit");
+                    b.Property<DateTime?>("NewsDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("PublishDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("SubTitleArabic")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SubTitleEnglish")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ThumbnailUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TitleArabic")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("TitleEnglish")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool?>("ShowInHome")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TitleArabic")
-                        .IsUnique();
-
-                    b.HasIndex("TitleEnglish")
-                        .IsUnique();
-
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("Pages");
+                    b.ToTable("Articles");
                 });
 
             modelBuilder.Entity("KFEOCH.Models.Site.Post", b =>
@@ -1572,12 +1600,6 @@ namespace KFEOCH.Migrations
                     b.Property<bool>("IsPublished")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PageId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PostId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("PublishDate")
                         .HasColumnType("datetime2");
 
@@ -1585,9 +1607,6 @@ namespace KFEOCH.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubTitleEnglish")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ThumbnailUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TitleArabic")
@@ -1600,20 +1619,24 @@ namespace KFEOCH.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("thumbnailUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
-
-                    b.HasIndex("PageId");
-
-                    b.HasIndex("PostId");
 
                     b.HasIndex("TitleArabic")
                         .IsUnique();
 
                     b.HasIndex("TitleEnglish")
                         .IsUnique();
+
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Posts");
                 });
@@ -1657,6 +1680,58 @@ namespace KFEOCH.Migrations
                         .IsUnique();
 
                     b.ToTable("PostTypes");
+                });
+
+            modelBuilder.Entity("KFEOCH.Models.Site.Section", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("BodyArabic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BodyEnglish")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TitleArabic")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TitleEnglish")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("thumbnailUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("TitleArabic")
+                        .IsUnique();
+
+                    b.HasIndex("TitleEnglish")
+                        .IsUnique();
+
+                    b.ToTable("Sections");
                 });
 
             modelBuilder.Entity("LicenseSpeciality", b =>
@@ -2021,6 +2096,25 @@ namespace KFEOCH.Migrations
                     b.Navigation("Type");
                 });
 
+            modelBuilder.Entity("KFEOCH.Models.OfficeLicense", b =>
+                {
+                    b.HasOne("KFEOCH.Models.Office", "Office")
+                        .WithMany()
+                        .HasForeignKey("OfficeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KFEOCH.Models.Dictionaries.PaymentType", "PaymentType")
+                        .WithMany()
+                        .HasForeignKey("PaymentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Office");
+
+                    b.Navigation("PaymentType");
+                });
+
             modelBuilder.Entity("KFEOCH.Models.OfficeOwner", b =>
                 {
                     b.HasOne("KFEOCH.Models.Dictionaries.Gender", "Gender")
@@ -2126,10 +2220,10 @@ namespace KFEOCH.Migrations
                     b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Site.Page", b =>
+            modelBuilder.Entity("KFEOCH.Models.Site.Post", b =>
                 {
                     b.HasOne("KFEOCH.Models.Site.PostType", "Type")
-                        .WithMany("Pages")
+                        .WithMany("Posts")
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2137,19 +2231,15 @@ namespace KFEOCH.Migrations
                     b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Site.Post", b =>
+            modelBuilder.Entity("KFEOCH.Models.Site.Section", b =>
                 {
-                    b.HasOne("KFEOCH.Models.Site.Page", "Page")
-                        .WithMany("Posts")
-                        .HasForeignKey("PageId")
+                    b.HasOne("KFEOCH.Models.Site.Post", "Post")
+                        .WithMany("Sections")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KFEOCH.Models.Site.Post", null)
-                        .WithMany("Sections")
-                        .HasForeignKey("PostId");
-
-                    b.Navigation("Page");
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("LicenseSpeciality", b =>
@@ -2258,11 +2348,6 @@ namespace KFEOCH.Migrations
                     b.Navigation("Documents");
                 });
 
-            modelBuilder.Entity("KFEOCH.Models.Site.Page", b =>
-                {
-                    b.Navigation("Posts");
-                });
-
             modelBuilder.Entity("KFEOCH.Models.Site.Post", b =>
                 {
                     b.Navigation("Sections");
@@ -2270,7 +2355,7 @@ namespace KFEOCH.Migrations
 
             modelBuilder.Entity("KFEOCH.Models.Site.PostType", b =>
                 {
-                    b.Navigation("Pages");
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

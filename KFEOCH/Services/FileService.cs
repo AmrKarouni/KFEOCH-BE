@@ -3,6 +3,7 @@ using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
+using KFEOCH.Models.Site;
 
 namespace KFEOCH.Services
 {
@@ -158,6 +159,48 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Message = "/" + filePath };
         }
 
+        public async Task<ResultWithMessage> UploadPostImage(PostFileModel model, string path)
+        {
+            int MaxContentLength = 1024 * 1024 * 2; //Size = 2 MB
+            IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".jpeg", ".png"};
+            var fileHostServer = _configuration.GetValue<string>("FileHostServer");
+            if (model.Image == null)
+            {
+                return new ResultWithMessage { Success = false, Message = "No Image Found !!" };
+            }
+            var extension = model.Image.FileName.Substring(model.Image.FileName.LastIndexOf('.')).ToLower();
+            if (!AllowedFileExtensions.Contains(extension))
+            {
+                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .jpeg, .png" };
+            }
+            if (model.Image.Length > MaxContentLength)
+            {
+                return new ResultWithMessage { Success = false, Message = "Max Size Allowed is 2 M.B" };
+            }
+
+            var filename = model.PageId + ""
+                         + DateTime.UtcNow.Year + ""
+                         + DateTime.UtcNow.Month + ""
+                         + DateTime.UtcNow.Day + ""
+                         + DateTime.UtcNow.Hour + ""
+                         + DateTime.UtcNow.Minute + ""
+                         + DateTime.UtcNow.Second + ""
+                         + DateTime.UtcNow.Millisecond;
+            var filePath = Path.Combine(path + "/" + model.PageId +
+                //"/" + model.PostId +
+                "/" + filename +
+                extension);
+            var fullfilePath = Path.Combine(fileHostServer + "/", filePath);
+            string directory = Path.GetDirectoryName(fullfilePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            FileStream stream = new FileStream(fullfilePath, FileMode.Create);
+            await model.Image.CopyToAsync(stream);
+            stream.Close();
+            return new ResultWithMessage { Success = true, Message = "/" + filePath };
+        }
         public FilePathModel GetFilePath(string fileurl)
         {
             var path = new FilePathModel();

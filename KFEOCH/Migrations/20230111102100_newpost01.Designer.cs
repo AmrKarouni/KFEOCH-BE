@@ -4,6 +4,7 @@ using KFEOCH.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KFEOCH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230111102100_newpost01")]
+    partial class newpost01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1514,9 +1516,6 @@ namespace KFEOCH.Migrations
                     b.Property<string>("SubTitleEnglish")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ThumbnailUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TitleArabic")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1531,6 +1530,9 @@ namespace KFEOCH.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("thumbnailUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1587,9 +1589,6 @@ namespace KFEOCH.Migrations
                     b.Property<string>("SubTitleEnglish")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ThumbnailUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TitleArabic")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1601,6 +1600,9 @@ namespace KFEOCH.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("thumbnailUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
