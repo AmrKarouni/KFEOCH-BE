@@ -10,3 +10,4 @@ built using Ast.Net Core 6.
 4- Run " cd .\KFEOCH\" command in Developer PowerShell Window.
 5- Run "dotnet run seedData" command in Developer PowerShell Window.
 6- Run "Dictionaries_Script" file using SQL Server Management Studio.
+7- Use received Credentials to Login as SuperUser.
