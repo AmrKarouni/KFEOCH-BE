@@ -1,24 +1,36 @@
 ﻿using KFEOCH.Models;
 using KFEOCH.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 
 namespace KFEOCH.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OfficeOwnerController : ControllerBase
     {
         private readonly IOfficeOwnerService _officeOwnerService;
         private readonly IOwnerDocumentService _ownerDocumentService;
-
-        public OfficeOwnerController(IOfficeOwnerService officeOwnerService, IOwnerDocumentService ownerDocumentService)
+        private readonly IUserService _userService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly string[] roles;
+        public OfficeOwnerController(IOfficeOwnerService officeOwnerService,
+                                     IOwnerDocumentService ownerDocumentService,
+                                     IUserService userService,
+                                     IHttpContextAccessor httpContextAccessor)
         {
             _officeOwnerService = officeOwnerService;
             _ownerDocumentService = ownerDocumentService;
+            _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
+            roles = new string[] { "SuperUser", "Administrator", "Office", "OfficeManager" };
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -31,8 +43,22 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostOfficeOwnerAsync(OfficeOwner model)
+        public async Task<IActionResult> PostOfficeOwnerAsync(OfficeOwner model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = "Invalid Model" });
+
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _officeOwnerService.PostOfficeOwnerAsync(model);
             if (!result.Success)
             {
@@ -40,9 +66,23 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
+
         [HttpPut("{id}")]
-        public IActionResult PutOfficeOwnerAsync(int id, OfficeOwner model)
+        public async Task<IActionResult> PutOfficeOwnerAsync(int id, OfficeOwner model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = "Invalid Model" });
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _officeOwnerService.PutOfficeOwnerAsync(id, model);
             if (!result.Result.Success)
             {
@@ -53,9 +93,23 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result.Result);
         }
+
         [HttpDelete("{id}")]
-        public IActionResult DeleteOfficeOwnerAsync(int id)
+        public async Task<IActionResult> DeleteOfficeOwnerAsync(int id)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = "Invalid Model" });
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _officeOwnerService.DeleteOfficeOwnerAsync(id);
             if (!result.Result.Success)
             {
@@ -68,8 +122,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpGet("Document/{ownerid}")]
-        public IActionResult GetAllDocumentsByOwnerId(int ownerid)
+        public async Task<IActionResult> GetAllDocumentsByOwnerId(int ownerid)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _ownerDocumentService.GetAllDocumentsByOwnerId(ownerid);
             if (result == null)
             {
@@ -79,8 +144,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpGet("Document/View/{documentid}")]
-        public IActionResult ViewDocumentByUrl(int documentid)
+        public async Task<IActionResult> ViewDocumentByUrl(int documentid)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _ownerDocumentService.GetDocument(documentid);
             if (result.Bytes == null)
             {
@@ -90,8 +166,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpGet("Form/View/{typeid}")]
-        public IActionResult GetForm(int typeid)
+        public async Task<IActionResult> GetForm(int typeid)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _ownerDocumentService.GetForm(typeid);
             if (result.Bytes == null)
             {
@@ -101,8 +188,21 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("Document")]
-        public async Task<ActionResult> PostOwnerDocumentAsync([FromForm] OwnerFileModel model)
+        public async Task<IActionResult> PostOwnerDocumentAsync([FromForm] OwnerFileModel model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = "Invalid Model" });
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _ownerDocumentService.PostOwnerDocumentAsync(model);
             if (!result.Success)
             {
@@ -112,8 +212,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpDelete("Document/{documentid}")]
-        public async Task<ActionResult> DeleteDocumentAsync(int documentid)
+        public async Task<IActionResult> DeleteDocumentAsync(int documentid)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _ownerDocumentService.DeleteDocumentAsync(documentid);
             if (!result.Success)
             {

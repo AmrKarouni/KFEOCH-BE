@@ -23,4 +23,11 @@
         public string? Extension { get; set; }
         public string? cType { get; set; }
     }
+
+    public class ExcelModel
+    {
+        public MemoryStream? MemoryStream { get; set; }
+        public string? ContentType { get; set; }
+        public string? FileName { get; set; }
+    }
 }

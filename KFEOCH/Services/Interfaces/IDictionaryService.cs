@@ -114,11 +114,11 @@ namespace KFEOCH.Services.Interfaces
         //Task<ResultWithMessage> DeletePaymentTypeAsync(int id);
 
         //Request Type
-        List<RequestTypeViewModel> GetAllRequestTypes();
+        List<RequestType> GetAllRequestTypes();
         Task<ResultWithMessage> PostRequestTypeAsync(RequestType model);
         ResultWithMessage PutRequestType(int id, RequestType model);
         //Task<ResultWithMessage> DeleteRequestTypeAsync(int id);
-        List<RequestTypeViewModel> GetAllRequestTypesByOfficeTypeId(int id);
+        //List<RequestTypeViewModel> GetAllRequestTypesByOfficeTypeId(int id);
 
         //OwnerPositionType
         List<OwnerPositionType> GetAllOwnerPositionTypes();

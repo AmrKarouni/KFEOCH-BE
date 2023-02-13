@@ -4,6 +4,10 @@ using KFEOCH.Services.Interfaces;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using KFEOCH.Models.Site;
+using System.Drawing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using OfficeOpenXml;
 
 namespace KFEOCH.Services
 {
@@ -159,10 +163,10 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Message = "/" + filePath };
         }
 
-        public async Task<ResultWithMessage> UploadPostImage(PostFileModel model, string path)
+        public async Task<ResultWithMessage> UploadPageImage(ImageModel model, string path)
         {
             int MaxContentLength = 1024 * 1024 * 2; //Size = 2 MB
-            IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".jpeg", ".png"};
+            IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
             var fileHostServer = _configuration.GetValue<string>("FileHostServer");
             if (model.Image == null)
             {
@@ -178,19 +182,16 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false, Message = "Max Size Allowed is 2 M.B" };
             }
 
-            var filename = model.PageId + ""
-                         + DateTime.UtcNow.Year + ""
-                         + DateTime.UtcNow.Month + ""
-                         + DateTime.UtcNow.Day + ""
-                         + DateTime.UtcNow.Hour + ""
-                         + DateTime.UtcNow.Minute + ""
-                         + DateTime.UtcNow.Second + ""
-                         + DateTime.UtcNow.Millisecond;
-            var filePath = Path.Combine(path + "/" + model.PageId +
-                //"/" + model.PostId +
-                "/" + filename +
+            var filename = model.Id;
+            var filePath = Path.Combine(path + "/" + filename +
                 extension);
             var fullfilePath = Path.Combine(fileHostServer + "/", filePath);
+
+            var thumPath = Path.Combine(path + "/" + "thum_" + filename +
+                 extension);
+            var thumfullfilePath = Path.Combine(fileHostServer + "/", thumPath);
+
+
             string directory = Path.GetDirectoryName(fullfilePath);
             if (!Directory.Exists(directory))
             {
@@ -198,9 +199,87 @@ namespace KFEOCH.Services
             }
             FileStream stream = new FileStream(fullfilePath, FileMode.Create);
             await model.Image.CopyToAsync(stream);
+
+            using (var img = SixLabors.ImageSharp.Image.Load(model.Image.OpenReadStream()))
+            {
+
+                string newSize = ImageResize(img, 300, 300);
+                string[] sizearr = newSize.Split(",");
+                img.Mutate(x => x.Resize(Convert.ToInt32(sizearr[1]), Convert.ToInt32(sizearr[0])));
+                img.Save(thumfullfilePath);
+            }
+
             stream.Close();
-            return new ResultWithMessage { Success = true, Message = "/" + filePath };
+
+            return new ResultWithMessage
+            {
+                Success = true,
+                MessageEnglish = "/" + filePath,
+                MessageArabic = "/" + thumPath
+            };
         }
+
+        public async Task<ResultWithMessage> UploadImage(IFormFile file, string path)
+        {
+            int MaxContentLength = 1024 * 1024 * 2; //Size = 2 MB
+            IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
+            var fileHostServer = _configuration.GetValue<string>("FileHostServer");
+            if (file == null)
+            {
+                return new ResultWithMessage { Success = false, Message = "No Image Found !!" };
+            }
+            var extension = file.FileName.Substring(file.FileName.LastIndexOf('.')).ToLower();
+            if (!AllowedFileExtensions.Contains(extension))
+            {
+                return new ResultWithMessage { Success = false, Message = "Allowed Extensions are .jpg, .jpeg, .png" };
+            }
+            if (file.Length > MaxContentLength)
+            {
+                return new ResultWithMessage { Success = false, Message = "Max Size Allowed is 2 M.B" };
+            }
+
+            var filename = DateTime.UtcNow.Year + ""
+                          + DateTime.UtcNow.Month + ""
+                          + DateTime.UtcNow.Day + ""
+                          + DateTime.UtcNow.Hour + ""
+                          + DateTime.UtcNow.Minute + ""
+                          + DateTime.UtcNow.Second + ""
+                          + DateTime.UtcNow.Millisecond;
+            var filePath = Path.Combine(path + "/" + filename +
+                extension);
+            var fullfilePath = Path.Combine(fileHostServer + "/", filePath);
+
+            var thumPath = Path.Combine(path + "/" + "thum_" + filename +
+                  extension);
+            var thumfullfilePath = Path.Combine(fileHostServer + "/", thumPath);
+
+
+            string directory = Path.GetDirectoryName(fullfilePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            FileStream stream = new FileStream(fullfilePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            using (var img = SixLabors.ImageSharp.Image.Load(file.OpenReadStream()))
+            {
+
+                string newSize = ImageResize(img, 300, 300);
+                string[] sizearr = newSize.Split(",");
+                img.Mutate(x => x.Resize(Convert.ToInt32(sizearr[1]), Convert.ToInt32(sizearr[0])));
+                img.Save(thumfullfilePath);
+            }
+
+            stream.Close();
+            return new ResultWithMessage
+            {
+                Success = true,
+                MessageEnglish = "/" + filePath,
+                MessageArabic = "/" + thumPath
+            };
+        }
+
         public FilePathModel GetFilePath(string fileurl)
         {
             var path = new FilePathModel();
@@ -261,6 +340,44 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = true, Message = $@"File {fileurl} Deleted !!!" };
             }
             return new ResultWithMessage { Success = false, Message = $@"File {fileurl} Not Found !!!" };
+        }
+
+
+        public string ImageResize(SixLabors.ImageSharp.Image img, int maxWidth, int maxHeight)
+        {
+            if (img.Width > maxWidth || img.Height > maxHeight)
+            {
+                double widthratio = (double)img.Width / (double)maxWidth;
+                double heightratio = (double)img.Height / (double)maxHeight;
+                double ratio = Math.Max(widthratio, heightratio);
+                int newWidth = (int)(img.Width / ratio);
+                int newHeight = (int)(img.Height / ratio);
+                return newHeight.ToString() + "," + newWidth.ToString();
+
+            }
+            else
+            {
+                return img.Height.ToString() + "," + img.Width.ToString();
+            }
+        }
+
+        public FileBytesModel ExportToExcel(IEnumerable<object> model)
+        {
+            FileBytesModel result = new FileBytesModel();
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var stream = new MemoryStream();
+            var package = new ExcelPackage(stream);
+            var workSheet = package.Workbook.Worksheets.Add("Sheet1");
+            workSheet.Cells.LoadFromCollection(model, true);
+            package.Save();
+            //stream.Position = 0;
+            result.Bytes = stream.ToArray();
+            //stream.Close();
+            string excelName = $"Data-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
+            string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            result.FileName = excelName;
+            result.ContentType = contentType;
+            return result;
         }
     }
 }

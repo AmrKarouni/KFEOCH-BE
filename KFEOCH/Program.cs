@@ -13,10 +13,9 @@ using Microsoft.Extensions.FileProviders;
 using User.Management.Service.Models;
 using User.Management.Service.Services;
 
-var testConnectionString = "MochaConnection";
-var localConnectionString = "LocalConnection";
+var ConnectionString = "Connection";
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString(testConnectionString);
+var connectionString = builder.Configuration.GetConnectionString(ConnectionString);
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
 {
@@ -36,6 +35,9 @@ AddEntityFrameworkStores<ApplicationDbContext>()
 builder.Services.Configure<IdentityOptions>(
     opts => opts.SignIn.RequireConfirmedEmail = true);
 
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+    opt.TokenLifespan = TimeSpan.FromHours(2));
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDictionaryService, DictionaryService>();
 builder.Services.AddScoped<ISiteService, SiteService>();
@@ -50,6 +52,9 @@ builder.Services.AddScoped<IOfficeRequestService, OfficeRequestService>();
 builder.Services.AddScoped<IOfficeDocumentService, OfficeDocumentService>();
 builder.Services.AddScoped<IOfficeRegistrationService, OfficeRegistrationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IKnetPaymentService, KnetPaymentService>();
+builder.Services.AddScoped<ISiteMessageService, SiteMessageService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddTransient<ApplicationDbContextSeed>();
 builder.Services.AddDbContext<ApplicationDbContext>(x =>
 {
@@ -121,7 +126,8 @@ async Task SeedData(IHost app)
         var service = scope?.ServiceProvider.GetService<ApplicationDbContextSeed>();
         var userManager = scope?.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = scope?.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        await service.SeedEssentialsAsync(userManager, roleManager);
+        var dictionaryService = scope?.ServiceProvider.GetRequiredService<IDictionaryService>();
+        await service.SeedEssentialsAsync(userManager, roleManager, dictionaryService);
     }
 }
 
@@ -158,6 +164,15 @@ app.UseStaticFiles(new StaticFileOptions
 
 });
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "./App_Media/pages")),
+    RequestPath = "/pages"
+
+});
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -19,6 +19,9 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Web;
+using MimeKit;
+using Microsoft.AspNetCore.WebUtilities;
+using KFEOCH.Models.Binding;
 
 namespace KFEOCH.Services
 {
@@ -132,7 +135,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
             }
-            
+
 
         }
 
@@ -218,6 +221,8 @@ namespace KFEOCH.Services
             office.IsLocal = type?.IsLocal;
             office.IsActive = true;
             office.IsVerified = true;
+            var defaultEntity = _db.OfficeEntities?.FirstOrDefault(x => x.NameEnglish.ToLower() == _configuration.GetValue<string>("DefaultEntity").ToLower());
+            office.EntityId = defaultEntity.Id;
             if ((bool)type?.IsLocal)
             {
                 var localcountry = _configuration.GetValue<string>("LocalCountry");
@@ -272,8 +277,11 @@ namespace KFEOCH.Services
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return new ResultWithMessage { Success = false, Message = "User Not Found !!!",
-                MessageEnglish = "User Not Found !!!",
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "User Not Found !!!",
+                    MessageEnglish = "User Not Found !!!",
                     MessageArabic = "البريد الالكتروني غير موجود !!!",
                 };
             }
@@ -302,7 +310,7 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = result.ToString() };
             }
-            return new ResultWithMessage { Success = true, Message = $"Email {email} Has Been Confirmed !!!" };
+            return new ResultWithMessage { Success = true, Message = $"Email {email} Has Been Confirmed." };
         }
 
         public async Task<AuthenticationModel> AdminLoginAsync(AdminLoginModel model)
@@ -363,7 +371,7 @@ namespace KFEOCH.Services
         {
             var authenticationModel = new AuthenticationModel();
             var user = await _userManager.FindByNameAsync("T" + model.OfficeTypeId + "L" + model.LicenseId);
-            
+
             if (user == null || !user.IsActive)
             {
                 authenticationModel.IsAuthenticated = false;
@@ -373,7 +381,7 @@ namespace KFEOCH.Services
                 return authenticationModel;
             }
             var confimred = await _userManager.IsEmailConfirmedAsync(user);
-            if ( !confimred)
+            if (!confimred)
             {
                 authenticationModel.IsAuthenticated = false;
                 authenticationModel.IsEmailConfirmed = false;
@@ -450,6 +458,12 @@ namespace KFEOCH.Services
             if (user == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Unavailable Or Deactivated Account!!!" };
+            }
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await CanManipulateOffice(principal, user.OfficeId.Value);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
             }
             if (await _userManager.CheckPasswordAsync(user, model.CurrentPassword))
             {
@@ -532,23 +546,44 @@ namespace KFEOCH.Services
             return authenticationModel;
         }
 
-        public ResultWithMessage DeactivateAccountAsync(string userId)
+        public async Task<ResultWithMessage> DeactivateAccountAsync(string userId)
         {
             var user = _db.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
                 return new ResultWithMessage() { Success = false, Message = $@"No accounts registered with {user.UserName}" };
             }
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
+            }
             user.IsActive = false;
             RevokeTokenById(userId);
             _db.Update(user);
             _db.SaveChanges();
             return new ResultWithMessage() { Success = true, Message = $@"Account {user.UserName} Deactivated !!!" };
-
-
         }
 
-        public ResultWithMessage RevokeToken(string token)
+        public async Task<ResultWithMessage> ActivateAccountAsync(string userId)
+        {
+            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"No accounts registered with {user.UserName}" };
+            }
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
+            }
+            user.IsActive = true;
+            _db.Update(user);
+            _db.SaveChanges();
+            return new ResultWithMessage() { Success = true, Message = $@"Account {user.UserName} Deactivated !!!" };
+        }
+
+        public async Task<ResultWithMessage> RevokeToken(string token)
         {
             var user = _db.Users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
             // return false if no user found with token
@@ -556,6 +591,13 @@ namespace KFEOCH.Services
             {
                 new ResultWithMessage() { Success = false, Message = $@"No accounts registered with {user.UserName}" };
             }
+
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
+            }
+
             var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
             // return false if token is not active
             if (!refreshToken.IsActive)
@@ -569,12 +611,17 @@ namespace KFEOCH.Services
             return new ResultWithMessage() { Success = true, Message = $@"Revoke Token Succeeded!!" };
         }
 
-        public ResultWithMessage RevokeTokenById(string userId)
+        public async Task<ResultWithMessage> RevokeTokenById(string userId)
         {
             var user = _db.Users.Include(u => u.RefreshTokens).FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
                 new ResultWithMessage() { Success = false, Message = $@"No accounts registered with {user.UserName} !!!" };
+            }
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
             }
             foreach (var refreshToken in user.RefreshTokens)
             {
@@ -614,6 +661,16 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true };
         }
 
+        public async Task<ResultWithMessage> CheckUserName(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return new ResultWithMessage { Success = false };
+            }
+            return new ResultWithMessage { Success = true };
+        }
+
         public async Task<ResultWithMessage> CheckOfficeNameArabic(string nameArabic)
         {
             var user = _db.Offices?.FirstOrDefault(x => x.NameArabic.ToLower() == nameArabic.ToLower());
@@ -643,6 +700,347 @@ namespace KFEOCH.Services
                 return new ResultWithMessage { Success = false };
             }
             return new ResultWithMessage { Success = true };
+        }
+
+        public async Task<bool> CanManipulateOffice(ClaimsPrincipal user, int officeId)
+        {
+            if (user.IsInRole("Administrator") || user.IsInRole("SuperUser") || user.IsInRole("OfficeManager"))
+            {
+                return true;
+            }
+            var appUser = await _userManager.FindByNameAsync(user.Identity.Name);
+            return appUser.OfficeId == officeId;
+        }
+       
+        public async Task<ResultWithMessage> ForgetPassword(ForgetPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "User Not Found",
+                    MessageEnglish = "User Not Found",
+                    MessageArabic = "المستخدم غير موجود"
+                };
+            }
+
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
+            }
+
+            var office = _db.Offices.FirstOrDefault(x => x.Id == user.OfficeId);
+            if (office == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Office Not Found",
+                    MessageEnglish = "Office Not Found",
+                    MessageArabic = "المكتب غير موجود"
+                };
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (token == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "You Can't Reset Your Password Now, Please Try Again Later",
+                    MessageEnglish = "You Can't Reset Your Password Now, Please Try Again Later",
+                    MessageArabic = "لا يمكنك إعادة تعيين كلمة المرور الخاصة بك الآن ، يرجى المحاولة مرة أخرى لاحقًا"
+                };
+            }
+
+            var param = new Dictionary<string, string?>
+                                {
+                                    {"token", token },
+                                    {"email", model.Email }
+                                };
+            var callback = QueryHelpers.AddQueryString(model.ClientUri, param);
+
+            var body = @$"<table style='border-collapse: collapse; width: 100%;'>
+                            <tbody>
+                            <tr>
+                            <td colspan='2'><img style='width: 30%;' src='https://kfeoch-api.techteec.net/logos/logo-horizontal.png' alt='' /></td>
+                            </tr>
+                            <tr>
+                            <td colspan='2'>
+                            <h4>Dear Mr. / Ms. {office.NameEnglish},&nbsp;</h4>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td colspan='2'>You have been sent this email because you request Forget Password with this email account.<br />Please click on <a href='{callback}'>this link </a>to reset your account password.</td>
+                            </tr>
+                            <tr>
+                            <td colspan='2'>
+                            <p>Thank You ,</p>
+                            <h4>KFEOCH Team</h4>
+                            </td>
+                            </tr>
+                            </tbody>
+                            </table>";
+
+            var bodybuilder = new BodyBuilder();
+            bodybuilder.HtmlBody = body;
+            var ms = bodybuilder.ToMessageBody();
+            var message =
+                        new Message(new string[]
+                        { model.Email! }, "Reset Password From Kfeoch", bodybuilder.ToMessageBody());
+            _emailService.SendEmail(message);
+            return new ResultWithMessage
+            {
+                Success = true
+            };
+
+        }
+
+        public async Task<ResultWithMessage> ResetPassword(ResetPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "User Not Found",
+                    MessageEnglish = "User Not Found",
+                    MessageArabic = "المستخدم غير موجود"
+                };
+            }
+
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
+            }
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (!resetPassResult.Succeeded)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "You Can't Reset Your Password Now, Please Try Again Later",
+                    MessageEnglish = "You Can't Reset Your Password Now, Please Try Again Later",
+                    MessageArabic = "لا يمكنك إعادة تعيين كلمة المرور الخاصة بك الآن ، يرجى المحاولة مرة أخرى لاحقًا"
+                };
+            }
+            return new ResultWithMessage
+            {
+                Success = true
+            };
+        }
+
+        public async Task<ResultWithMessage> GetAllUsers(ClaimsPrincipal user)
+        {
+            var list = new List<UserViewModel>();
+            var officeTypeId = _db.OfficeTypes.Where(o => o.IsAdmin).Select(x => x.Id).FirstOrDefault();
+            var users = _db.Users.Where(x => x.OfficeTypeId == officeTypeId && x.UserName != user.Identity.Name).ToList();
+            foreach (var u in users)
+            {
+                
+                var v = new UserViewModel();
+                v.Id = u.Id;
+                v.UserName = u.UserName;
+                v.Email = u.Email;
+                v.IsActive = u.IsActive;
+                v.Roles = (await _userManager.GetRolesAsync(u));
+                list.Add(v);
+                var isSuperuser = await IsSuperuser(u.Id);
+                if (isSuperuser)
+                {
+                    list.Remove(v);
+                }
+            }
+            return new ResultWithMessage { Success = true, Result = list };
+
+        }
+
+        public ResultWithMessage GetAllRoles()
+        {
+            var roles = _db.Roles.Where(x => x.Name != "SuperUser" && x.Name != "Office").ToList();
+            return new ResultWithMessage
+            {
+                Success = true,
+                Result = roles
+            };
+        }
+
+
+        public async Task<ResultWithMessage> GetUserInfo(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "User Not Found",
+                    MessageEnglish = "User Not Found",
+                    MessageArabic = "مستخدم غير موجود",
+
+                };
+            }
+
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
+            }
+            var userview = new UserViewModel();
+            userview.Id = user.Id;
+            userview.UserName = user.UserName;
+            userview.Email = user.Email;
+            userview.IsActive = user.IsActive;
+            userview.Roles = (await _userManager.GetRolesAsync(user));
+            return new ResultWithMessage { Success = true, Result = userview };
+
+        }
+
+        public async Task<ResultWithMessage> PutUserRoles(string id,UserWithRoles model)
+        {
+            if (id != model.Id)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Invalid Model",
+                    MessageEnglish = "Invalid Model",
+                    MessageArabic = "نموذج غير صالح",
+
+                };
+            }
+            var user = await _userManager.FindByIdAsync(model.Id);
+            if (user == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "User Not Found",
+                    MessageEnglish = "User Not Found",
+                    MessageArabic = "مستخدم غير موجود",
+
+                };
+            }
+
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
+            }
+
+            var oldroles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, oldroles);
+            await _userManager.AddToRolesAsync(user, model.Roles);
+            var userview = new UserViewModel();
+            userview.Id = user.Id;
+            userview.UserName = user.UserName;
+            userview.Email = user.Email;
+            userview.Roles = (await _userManager.GetRolesAsync(user));
+            return new ResultWithMessage { Success = true, Result = userview };
+        }
+
+        public async Task<ResultWithMessage> UserResetPasswordAsync(UserResetPasswordModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.Id);
+            if (user == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "User Not Found",
+                    MessageEnglish = "User Not Found",
+                    MessageArabic = "مستخدم غير موجود",
+
+                };
+            }
+
+            var isSuperuser = await IsSuperuser(user.Id);
+            if (isSuperuser)
+            {
+                return new ResultWithMessage() { Success = false, Message = $@"Unauthorized" };
+            }
+            await _userManager.RemovePasswordAsync(user);
+            var result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+            user.IsPasswordChanged = false;
+            if (result.Succeeded)
+            {
+                return new ResultWithMessage { Success = true, Message = $@"Password Reset for {user.UserName}" };
+            }
+            return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
+        }
+
+        public async Task<ResultWithMessage> AddUserWithRolesAsync(AdminRegistrationModel model)
+        {
+            var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
+            var officeTypeId = _db.OfficeTypes.Where(o => o.IsAdmin).Select(x => x.Id).FirstOrDefault();
+            var maxlicenseUser = _db.Users.Where(u => u.OfficeTypeId == officeTypeId).OrderByDescending(x => x.LicenseId).FirstOrDefault();
+            var licenseId = maxlicenseUser == null ? 0 : maxlicenseUser.LicenseId;
+            if (userWithSameEmail != null)
+            {
+                return new ResultWithMessage { Success = false, Message = "Email Already Exist!!" };
+            }
+            if (officeTypeId == null)
+            {
+                return new ResultWithMessage { Success = false, Message = "No Admin Office Found!!!" };
+            }
+
+            if (model.Roles.Contains("SuperUser"))
+            {
+                return new ResultWithMessage { Success = false, Message = "Unauthorized" };
+            }
+            var user = new ApplicationUser
+            {
+                UserName = model.UserName,
+                Email = model.Email,
+                LicenseId = licenseId + 1,
+                OfficeTypeId = officeTypeId,
+                OfficeId = null,
+                IsPasswordChanged = true,
+                IsActive = true
+            };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+
+                await _userManager.AddToRolesAsync(user, model.Roles);
+                return new ResultWithMessage { Success = true, Message = $@"User {model.UserName} has been registered!" };
+            }
+            else
+            {
+                return new ResultWithMessage { Success = false, Message = result.Errors.FirstOrDefault()?.Description };
+            }
+
+
+        }
+
+        public async Task<bool> IsAuthorized(ClaimsPrincipal user, string[] roles)
+        {
+            var dbuser = await _userManager.FindByNameAsync(user.Identity.Name);
+            if (!dbuser.IsActive)
+            {
+                return false;
+            }
+            if (roles.FirstOrDefault(x => user.IsInRole(x)) == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> IsSuperuser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("SuperUser"))
+            {
+                return true;
+            }
+           
+            return false;
         }
     }
 }

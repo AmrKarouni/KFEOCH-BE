@@ -14,5 +14,10 @@
         public List<int>? Activities { get; set; }
         public bool? IsVerified { get; set; }
         public bool? IsActive { get; set; }
+        public List<int>? OfficeTypes { get; set; }
+        public List<int>? Offices { get; set; }
+        public string? PaymentCategoryEnglish { get; set; }
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
     }
-}
+ }

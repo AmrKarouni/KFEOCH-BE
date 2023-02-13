@@ -1,22 +1,50 @@
 ﻿using KFEOCH.Models.Dictionaries;
+using KFEOCH.Models.Site;
 using KFEOCH.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace KFEOCH.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DictionaryController : ControllerBase
     {
         private readonly IDictionaryService _dictionaryService;
-        public DictionaryController(IDictionaryService dictionaryService)
+        private readonly ISiteService _siteService;
+        private readonly IUserService _userService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly string[] roles;
+        public DictionaryController(IDictionaryService dictionaryService,
+                                    ISiteService siteService,
+                                    IUserService userService,
+                                    IHttpContextAccessor httpContextAccessor)
         {
             _dictionaryService = dictionaryService;
+            _siteService = siteService;
+            _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
+            roles = new string[] { "SuperUser", "Administrator", "DictionaryManager" };
+            
         }
+
         [HttpPost("countries")]
-        public async Task<ActionResult> PostCountryAsync(Country model)
+        public async Task<IActionResult> PostCountryAsync(Country model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostCountryAsync(model);
             if (!result.Success)
             {
@@ -24,6 +52,8 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
+
+        [AllowAnonymous]
         [HttpGet("countries")]
         public IActionResult GetAllCountries()
         {
@@ -36,8 +66,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("countries/{id}")]
-        public IActionResult PutCountry(int id, Country model)
+        public async Task<IActionResult> PutCountry(int id, Country model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutCountry(id, model);
             if (result.Success == false)
             {
@@ -45,6 +86,8 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
+
+        [AllowAnonymous]
         [HttpGet("country-locations")]
         public IActionResult GetLocationsByCountryId(int id)
         {
@@ -57,8 +100,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("governorates")]
-        public async Task<ActionResult> PostGovernorateAsync(Governorate model)
+        public async Task<IActionResult> PostGovernorateAsync(Governorate model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostGovernorateAsync(model);
             if (!result.Success)
             {
@@ -66,6 +120,9 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
+        
+        
+        [AllowAnonymous]
         [HttpGet("governorates")]
         public IActionResult GetAllGovernorates()
         {
@@ -90,8 +147,19 @@ namespace KFEOCH.Controllers
         //}
 
         [HttpPut("governorates/{id}")]
-        public IActionResult PutGovernorate(int id, Governorate model)
+        public async Task<IActionResult> PutGovernorate(int id, Governorate model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutGovernorate(id, model);
             if (result.Success == false)
             {
@@ -100,6 +168,7 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
+        [AllowAnonymous]
         [HttpGet("governorate-locations/{id}")]
         public IActionResult GetGovernoratesByCountryId(int id)
         {
@@ -112,8 +181,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("areas")]
-        public async Task<ActionResult> PostAreaAsync(Area model)
+        public async Task<IActionResult> PostAreaAsync(Area model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostAreaAsync(model);
             if (!result.Success)
             {
@@ -121,6 +201,9 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
+
+
+        [AllowAnonymous]
         [HttpGet("areas")]
         public IActionResult GetAllAreas()
         {
@@ -133,8 +216,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("areas/{id}")]
-        public IActionResult PutArea(int id,Area model)
+        public async Task<IActionResult> PutArea(int id,Area model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutArea(id,model);
             if (result.Success == false)
             {
@@ -143,6 +237,7 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
 
+        [AllowAnonymous]
         [HttpGet("area-locations/{id}")]
         public IActionResult GetAreasByGovernorateId(int id)
         {
@@ -153,9 +248,9 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
-        
 
 
+        [AllowAnonymous]
         [HttpGet("certificate-entities")]
         public IActionResult GetAllCertificateEntity()
         {
@@ -168,8 +263,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("certificate-entities")]
-        public async Task<ActionResult> PostCertificateEntityAsync(CertificateEntity model)
+        public async Task<IActionResult> PostCertificateEntityAsync(CertificateEntity model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostCertificateEntityAsync(model);
             if (!result.Success)
             {
@@ -179,8 +285,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("certificate-entities/{id}")]
-        public ActionResult PutCertificateEntity(int id,CertificateEntity model)
+        public async Task<IActionResult> PutCertificateEntity(int id,CertificateEntity model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result =  _dictionaryService.PutCertificateEntity(id,model);
             if (!result.Success)
             {
@@ -200,7 +317,7 @@ namespace KFEOCH.Controllers
         //    }
         //    return Ok(result);
         //}
-
+        [AllowAnonymous]
         [HttpGet("course-categories")]
         public IActionResult GetAllCourseCategories()
         {
@@ -213,8 +330,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("course-categories")]
-        public async Task<ActionResult> PostCourseCategoryAsync(CourseCategory model)
+        public async Task<IActionResult> PostCourseCategoryAsync(CourseCategory model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostCourseCategoryAsync(model);
             if (!result.Success)
             {
@@ -222,9 +350,21 @@ namespace KFEOCH.Controllers
             }
             return Ok(result.Result);
         }
+        
         [HttpPut("course-categories/{id}")]
-        public IActionResult PutCourseCategory(int id, CourseCategory model)
+        public async Task<IActionResult> PutCourseCategory(int id, CourseCategory model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result =  _dictionaryService.PutCourseCategory(id, model);
             if (result.Success == false)
             {
@@ -242,7 +382,8 @@ namespace KFEOCH.Controllers
         //    }
         //    return Ok(result);
         //}
-
+        
+        [AllowAnonymous]
         [HttpGet("genders")]
         public IActionResult GetAllGenders()
         {
@@ -254,6 +395,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpGet("office-activities")]
         public IActionResult GetAllOfficeActivities()
         {
@@ -266,8 +408,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-activities")]
-        public async Task<ActionResult> PostOfficeActivityAsync(Activity model)
+        public async Task<IActionResult> PostOfficeActivityAsync(Activity model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOfficeActivityAsync(model);
             if (!result.Success)
             {
@@ -277,8 +430,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("office-activities/{id}")]
-        public IActionResult PutOfficeActivity(int id, Activity model)
+        public async Task<IActionResult> PutOfficeActivity(int id, Activity model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOfficeActivity(id, model);
             if (result.Success == false)
             {
@@ -298,7 +462,7 @@ namespace KFEOCH.Controllers
         //    }
         //    return Ok(result);
         //}
-
+        [AllowAnonymous]
         [HttpGet("office-type-activities/{id}")]
         public IActionResult GetAllOfficeActivitiesByOfficeTypeId(int id)
         {
@@ -310,6 +474,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpGet("office-entities")]
         public IActionResult GetAllOfficeEntities()
         {
@@ -322,8 +487,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-entities")]
-        public async Task<ActionResult> PostOfficeEntityAsync(OfficeEntity model)
+        public async Task<IActionResult> PostOfficeEntityAsync(OfficeEntity model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOfficeEntityAsync(model);
             if (!result.Success)
             {
@@ -333,8 +509,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("office-entities/{id}")]
-        public ActionResult PutOfficeEntity(int id, OfficeEntity model)
+        public async Task<IActionResult> PutOfficeEntity(int id, OfficeEntity model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOfficeEntity(id, model);
             if (!result.Success)
             {
@@ -353,6 +540,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
+        [AllowAnonymous]
         [HttpGet("office-legal-entities")]
         public IActionResult GetAllOfficeLegalEntities()
         {
@@ -365,8 +553,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-legal-entities")]
-        public async Task<ActionResult> PostOfficeLegalEntityAsync(OfficeLegalEntity model)
+        public async Task<IActionResult> PostOfficeLegalEntityAsync(OfficeLegalEntity model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOfficeLegalEntityAsync(model);
             if (!result.Success)
             {
@@ -375,8 +574,19 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
         [HttpPut("office-legal-entities/{id}")]
-        public IActionResult PutOfficeLegalEntity(int id, OfficeLegalEntity model)
+        public async Task<IActionResult> PutOfficeLegalEntity(int id, OfficeLegalEntity model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOfficeLegalEntity(id,model);
             if (!result.Success)
             {
@@ -396,7 +606,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
-
+        [AllowAnonymous]
         [HttpGet("office-owner-specialities")]
         public IActionResult GetAllOfficeOwnerSpecialities()
         {
@@ -409,8 +619,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-owner-specialities")]
-        public async Task<ActionResult> PostOfficeOwnerSpecialityAsync(OfficeOwnerSpeciality model)
+        public async Task<IActionResult> PostOfficeOwnerSpecialityAsync(OfficeOwnerSpeciality model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOfficeOwnerSpecialityAsync(model);
             if (!result.Success)
             {
@@ -420,8 +641,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("office-owner-specialities/{id}")]
-        public ActionResult PutOfficeOwnerSpeciality(int id, OfficeOwnerSpeciality model)
+        public async Task<IActionResult> PutOfficeOwnerSpeciality(int id, OfficeOwnerSpeciality model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOfficeOwnerSpeciality(id, model);
             if (!result.Success)
             {
@@ -441,7 +673,7 @@ namespace KFEOCH.Controllers
         //    }
         //    return Ok(result);
         //}
-
+        [AllowAnonymous]
         [HttpGet("office-specialities")]
         public IActionResult GetAllOfficeSpecialities()
         {
@@ -454,8 +686,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-specialities")]
-        public async Task<ActionResult> PostOfficeSpecialityAsync(Speciality model)
+        public async Task<IActionResult> PostOfficeSpecialityAsync(Speciality model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOfficeSpecialityAsync(model);
             if (!result.Success)
             {
@@ -464,8 +707,19 @@ namespace KFEOCH.Controllers
             return Ok(result.Result);
         }
         [HttpPut("office-specialities/{id}")]
-        public ActionResult PutOfficeSpeciality(int id, Speciality model)
+        public async Task<IActionResult> PutOfficeSpeciality(int id, Speciality model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOfficeSpeciality(id, model);
             if (!result.Success)
             {
@@ -484,6 +738,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
+        [AllowAnonymous]
         [HttpGet("office-type-specialities/{id}")]
         public IActionResult GetAllOfficeSpecialitiesByOfficeTypeId(int id)
         {
@@ -494,7 +749,8 @@ namespace KFEOCH.Controllers
             }
             return Ok(result);
         }
-
+        
+        [AllowAnonymous]
         [HttpGet("office-statuses")]
         public IActionResult GetAllOfficeStatuses()
         {
@@ -507,8 +763,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-statuses")]
-        public async Task<ActionResult> PostOfficeStatusAsync(OfficeStatus model)
+        public async Task<IActionResult> PostOfficeStatusAsync(OfficeStatus model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOfficeStatusAsync(model);
             if (!result.Success)
             {
@@ -518,8 +785,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("office-statuses/{id}")]
-        public ActionResult PutOfficeStatus(int id, OfficeStatus model)
+        public async Task<IActionResult> PutOfficeStatus(int id, OfficeStatus model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOfficeStatus(id, model);
             if (!result.Success)
             {
@@ -538,6 +816,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
+        [AllowAnonymous]
         [HttpGet("office-types")]
         public IActionResult GetAllOfficeTypes()
         {
@@ -550,8 +829,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-types")]
-        public async Task<ActionResult> PostOfficeTypeAsync(OfficeType model)
+        public async Task<IActionResult> PostOfficeTypeAsync(OfficeType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOfficeTypeAsync(model);
             if (!result.Success)
             {
@@ -561,8 +851,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("office-types/{id}")]
-        public ActionResult PutOfficeType(int id, OfficeType model)
+        public async Task<IActionResult> PutOfficeType(int id, OfficeType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOfficeType(id, model);
             if (!result.Success)
             {
@@ -581,6 +882,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
+        [AllowAnonymous]
         [HttpGet("office-type-details/{id}")]
         public IActionResult GetAllOfficeTypesWithDetials(int id)
         {
@@ -592,7 +894,7 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-
+        [AllowAnonymous]
         [HttpGet("office-document-types")]
         public IActionResult GetAllOfficeDocumentTypes()
         {
@@ -605,8 +907,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-document-types")]
-        public async Task<ActionResult> PostOfficeDocumentTypeAsync(OfficeDocumentType model)
+        public async Task<IActionResult> PostOfficeDocumentTypeAsync(OfficeDocumentType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOfficeDocumentTypeAsync(model);
             if (!result.Success)
             {
@@ -616,8 +929,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("office-document-types/{id}")]
-        public ActionResult PutOfficeDocumentType(int id, OfficeDocumentType model)
+        public async Task<IActionResult> PutOfficeDocumentType(int id, OfficeDocumentType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOfficeDocumentType(id, model);
             if (!result.Success)
             {
@@ -636,6 +960,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
+        [AllowAnonymous]
         [HttpGet("owner-document-types")]
         public IActionResult GetAllOwnerDocumentTypes()
         {
@@ -648,8 +973,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("owner-document-types")]
-        public async Task<ActionResult> PostOwnerDocumentTypeAsync(OwnerDocumentType model)
+        public async Task<IActionResult> PostOwnerDocumentTypeAsync(OwnerDocumentType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOwnerDocumentTypeAsync(model);
             if (!result.Success)
             {
@@ -659,8 +995,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("owner-document-types/{id}")]
-        public ActionResult PutOwnerDocumentType(int id, OwnerDocumentType model)
+        public async Task<IActionResult> PutOwnerDocumentType(int id, OwnerDocumentType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOwnerDocumentType(id, model);
             if (!result.Success)
             {
@@ -680,7 +1027,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
-
+        [AllowAnonymous]
         [HttpGet("contact-types")]
         public IActionResult GetAllContactTypes()
         {
@@ -693,8 +1040,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("contact-types")]
-        public async Task<ActionResult> PostContactTypeAsync(ContactType model)
+        public async Task<IActionResult> PostContactTypeAsync(ContactType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostContactTypeAsync(model);
             if (!result.Success)
             {
@@ -704,8 +1062,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("contact-types/{id}")]
-        public ActionResult PutContactType(int id, ContactType model)
+        public async Task<IActionResult> PutContactType(int id, ContactType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutContactType(id, model);
             if (!result.Success)
             {
@@ -724,6 +1093,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
+        [AllowAnonymous]
         [HttpGet("payment-types")]
         public IActionResult GetAllPaymentTypes()
         {
@@ -736,8 +1106,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("payment-types")]
-        public async Task<ActionResult> PostPaymentTypeAsync(PaymentType model)
+        public async Task<IActionResult> PostPaymentTypeAsync(PaymentType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostPaymentTypeAsync(model);
             if (!result.Success)
             {
@@ -747,8 +1128,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("payment-types/{id}")]
-        public ActionResult PutPaymentType(int id, PaymentType model)
+        public async Task<IActionResult> PutPaymentType(int id, PaymentType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutPaymentType(id, model);
             if (!result.Success)
             {
@@ -767,6 +1159,7 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
+        [AllowAnonymous]
         [HttpGet("request-types")]
         public IActionResult GetAllRequestTypes()
         {
@@ -778,20 +1171,31 @@ namespace KFEOCH.Controllers
             return Ok(result);
         }
 
-        [HttpPost("request-types")]
-        public async Task<ActionResult> PostRequestTypeAsync(RequestType model)
-        {
-            var result = await _dictionaryService.PostRequestTypeAsync(model);
-            if (!result.Success)
-            {
-                return BadRequest(new { message = result.Message });
-            }
-            return Ok(result.Result);
-        }
+        //[HttpPost("request-types")]
+        //public async Task<IActionResult> PostRequestTypeAsync(RequestType model)
+        //{
+        //    var result = await _dictionaryService.PostRequestTypeAsync(model);
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(new { message = result.Message });
+        //    }
+        //    return Ok(result.Result);
+        //}
 
         [HttpPut("request-types/{id}")]
-        public ActionResult PutRequestType(int id, RequestType model)
+        public async Task<IActionResult> PutRequestType(int id, RequestType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutRequestType(id, model);
             if (!result.Success)
             {
@@ -810,19 +1214,9 @@ namespace KFEOCH.Controllers
         //    return Ok(result);
         //}
 
-        [HttpGet("request-types/{id}")]
-        public IActionResult GetAllRequestTypesByOfficeTypeId(int id)
-        {
-            var result = _dictionaryService.GetAllRequestTypesByOfficeTypeId(id);
-            if (result == null)
-            {
-                return BadRequest(new { message = "No Request Type Found!!!" });
-            }
-            return Ok(result);
-        }
 
 
-
+        [AllowAnonymous]
         [HttpGet("office-owner-positions")]
         public IActionResult GetAllOwnerPositionTypes()
         {
@@ -835,8 +1229,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPost("office-owner-positions")]
-        public async Task<ActionResult> PostOwnerPositionTypeAsync(OwnerPositionType model)
+        public async Task<IActionResult> PostOwnerPositionTypeAsync(OwnerPositionType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = await _dictionaryService.PostOwnerPositionTypeAsync(model);
             if (!result.Success)
             {
@@ -846,8 +1251,19 @@ namespace KFEOCH.Controllers
         }
 
         [HttpPut("office-owner-positions/{id}")]
-        public ActionResult PutOwnerPositionType(int id, OwnerPositionType model)
+        public async Task<IActionResult> PutOwnerPositionType(int id, OwnerPositionType model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
             var result = _dictionaryService.PutOwnerPositionType(id, model);
             if (!result.Success)
             {
@@ -867,7 +1283,7 @@ namespace KFEOCH.Controllers
         //}
 
 
-
+        [AllowAnonymous]
         [HttpGet("nationalities")]
         public IActionResult GetAllNationalities()
         {
@@ -877,6 +1293,67 @@ namespace KFEOCH.Controllers
                 return BadRequest(new { message = "No Nationality Found!!!" });
             }
             return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("post-categories")]
+        public IActionResult GetAllPostCategories()
+        {
+            var result = _siteService.GetAllPostCategories();
+            if (result == null)
+            {
+                return BadRequest(new { message = "No Post Category Found!!!" });
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("post-categories")]
+        public async Task<IActionResult> AddPostCategoryAsync(PostCategory model)
+        {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorize = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorize == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
+
+            //if (roles.FirstOrDefault(x => User.IsInRole(x)) == null)
+            //{
+            //    return Unauthorized();
+            //}
+            var result = await _siteService.AddPostCategoryAsync(model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
+        }
+
+        [HttpPut("post-categories/{id}")]
+        public async Task<IActionResult> PutOfficeEntity(int id, PostCategory model)
+        {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var isAuthorized = await _userService.IsAuthorized(principal, roles);
+            if (isAuthorized == false)
+            {
+                return Unauthorized(new
+                {
+                    Message = "Unauthorized",
+                    MessageEnglish = "Unauthorized",
+                    MessageArabic = "غير مصرح",
+                });
+            }
+            var result = _siteService.PutPostCategory(id, model);
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Message });
+            }
+            return Ok(result.Result);
         }
     }
 }

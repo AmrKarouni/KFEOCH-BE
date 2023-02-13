@@ -5,6 +5,7 @@ namespace KFEOCH.Models
 {
     public class OfficePayment
     {
+
         public int Id { get; set; }
         [ForeignKey("Type")]
         public int TypeId { get; set; }
@@ -16,9 +17,12 @@ namespace KFEOCH.Models
         public double Amount { get; set; }
         public double YearsCount { get; set; } = 1;
         public bool IsPaid { get; set; } = true;
+        public string? PaymentCategoryArabic { get; set; }
+        public string? PaymentCategoryEnglish { get; set; }
         public string? PaymentUrl { get; set; }
         public string? PaymentNumber { get; set; }
         public DateTime? MembershipEndDate { get; set; }
+        public string? HtmlBody { get; set; }
         public virtual Office? Office { get; set; }
         public virtual PaymentType? Type { get; set; }
     }
@@ -32,6 +36,41 @@ namespace KFEOCH.Models
         public double TotalAmount { get; set; } 
         public List<OfficePayment>? Payments { get; set; }
     }
+
+    public class OfficesPaymentsReportViewModel
+    {
+        public OfficesPaymentsReportViewModel(OfficePayment model)
+        {
+            Id = model.Id;
+            OfficeId = model.OfficeId;
+            OfficeNameArabic = model.Office.NameArabic;
+            OfficeNameEnglish  = model.Office.NameEnglish;
+            RequestNameArabic = model.RequestNameArabic;
+            RequestNameEnglish = model.RequestNameEnglish;
+            PaymentDate = model.PaymentDate;
+            Amount = model.Amount;
+            YearsCount = model.YearsCount;
+            IsPaid = model.IsPaid;
+            PaymentNumber = model.PaymentNumber;
+            PaymentCategoryArabic = model.PaymentCategoryArabic;
+            PaymentCategoryEnglish = model.PaymentCategoryEnglish;
+        }
+
+        public int Id { get; set; }
+        public int OfficeId { get; set; }
+        public string? OfficeNameArabic { get; set; }
+        public string? OfficeNameEnglish { get; set; }
+        public string? RequestNameArabic { get; set; }
+        public string? RequestNameEnglish { get; set; }
+        public DateTime PaymentDate { get; set; }
+        public double Amount { get; set; }
+        public double YearsCount { get; set; }
+        public bool IsPaid { get; set; }
+        public string? PaymentNumber { get; set; }
+        public string? PaymentCategoryArabic { get; set; }
+        public string? PaymentCategoryEnglish { get; set; }
+    }
+
 
     public class OfficePaymentWithTypeViewModel
     {
@@ -56,6 +95,9 @@ namespace KFEOCH.Models
             PaymentUrl = model.PaymentUrl ;
             PaymentNumber = model.PaymentNumber ;
             MembershipEndDate = model.MembershipEndDate ;
+            PaymentCategoryArabic = model.PaymentCategoryArabic;
+            PaymentCategoryEnglish = model.PaymentCategoryEnglish ;
+            HtmlBody = null ;
         }
 
         public int Id { get; set; }
@@ -72,5 +114,8 @@ namespace KFEOCH.Models
         public string? PaymentUrl { get; set; }
         public string? PaymentNumber { get; set; }
         public DateTime? MembershipEndDate { get; set; }
+        public string? PaymentCategoryArabic { get; set; }
+        public string? PaymentCategoryEnglish { get; set; }
+        public string? HtmlBody { get; set; }
     }
 }

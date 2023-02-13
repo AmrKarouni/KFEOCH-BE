@@ -19,7 +19,7 @@ namespace User.Management.Service.Services
 
         public void SendEmail(Message message)
         {
-            var emailMessage = CreateEmailMessage(message);
+            var emailMessage = CreateEmailMessageHtml(message);
             Send(emailMessage);
         }
 
@@ -31,6 +31,18 @@ namespace User.Management.Service.Services
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
+            return emailMessage;
+
+        }
+
+        private MimeMessage CreateEmailMessageHtml(Message message)
+        {
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress("email",
+                                  _emailConfiguration.From));
+            emailMessage.To.AddRange(message.To);
+            emailMessage.Subject = message.Subject;
+            emailMessage.Body = message.MimeContent;
             return emailMessage;
 
         }

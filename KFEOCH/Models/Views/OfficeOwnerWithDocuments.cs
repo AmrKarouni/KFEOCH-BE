@@ -11,6 +11,7 @@
         public int? NationalityId { get; set; }
         public int? PositionId { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? PhoneNumberTwo { get; set; } 
         public string? Email { get; set; }
         public string? SemId { get; set; }
         public int? SpecialityId { get; set; }

@@ -3,6 +3,7 @@ using KFEOCH.Models;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace KFEOCH.Services
 {
@@ -12,14 +13,16 @@ namespace KFEOCH.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFileService _fileService;
         private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
         public OfficeDocumentService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor,
-                                    IFileService fileService, IConfiguration configuration)
+                                    IFileService fileService, IConfiguration configuration,IUserService userService)
         {
             _db = db;
             _httpContextAccessor = httpContextAccessor;
             _fileService = fileService;
             _configuration = configuration;
+            _userService = userService;
         }
 
         public OfficeWithDocuments GetAllDocumentsByOfficeId(int officeid)
@@ -54,7 +57,12 @@ namespace KFEOCH.Services
         }
         public async Task<ResultWithMessage> PostOfficeDocumentAsync(OfficeFileModel model)
         {
-
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
             var office = _db.Offices?.Find(model.OfficeId);
             if (office == null)
             {
@@ -171,10 +179,17 @@ namespace KFEOCH.Services
 
         public async Task<ResultWithMessage> DeleteDocumentAsync(int documentid)
         {
+            
             var doc = _db.OfficeDocuments?.Find(documentid);
             if (doc == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Document Not Found !!!" };
+            }
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, doc.Office.Id);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
             }
             var deletedfile = await _fileService.DeleteFile(doc.DocumentUrl);
             _db.OfficeDocuments.Remove(doc);

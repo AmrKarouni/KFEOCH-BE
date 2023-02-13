@@ -4,24 +4,36 @@ using KFEOCH.Models.Binding;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace KFEOCH.Services
 {
     public class OfficeSpecialityService : IOfficeSpecialityService
     {
         private readonly ApplicationDbContext _db;
-        public OfficeSpecialityService(ApplicationDbContext db)
+        private readonly IUserService _userService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public OfficeSpecialityService(ApplicationDbContext db,IUserService userService, IHttpContextAccessor httpContextAccessor)
         {
             _db = db;
+            _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ResultWithMessage> PostOfficeSpecialityAsync(OfficeSpecialityBindingModel model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
             var office = _db.Offices?.Find(model.OfficeId);
             if (office == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Not Found !!!" };
             }
+            
             var speciality = _db.Specialities?.Find(model.SpecialityId);
             if (speciality == null)
             {
@@ -50,6 +62,14 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Office Speciality Not Found !!!" };
             }
+
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, officespeciality.OfficeId.Value);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
+
             _db.OfficeSpecialities.Remove(officespeciality);
             _db.SaveChanges();
             var viewmodel = new OfficeSpecialityViewModel(officespeciality);

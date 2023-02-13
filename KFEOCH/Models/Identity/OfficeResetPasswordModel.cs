@@ -6,4 +6,10 @@
         public int OfficeTypeId { get; set; }
         public string? NewPassword { get; set; }
     }
+
+    public class UserResetPasswordModel
+    {
+        public string? Id { get; set; }
+        public string? NewPassword { get; set; }
+    }
 }

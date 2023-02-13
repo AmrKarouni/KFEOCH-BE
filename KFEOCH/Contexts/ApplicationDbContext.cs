@@ -39,13 +39,14 @@ namespace KFEOCH.Contexts
         public DbSet<OfficePayment>? OfficePayments { get; set; }
         public DbSet<OfficeRequest>? OfficeRequests { get; set; }
         public DbSet<OfficeDocument>? OfficeDocuments { get; set; }
-        public DbSet<PostType>? PostTypes { get; set; }
         public DbSet<Page>? Pages { get; set; }
         public DbSet<Post>? Posts { get; set; }
+        public DbSet<Section>? Sections { get; set; }
         public DbSet<OwnerPositionType>? OwnerPositionTypes { get; set; }
         public DbSet<Nationality>? Nationalities { get; set; }
         public DbSet<License>? Licenses { get; set; }
-
+        public DbSet<PostCategory> PostCategories { get; set; }
+        public DbSet<SiteMessage> SiteMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -263,12 +264,12 @@ namespace KFEOCH.Contexts
 
             modelBuilder.Entity<RequestType>(entity =>
             {
-                entity.HasIndex(e => new { e.NameArabic, e.ParentId })
+                entity.HasIndex(e => new { e.NameArabic})
                 .IsUnique();
             });
             modelBuilder.Entity<RequestType>(entity =>
             {
-                entity.HasIndex(e => new { e.NameEnglish, e.ParentId })
+                entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();
             });
 
@@ -283,36 +284,9 @@ namespace KFEOCH.Contexts
                 .IsUnique();
             });
 
-            modelBuilder.Entity<PostType>(entity =>
-            {
-                entity.HasIndex(e => new { e.NameArabic })
-                .IsUnique();
-            });
-            modelBuilder.Entity<PostType>(entity =>
-            {
-                entity.HasIndex(e => new { e.NameEnglish })
-                .IsUnique();
-            });
-
             modelBuilder.Entity<Page>(entity =>
             {
-                entity.HasIndex(e => new { e.TitleArabic })
-                .IsUnique();
-            });
-            modelBuilder.Entity<Page>(entity =>
-            {
-                entity.HasIndex(e => new { e.TitleEnglish })
-                .IsUnique();
-            });
-
-            modelBuilder.Entity<Post>(entity =>
-            {
-                entity.HasIndex(e => new { e.TitleArabic })
-                .IsUnique();
-            });
-            modelBuilder.Entity<Post>(entity =>
-            {
-                entity.HasIndex(e => new { e.TitleEnglish })
+                entity.HasIndex(e => new { e.HostUrl })
                 .IsUnique();
             });
 
@@ -333,6 +307,17 @@ namespace KFEOCH.Contexts
                 .IsUnique();
             });
             modelBuilder.Entity<Nationality>(entity =>
+            {
+                entity.HasIndex(e => new { e.NameEnglish })
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<PostCategory>(entity =>
+            {
+                entity.HasIndex(e => new { e.NameArabic })
+                .IsUnique();
+            });
+            modelBuilder.Entity<PostCategory>(entity =>
             {
                 entity.HasIndex(e => new { e.NameEnglish })
                 .IsUnique();

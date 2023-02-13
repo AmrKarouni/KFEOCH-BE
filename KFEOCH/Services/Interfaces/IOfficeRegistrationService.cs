@@ -11,14 +11,16 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> UploadDocument(FileModel model);
         FileBytesModel GetDocument(int licenseid);
         ResultWithMessage GetLicenseById(int id);
-        ResultWithMessage PostLicense(License model);
+        Task<ResultWithMessage> PostLicense(License model);
         ResultWithMessage ApproveLicense(int id, License model);
-        ResultWithMessage PutLicense(int id, License model);
+        Task<ResultWithMessage> PutLicense(int id, License model);
         ResultWithMessage CalculationFeesForNewOffice(int officeid);
-        ResultWithMessage CalculationFeesForNewOfficeByLisense(License model);
+        Task<ResultWithMessage> CalculationFeesForNewOfficeByLisense(License model);
         ResultWithMessage GetAllPendingLicenses();
         Task<ResultWithMessage> RejectLicense(int id);
-        ResultWithMessage CalculationFeesForRenew(int officeid, bool ispaid);
+        Task<ResultWithMessage> CalculationFeesForRenew(int officeid, bool ispaid, string lang, string returnUrl);
         ResultWithMessage GetAllOfficePayments(int officeid);
+        ResultWithMessage GetAllOfficeRenewPayments(int officeid);
+        Task<ResultWithMessage> GenerateRenewReceipt(int id);
     }
 }

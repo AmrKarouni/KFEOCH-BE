@@ -6,6 +6,7 @@ using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 
 namespace KFEOCH.Services
 {
@@ -15,14 +16,16 @@ namespace KFEOCH.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFileService _fileService;
         private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
         public OwnerDocumentService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor,
-                                    IFileService fileService, IConfiguration configuration)
+                                    IFileService fileService, IConfiguration configuration,IUserService userService)
         {
             _db = db;
             _httpContextAccessor = httpContextAccessor;
             _fileService = fileService;
             _configuration = configuration;
+            _userService = userService; 
         }
 
         public OfficeOwnerWithDocuments GetAllDocumentsByOwnerId(int ownerid)
@@ -60,12 +63,20 @@ namespace KFEOCH.Services
         }
         public async Task<ResultWithMessage> PostOwnerDocumentAsync(OwnerFileModel model)
         {
-
+            
             var owner = _db.OfficeOwners?.Find(model.OwnerId);
             if (owner == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Owner Not Found !!!" };
             }
+
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, owner.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
+
             var type = _db.OwnerDocumentTypes?.Find(model.TypeId);
             if (type == null)
             {
@@ -116,6 +127,7 @@ namespace KFEOCH.Services
             {
                 return result;
             }
+            
             docurl = doc.DocumentUrl;
             if (docurl != null)
             {
@@ -183,6 +195,12 @@ namespace KFEOCH.Services
             if (doc == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Owner Document Not Found !!!" };
+            }
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, doc.Owner.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
             }
             var deletedfile = await _fileService.DeleteFile(doc.DocumentUrl);
             _db.OwnerDocuments.Remove(doc);

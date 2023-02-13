@@ -5,6 +5,7 @@ using KFEOCH.Models.Dictionaries;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace KFEOCH.Services
 {
@@ -15,16 +16,22 @@ namespace KFEOCH.Services
         private readonly IFileService _fileService;
         private readonly IConfiguration _configuration;
         private readonly TimeZoneInfo timezone;
+        private readonly IKnetPaymentService _knetPaymentService;
+        private readonly IUserService _userService;
         public OfficeRegistrationService(ApplicationDbContext db,
                                          IHttpContextAccessor httpContextAccessor,
                                          IFileService fileService,
-                                         IConfiguration configuration)
+                                         IConfiguration configuration,
+                                         IKnetPaymentService knetPaymentService,
+                                         IUserService userService)
         {
             _db = db;
             _httpContextAccessor = httpContextAccessor;
             _fileService = fileService;
             _configuration = configuration;
             timezone = TimeZoneInfo.FindSystemTimeZoneById("Arab Standard Time");
+            _knetPaymentService = knetPaymentService;
+            _userService = userService;
         }
 
         public ResultWithMessage GetLicenseByOfficeId(int id)
@@ -134,8 +141,15 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Result = license };
         }
 
-        public ResultWithMessage PostLicense(License model)
+        public async Task<ResultWithMessage> PostLicense(License model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
+
             if (!CheckLicense(model).Success)
             {
                 return new ResultWithMessage
@@ -353,9 +367,14 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true, Result = license };
         }
 
-        public ResultWithMessage PutLicense(int id, License model)
+        public async Task<ResultWithMessage> PutLicense(int id, License model)
         {
-
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
             if (id != model.Id)
             {
                 return new ResultWithMessage
@@ -518,8 +537,14 @@ namespace KFEOCH.Services
 
         }
 
-        public ResultWithMessage CalculationFeesForNewOfficeByLisense(License model)
+        public async Task<ResultWithMessage> CalculationFeesForNewOfficeByLisense(License model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
             var office = _db.Offices.FirstOrDefault(x => x.Id == model.OfficeId);
             var entity = _db.OfficeEntities.FirstOrDefault(x => x.Id == model.OfficeEntityId);
             if (office == null)
@@ -667,6 +692,8 @@ namespace KFEOCH.Services
                     YearsCount = period,
                     MembershipEndDate = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(license.StartDate, timezone).Year, 12, 31).AddYears(DefaultFirstRegistrationYears - 1),
                     IsPaid = true,
+                    PaymentCategoryArabic = "تجديد اشتراك",
+                    PaymentCategoryEnglish = "Renew Registration",
 
                 });
                 office.OfficePayments = fees;
@@ -732,8 +759,213 @@ namespace KFEOCH.Services
             return new ResultWithMessage { Success = true };
         }
 
-        public ResultWithMessage CalculationFeesForRenew(int officeid, bool ispaid)
+        //public ResultWithMessage CalculationFeesForRenew(int officeid, bool ispaid)
+        //{
+        //    var office = _db.Offices?.Include(x => x.Entity).FirstOrDefault(x => x.Id == officeid);
+        //    if (office == null)
+        //    {
+        //        return new ResultWithMessage
+        //        {
+        //            Success = false,
+        //            Message = "Office Not Found !!!",
+        //            MessageEnglish = "Office Not Found !!!",
+        //            MessageArabic = "المكتب غير موجود "
+
+        //        };
+        //    }
+        //    if (office.IsActive == false ||
+        //        office.IsVerified == false)
+        //    {
+        //        return new ResultWithMessage
+        //        {
+        //            Success = false,
+        //            Message = "Office Not Active Or Not IsVerified !!!",
+        //            MessageEnglish = "Office Not Active Or Not IsVerified !!!",
+        //            MessageArabic = "المكتب غير فعال أو غير موثق  "
+
+        //        };
+        //    }
+        //    if (office.LicenseEndDate == null ||
+        //        office.MembershipEndDate == null)
+        //    {
+        //        return new ResultWithMessage
+        //        {
+        //            Success = false,
+        //            Message = "Office License Date Or Membership Date Not Found !!!",
+        //            MessageEnglish = "Office License Date Or Membership Date Not Found !!!",
+        //            MessageArabic = "خطأ في تاريخ نهاية الرخصة أو تاريخ نهاية الاشتراك"
+
+        //        };
+        //    }
+
+        //    var lastLicense = _db.Licenses?.FirstOrDefault(x => x.OfficeId == officeid && x.IsLast == true && x.IsApproved == true);
+        //    if (lastLicense == null)
+        //    {
+        //        return new ResultWithMessage { Success = false, Message = "Office Last Approved License Not Found !!!" };
+        //        return new ResultWithMessage
+        //        {
+        //            Success = false,
+        //            Message = "Office Last Approved License Not Found !!!",
+        //            MessageEnglish = "Office Last Approved License Not Found !!!",
+        //            MessageArabic = "أخر رخصة موافق عليها غير موجودة"
+
+        //        };
+        //    }
+        //    var fees = new List<OfficePayment>();
+
+
+        //    var membershipenddate = office.MembershipEndDate.Value;
+        //    var membershipenddateutc = TimeZoneInfo.ConvertTimeFromUtc(office.MembershipEndDate.Value, timezone);
+        //    var lastLicenseenddate = lastLicense.EndDate;
+        //    var currentdate = DateTime.UtcNow;
+        //    var paymentdate = DateTime.UtcNow;
+        //    var newmembershipenddate = new DateTime();
+
+        //    if (membershipenddate.Date < lastLicenseenddate.Date
+        //        && membershipenddateutc.Year >= currentdate.Year)
+        //    {
+
+        //        fees.Add(new OfficePayment
+        //        {
+        //            OfficeId = office.Id,
+        //            TypeId = 2,
+        //            RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") سنوات",
+        //            RequestNameEnglish = "Missing Period Registration Fees For (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") Years",
+        //            PaymentDate = paymentdate,
+        //            Amount = office.Entity.YearlyFees * (lastLicenseenddate.Year - membershipenddate.Year),
+        //            YearsCount = 0,
+        //            MembershipEndDate = null,
+        //            IsPaid = ispaid,
+        //        });
+
+
+        //        fees.Add(new OfficePayment
+        //        {
+        //            OfficeId = office.Id,
+        //            TypeId = 2,
+        //            RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+        //            RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
+        //            PaymentDate = paymentdate,
+        //            Amount = office.Entity.YearlyFees * office.RenewYears,
+        //            YearsCount = office.RenewYears,
+        //            MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (lastLicenseenddate.Year - membershipenddate.Year)),
+        //            IsPaid = ispaid,
+        //        });
+        //        newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (lastLicenseenddate.Year - membershipenddate.Year));
+        //    }
+        //    else if (membershipenddate.Date < lastLicenseenddate.Date
+        //       && membershipenddateutc.Year < currentdate.Year)
+        //    {
+        //        fees.Add(new OfficePayment
+        //        {
+        //            OfficeId = office.Id,
+        //            TypeId = 2,
+        //            RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
+        //            RequestNameEnglish = "Missing Period Registration Fees For (" + (currentdate.Year - membershipenddateutc.Year) + ") Years",
+        //            PaymentDate = paymentdate,
+        //            Amount = office.Entity.YearlyFees * (currentdate.Year - membershipenddateutc.Year),
+        //            YearsCount = 0,
+        //            MembershipEndDate = null,
+        //            IsPaid = ispaid,
+        //        });
+
+
+        //        fees.Add(new OfficePayment
+        //        {
+        //            OfficeId = office.Id,
+        //            TypeId = 2,
+        //            RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+        //            RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
+        //            PaymentDate = paymentdate,
+        //            Amount = office.Entity.YearlyFees * office.RenewYears,
+        //            YearsCount = office.RenewYears,
+        //            MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year)),
+        //            IsPaid = ispaid,
+        //        });
+        //        newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year));
+        //    }
+        //    if(membershipenddate.Date >= lastLicenseenddate.Date
+        //        && membershipenddateutc.Year >= currentdate.Year)
+        //    {
+        //        fees.Add(new OfficePayment
+        //        {
+        //            OfficeId = office.Id,
+        //            TypeId = 2,
+        //            RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+        //            RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
+        //            PaymentDate = paymentdate,
+        //            Amount = office.Entity.YearlyFees * office.RenewYears,
+        //            YearsCount = office.RenewYears,
+        //            MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears),
+        //            IsPaid = ispaid,
+        //        });
+        //        newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears);
+        //    }
+        //    else if(membershipenddate.Date >= lastLicenseenddate.Date
+        //        && membershipenddateutc.Year < currentdate.Year)
+        //    {
+        //        fees.Add(new OfficePayment
+        //        {
+        //            OfficeId = office.Id,
+        //            TypeId = 2,
+        //            RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
+        //            RequestNameEnglish = "Missing Period Registration Fees For (" + (currentdate.Year - membershipenddateutc.Year) + ") Years",
+        //            PaymentDate = paymentdate,
+        //            Amount = office.Entity.YearlyFees * (currentdate.Year - membershipenddateutc.Year),
+        //            YearsCount = 0,
+        //            MembershipEndDate = null,
+        //            IsPaid = ispaid,
+        //        });
+
+
+        //        fees.Add(new OfficePayment
+        //        {
+        //            OfficeId = office.Id,
+        //            TypeId = 2,
+        //            RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+        //            RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
+        //            PaymentDate = paymentdate,
+        //            Amount = office.Entity.YearlyFees * office.RenewYears,
+        //            YearsCount = office.RenewYears,
+        //            MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year)),
+        //            IsPaid = ispaid,
+        //        });
+        //        newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year));
+        //    }
+        //    if (ispaid == true)
+        //    {
+        //        office.MembershipEndDate = newmembershipenddate;
+        //        office.IsActive = true;
+        //        office.IsVerified = true;
+        //        _db.OfficePayments.AddRange(fees);
+        //        _db.Entry(office).State = EntityState.Modified;
+        //        _db.SaveChanges();
+        //    }
+
+        //    return new ResultWithMessage
+        //    {
+        //        Success = true,
+        //        Result = new OfficePaymentViewModel
+        //        {
+        //            StatusNameEnglish = office.MembershipEndDate < DateTime.UtcNow ? "In Active" : "Active",
+        //            StatusNameArabic = office.MembershipEndDate < DateTime.UtcNow ? "غير فعال" : "فعال",
+        //            CurrentMembershipEndDate = office.MembershipEndDate.Value,
+        //            NextMembershipEndDate = fees.FirstOrDefault(x => x.RequestNameEnglish.StartsWith("Renew Registration Fees For")).MembershipEndDate,
+        //            TotalAmount = fees.Sum(x => x.Amount),
+        //            Payments = fees
+        //        }
+        //    };
+        //}
+
+
+        public async Task<ResultWithMessage> CalculationFeesForRenew(int officeid, bool ispaid, string lang, string returnUrl)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, officeid);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
             var office = _db.Offices?.Include(x => x.Entity).FirstOrDefault(x => x.Id == officeid);
             if (office == null)
             {
@@ -793,22 +1025,24 @@ namespace KFEOCH.Services
             var currentdate = DateTime.UtcNow;
             var paymentdate = DateTime.UtcNow;
             var newmembershipenddate = new DateTime();
-
+            var renewYears = 0;
+            var missedYears = 0;
             if (membershipenddate.Date < lastLicenseenddate.Date
                 && membershipenddateutc.Year >= currentdate.Year)
             {
-
+                renewYears = office.RenewYears;
+                missedYears = (lastLicenseenddate.Year - membershipenddate.Year);
                 fees.Add(new OfficePayment
                 {
                     OfficeId = office.Id,
                     TypeId = 2,
-                    RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") سنوات",
+                    RequestNameArabic = "رسوم تجديد الاشتراك لفترة الانقطاع لمدة (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") سنوات",
                     RequestNameEnglish = "Missing Period Registration Fees For (" + (lastLicenseenddate.Year - membershipenddate.Year) + ") Years",
-                    PaymentDate = paymentdate,
+                    //PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * (lastLicenseenddate.Year - membershipenddate.Year),
                     YearsCount = 0,
                     MembershipEndDate = null,
-                    IsPaid = ispaid,
+                    IsPaid = false
                 });
 
 
@@ -816,30 +1050,32 @@ namespace KFEOCH.Services
                 {
                     OfficeId = office.Id,
                     TypeId = 2,
-                    RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+                    RequestNameArabic = "رسوم تجديد الاشتراك لمدة (" + office.RenewYears + ") سنوات",
                     RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
-                    PaymentDate = paymentdate,
+                    //PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
                     MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (lastLicenseenddate.Year - membershipenddate.Year)),
-                    IsPaid = ispaid,
+                    IsPaid = false
                 });
                 newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (lastLicenseenddate.Year - membershipenddate.Year));
             }
             else if (membershipenddate.Date < lastLicenseenddate.Date
                && membershipenddateutc.Year < currentdate.Year)
             {
+                renewYears = office.RenewYears;
+                missedYears = (currentdate.Year - membershipenddateutc.Year);
                 fees.Add(new OfficePayment
                 {
                     OfficeId = office.Id,
                     TypeId = 2,
-                    RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
+                    RequestNameArabic = "رسوم تجديد الاشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
                     RequestNameEnglish = "Missing Period Registration Fees For (" + (currentdate.Year - membershipenddateutc.Year) + ") Years",
-                    PaymentDate = paymentdate,
+                    //PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * (currentdate.Year - membershipenddateutc.Year),
                     YearsCount = 0,
                     MembershipEndDate = null,
-                    IsPaid = ispaid,
+                    IsPaid = false
                 });
 
 
@@ -847,47 +1083,51 @@ namespace KFEOCH.Services
                 {
                     OfficeId = office.Id,
                     TypeId = 2,
-                    RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+                    RequestNameArabic = "رسوم تجديد الاشتراك لمدة (" + office.RenewYears + ") سنوات",
                     RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
-                    PaymentDate = paymentdate,
+                    //PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
                     MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year)),
-                    IsPaid = ispaid,
+                    IsPaid = false
                 });
                 newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year));
             }
-            if(membershipenddate.Date >= lastLicenseenddate.Date
+            if (membershipenddate.Date >= lastLicenseenddate.Date
                 && membershipenddateutc.Year >= currentdate.Year)
             {
+                renewYears = office.RenewYears;
+                missedYears = 0;
                 fees.Add(new OfficePayment
                 {
                     OfficeId = office.Id,
                     TypeId = 2,
-                    RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+                    RequestNameArabic = "رسوم تجديد الاشتراك لمدة (" + office.RenewYears + ") سنوات",
                     RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
-                    PaymentDate = paymentdate,
+                    //PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
                     MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears),
-                    IsPaid = ispaid,
+                    IsPaid = false
                 });
                 newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears);
             }
-            else if(membershipenddate.Date >= lastLicenseenddate.Date
+            else if (membershipenddate.Date >= lastLicenseenddate.Date
                 && membershipenddateutc.Year < currentdate.Year)
             {
+                renewYears = office.RenewYears;
+                missedYears = (currentdate.Year - membershipenddateutc.Year);
                 fees.Add(new OfficePayment
                 {
                     OfficeId = office.Id,
                     TypeId = 2,
-                    RequestNameArabic = "رسوم تجديد اشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
+                    RequestNameArabic = "رسوم تجديد الاشتراك لفترة الانقطاع لمدة (" + (currentdate.Year - membershipenddateutc.Year) + ") سنوات",
                     RequestNameEnglish = "Missing Period Registration Fees For (" + (currentdate.Year - membershipenddateutc.Year) + ") Years",
-                    PaymentDate = paymentdate,
+                    //PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * (currentdate.Year - membershipenddateutc.Year),
                     YearsCount = 0,
                     MembershipEndDate = null,
-                    IsPaid = ispaid,
+                    IsPaid = false
                 });
 
 
@@ -895,24 +1135,42 @@ namespace KFEOCH.Services
                 {
                     OfficeId = office.Id,
                     TypeId = 2,
-                    RequestNameArabic = "رسوم تجديد اشتراك لمدة (" + office.RenewYears + ") سنوات",
+                    RequestNameArabic = "رسوم تجديد الاشتراك لمدة (" + office.RenewYears + ") سنوات",
                     RequestNameEnglish = "Renew Registration Fees For (" + office.RenewYears + ") Years",
-                    PaymentDate = paymentdate,
+                    //PaymentDate = paymentdate,
                     Amount = office.Entity.YearlyFees * office.RenewYears,
                     YearsCount = office.RenewYears,
                     MembershipEndDate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year)),
-                    IsPaid = ispaid,
+                    IsPaid = false
                 });
                 newmembershipenddate = office.MembershipEndDate.Value.AddYears(office.RenewYears + (currentdate.Year - membershipenddateutc.Year));
             }
             if (ispaid == true)
             {
-                office.MembershipEndDate = newmembershipenddate;
-                office.IsActive = true;
-                office.IsVerified = true;
+                //office.MembershipEndDate = newmembershipenddate;
+                //office.IsActive = true;
+                //office.IsVerified = true;
                 _db.OfficePayments.AddRange(fees);
-                _db.Entry(office).State = EntityState.Modified;
-                _db.SaveChanges();
+                //_db.Entry(office).State = EntityState.Modified;
+                //_db.SaveChanges();
+
+                var paymentResult = _knetPaymentService.GenerateRenewPayment(office.Id,
+                                                       fees.Sum(x => x.Amount),
+                                                       renewYears,
+                                                       missedYears,
+                                                       lang,
+                                                       returnUrl);
+                if (paymentResult == "Failed")
+                {
+                    return new ResultWithMessage
+                    {
+                        Success = false,
+                        Message = "Error Connecting to Payment Gateway ",
+                        MessageEnglish = "Error Connecting to Payment Gateway ",
+                        MessageArabic = "حدث خطأ في الاتصال مع مخدم الدفع"
+                    };
+                }
+                return new ResultWithMessage { Success = true, Result = new { PaymentUrl = paymentResult } };
             }
 
             return new ResultWithMessage
@@ -929,7 +1187,6 @@ namespace KFEOCH.Services
                 }
             };
         }
-
         public ResultWithMessage GetAllOfficePayments(int officeid)
         {
             var officepayments = _db.OfficePayments?
@@ -937,6 +1194,445 @@ namespace KFEOCH.Services
                                  .Where(x => x.OfficeId == officeid)
                                  .OrderByDescending(x => x.PaymentDate).Select(x => new OfficePaymentWithTypeViewModel(x)).ToList();
             return new ResultWithMessage { Success = true, Result = officepayments };
+        }
+
+        public ResultWithMessage GetAllOfficeRenewPayments(int officeid)
+        {
+            var officepayments = _db.OfficePayments?
+                                 .Include(x => x.Type)
+                                 .Where(x => x.OfficeId == officeid && x.PaymentCategoryEnglish.StartsWith("Renew Registration"))
+                                 .OrderByDescending(x => x.PaymentDate).Select(x => new OfficePaymentWithTypeViewModel(x)).ToList();
+            return new ResultWithMessage { Success = true, Result = officepayments };
+        }
+
+        public IEnumerable<DateTime> EachYear(DateTime from, DateTime thru)
+        {
+            for (var day = new DateTime(TimeZoneInfo.ConvertTimeFromUtc(from, timezone).Year, 12, 31); day.Date <= thru.Date; day = day.AddYears(1))
+                yield return day;
+        }
+        public async Task<ResultWithMessage> GenerateRenewReceipt(int id)
+        {
+            
+            var pay = _db.OfficePayments.Include(x => x.Office).FirstOrDefault(x => x.Id == id && x.PaymentCategoryEnglish == "Renew Registration");
+            if (pay == null)
+            {
+                return new ResultWithMessage
+                {
+                    Success = false,
+                    Message = "Payment Not Found",
+                    MessageEnglish = "Payment Not Found",
+                    MessageArabic = "الدفعة غير موجود"
+                };
+            }
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, pay.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
+            List<string> years = new List<string>();
+            foreach (DateTime day in EachYear(pay.Office.EstablishmentDate.Value, pay.Office.MembershipEndDate.Value))
+            {
+                years.Add(day.Year.ToString());
+            }
+            var cnt = years.Count;
+            if (cnt > 22)
+            {
+                years = years.Skip(cnt - 22).Take(22).ToList();
+            }
+            else if (cnt < 22)
+            {
+                for (int i = cnt - 1; i < 22; i++)
+                {
+                    years.Add("");
+                }
+            }
+            
+            var html = $@"<html>
+
+                        <head>
+                            <meta charset='UTF-8'>
+                        </head>
+                        <table width=100%>
+                            <tr>
+                                <td colspan='4' align='center' style='font-weight: 600;'>
+
+                                    <table style='width : 50mm; '>
+                                        <tr>
+                                            <td colspan='2' align='center' style='font-weight: 600;'>
+                                                <div style='width: 50mm '>
+                                                    <p style='margin-bottom: 2px;'>سند قبض</p>
+                                                    <p style='margin-top: 2px; margin-bottom: 2px;'>Receipt Voucher </p>
+                                                    <hr>
+                                                </div>
+                                        <tr>
+                                        <tr>
+                                            <td align='left' style='font-weight: 600;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>Knet</p>
+                                                </div>
+                                            </td>
+                                            <td align='right' style='font-weight: 600;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>كي نت</p>
+                                                </div>
+                                            </td>
+                                        <tr>
+                                    </table>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan='4' align='right'>
+                                    <table>
+                                        <tr>
+                                            <td align='left' style='font-weight: 600; padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>No.:</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px; width: 4cm;'>{pay.Id}</p>
+                                                </div>
+                                            </td>
+                                            <td align='left' style='font-weight: 600; padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>:رقم السند</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan='3' align='right'>
+                                    <table>
+                                        <tr>
+                                            <td align='left' style='font-weight: 600; padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>Date and Time</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px; width: 4cm;'>
+                                                       {TimeZoneInfo.ConvertTimeFromUtc(pay.PaymentDate, timezone).ToShortTimeString()}
+                                                        <span>
+                                                            &nbsp;
+                                                        </span>
+                                                        {TimeZoneInfo.ConvertTimeFromUtc(pay.PaymentDate, timezone).ToShortDateString()}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td align='right' style='font-weight: 600; padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>التاريخ و الوقت</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align='left' style='font-weight: 600; padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>Membership No. </p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px; width: 4cm;'>{pay.Office.LicenseId}</p>
+                                                </div>
+                                            </td>
+                                            <td align='right' style='font-weight: 600; padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>رقم العضــوية</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='right'>
+                                    <table>
+                                        <tr>
+                                            <td align='left' style='font-weight: 600; padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>Received From Mr.\ Messrs:</p>
+                                                </div>
+                                            </td>
+                                            <td colspan='2' align='center' style='padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px; width: 8cm;'>{pay.Office.NameArabic}</p>
+                                                </div>
+                                            </td>
+                                            <td align='right' style='font-weight: 600; padding-top: 1cm;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px;'>:وصلنا من السيد / السادة</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td align='center' style=' padding-top: 1cm;'>
+
+                                    <table
+                                        style='border: 1px solid black;border-collapse: collapse; width: 95%; border-bottom: none; border-left: none; border-right: none;'>
+                                        <tr style='border-bottom: 1px solid black;'>
+                                            <th align='center'
+                                                style='font-weight: 600; background-color:#ccc9c9; border-right:  1px solid black; border-left: 1px solid black;'>
+
+                                                <p>م</p>
+                                                <p>No.</p>
+
+                                            </th>
+                                            <th colspan='2' align='center'
+                                                style='font-weight: 600; background-color:#ccc9c9; border-right:  1px solid black;'>
+
+                                                <p style='width: 8cm;'>البيــــــان</p>
+                                                <p style='width: 8cm;'>Description</p>
+
+                                            </th>
+                                            <th align='center'
+                                                style='font-weight: 600; background-color:#ccc9c9; border-right:  1px solid black;'>
+
+                                                <p>المبلغ</p>
+                                                <p>Amount</p>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td align='center' style='border-right:  1px solid black;  border-left: 1px solid black;'>
+                                                <div>
+                                                    <p>1</p>
+                                                </div>
+                                            </td>
+                                            <td colspan='2' align='right' style=' border-right: 1px solid black; padding-right: 10px;'>
+                                                <div>
+                                                    <p style='width: 8cm;'>{pay.RequestNameArabic}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center'
+                                                style='border-left:  1px solid black;  border-right:  1px solid black;  padding-right: 10px;'>
+                                                <div>
+                                                    <p>{string.Format("{0:F2}", pay.Amount)}</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan='3' align='right'
+                                                style='font-weight: 600; border-top:  1px solid black; padding-right: 10px;'>
+                                                <div>
+                                                    <p style='width: 8cm;'> دينار كويتي فقط لاغير </p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='font-weight: 700; border-top:  1px solid black;'>
+                                                <div>
+                                                    <p>{string.Format("{0:F2}", pay.Amount)}</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='center' style=' padding-top: 1cm;'>
+
+                                    <table
+                                        style='border: 1px solid black;border-collapse: collapse; width: 95%; border-bottom: none; border-left: none; border-right: none;'>
+                                        <tr style='border-bottom: 1px solid black;'>
+                                            <th align='left' colspan='6'
+                                                style='font-weight: 600; background-color:#ccc9c9; border-right:  1px solid black; border-left: 1px solid black;'>
+
+                                                <p>The annual subscription was paid for year :</p>
+                                            </th>
+                                            <th align='right' colspan='5'
+                                                style='font-weight: 600; background-color:#ccc9c9; border-right:  1px solid black; border-left: 1px solid black;'>
+
+                                                <p> : تم تسديد الاشتراك السنوي عن عام</p>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td align='center'
+                                                style='border-right:  1px solid gray;  border-left: 1px solid black;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[10].ToString()) ? "" : years[10].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[9].ToString()) ? "" : years[9].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[8].ToString()) ? "" : years[8].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[7].ToString()) ? "" : years[7].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[6].ToString()) ? "" : years[6].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[5].ToString()) ? "" : years[5].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[4].ToString()) ? "" : years[4].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[3].ToString()) ? "" : years[3].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[2].ToString()) ? "" : years[2].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[1].ToString()) ? "" : years[1].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid black;border-bottom: 1px solid gray;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[0].ToString()) ? "" : years[0].ToString())}</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align='center'
+                                                style='border-right:  1px solid gray;  border-left: 1px solid black;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[21].ToString()) ? "" : years[21].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[20].ToString()) ? "" : years[20].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[19].ToString()) ? "" : years[19].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[18].ToString()) ? "" : years[18].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[17].ToString()) ? "" : years[17].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[16].ToString()) ? "" : years[16].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[15].ToString()) ? "" : years[15].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[14].ToString()) ? "" : years[14].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[13].ToString()) ? "" : years[13].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid gray;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[12].ToString()) ? "" : years[12].ToString())}</p>
+                                                </div>
+                                            </td>
+                                            <td align='center' style='border-right:  1px solid black;border-bottom: 1px solid black;width: 9%; height: 25px;'>
+                                                <div>
+                                                    <p>{(string.IsNullOrEmpty(years[11].ToString()) ? "" : years[11].ToString())}</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td style='font-weight: 600; padding-top: 2cm;  padding-left: 1cm; '>
+                                    <p>
+                                        <span>
+                                            Recept
+                                        </span>
+                                        <span>
+                                            &nbsp;
+                                        </span>
+                                        <span>
+                                            &nbsp;
+                                        </span>
+                                        <span>
+                                            المستلم
+                                        </span>
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td align='center' style=' padding-top: 1cm;'>
+
+                                    <table style='width: 95%;'>
+                                        <tr>
+                                            <td align='left' style='font-weight: 600;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px; width: 3cm;'>
+                                                        {TimeZoneInfo.ConvertTimeFromUtc(pay.Office.MembershipEndDate.Value.AddDays(1), timezone).ToShortDateString()}</p>
+                                                </div>
+                                            </td>
+                                            <td align='left' style='font-weight: 600;'> : مطلوب تجديد اشتراك العضوية اعتبارا من
+                                            </td>
+                                            <td align='right' style='font-weight: 600;'>
+                                                <div>
+                                                    <p style='margin-bottom: 2px; width: 3cm;'>
+                                                        {TimeZoneInfo.ConvertTimeFromUtc(pay.Office.MembershipEndDate.Value,timezone).ToShortDateString()}</p>
+                                                </div>
+                                            </td>
+                                            <td align='right' style='font-weight: 600;'> : تاريخ انتهاء اشتراك العضوية في
+                                            </td>
+                                        </tr>
+
+                                    </table>
+
+                                </td>
+                            </tr>
+                        </table>
+
+                        </html>";
+            pay.HtmlBody = html;
+            _db.Entry(pay).State = EntityState.Modified;
+            _db.SaveChanges();
+            return new ResultWithMessage { Success = true, Result = new { Html = html } }; 
+
         }
     }
 }

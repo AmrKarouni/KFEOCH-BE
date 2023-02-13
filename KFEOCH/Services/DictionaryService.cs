@@ -925,7 +925,10 @@ namespace KFEOCH.Services
                     MessageArabic = "نوع المكتب غير موجود !!!"
                 };
             }
-            officeType = model;
+            officeType.NameArabic = model.NameArabic;
+            officeType.NameEnglish = model.NameEnglish;
+            officeType.DescriptionArabic = model.DescriptionArabic;
+            officeType.DescriptionEnglish = model.DescriptionEnglish;
             _db.Entry(officeType).State = EntityState.Modified;
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = officeType };
@@ -1255,13 +1258,11 @@ namespace KFEOCH.Services
 
 
 
-        public List<RequestTypeViewModel> GetAllRequestTypes()
+        public List<RequestType> GetAllRequestTypes()
         {
-            var list = new List<RequestTypeViewModel>();
-            list = _db.RequestTypes?.Include(x => x.Parent).Where(x => x.IsDeleted == false)
-                                    .Select(x => new RequestTypeViewModel(x))
+            var list = _db.RequestTypes?.Where(x => x.IsDeleted == false)
                                     .ToList();
-            return list ?? new List<RequestTypeViewModel>();
+            return list ?? new List<RequestType>();
         }
         public async Task<ResultWithMessage> PostRequestTypeAsync(RequestType model)
         {
@@ -1269,8 +1270,6 @@ namespace KFEOCH.Services
                                    || (x.NameEnglish == model.NameEnglish));
             if (requesttype != null)
             {
-                return new ResultWithMessage { Success = false, Message = $@"Request Type {model.NameArabic} Already Exist !!!" };
-
                 return new ResultWithMessage
                 {
                     Success = false,
@@ -1281,8 +1280,7 @@ namespace KFEOCH.Services
             }
             await _db.RequestTypes.AddAsync(model);
             _db.SaveChanges();
-            var result = new RequestTypeViewModel(model);
-            return new ResultWithMessage { Success = true, Result = result };
+            return new ResultWithMessage { Success = true, Result = model };
         }
 
         public ResultWithMessage PutRequestType(int id, RequestType model)
@@ -1312,8 +1310,7 @@ namespace KFEOCH.Services
             requesttype = model;
             _db.Entry(requesttype).State = EntityState.Modified;
             _db.SaveChanges();
-            var result = new RequestTypeViewModel(requesttype);
-            return new ResultWithMessage { Success = true, Result = result };
+            return new ResultWithMessage { Success = true, Result = requesttype };
 
         }
 
@@ -1329,14 +1326,14 @@ namespace KFEOCH.Services
         //    _db.SaveChanges();
         //    return new ResultWithMessage { Success = true, Message = $@"Request Type {requesttype.NameArabic} Deleted !!!" };
         //}
-        public List<RequestTypeViewModel> GetAllRequestTypesByOfficeTypeId(int id)
-        {
-            var list = new List<RequestTypeViewModel>();
-            list = _db.RequestTypes?.Include(x => x.Parent).Where(x => x.IsDeleted == false && x.ParentId == id)
-                                    .Select(x => new RequestTypeViewModel(x))
-                                    .ToList();
-            return list ?? new List<RequestTypeViewModel>();
-        }
+        //public List<RequestType> GetAllRequestTypesByOfficeTypeId(int id)
+        //{
+        //    var list = new List<RequestTypeViewModel>();
+        //    list = _db.RequestTypes?.Include(x => x.Parent).Where(x => x.IsDeleted == false && x.ParentId == id)
+        //                            .Select(x => new RequestTypeViewModel(x))
+        //                            .ToList();
+        //    return list ?? new List<RequestTypeViewModel>();
+        //}
 
 
         //OwnerPositionType

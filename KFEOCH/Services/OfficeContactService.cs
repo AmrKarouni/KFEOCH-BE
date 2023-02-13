@@ -4,6 +4,7 @@ using KFEOCH.Models.Binding;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace KFEOCH.Services
@@ -11,9 +12,13 @@ namespace KFEOCH.Services
     public class OfficeContactService : IOfficeContactService
     {
         private readonly ApplicationDbContext _db;
-        public OfficeContactService(ApplicationDbContext db)
+        private readonly IUserService _userService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public OfficeContactService(ApplicationDbContext db,IUserService userService, IHttpContextAccessor httpContextAccessor)
         {
             _db = db;
+            _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public List<OfficeContactViewModel> GetAllOfficeContactsByOfficeId(int officeid)
@@ -32,11 +37,19 @@ namespace KFEOCH.Services
         }
         public async Task<ResultWithMessage> PostOfficeContactAsync(OfficeContactBindingModel model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
+
             var office = _db.Offices.Find(model.OfficeId);
             if (office == null)
             {
                 return new ResultWithMessage { Success = false, Message = "Office Not Found !!!" };
             }
+           
             var contacttype = _db.ContactTypes.Find(model.ContactId);
             if (contacttype == null)
             {
@@ -54,11 +67,20 @@ namespace KFEOCH.Services
             {
                 return new ResultWithMessage { Success = false, Message = $@"Bad Request" };
             }
+
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId.Value);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
             var office = _db.Offices.Find(model.OfficeId);
             if (office == null)
             {
                 return new ResultWithMessage { Success = false, Message = "Office Not Found !!!" };
             }
+            
+
             var contacttype = _db.ContactTypes.Find(model.ContactId);
             if (contacttype == null)
             {
@@ -86,6 +108,12 @@ namespace KFEOCH.Services
             if (contact == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Contact Not Found !!!" };
+            }
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, contact.OfficeId.Value);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
             }
             _db.OfficeContacts?.Remove(contact);
             _db.SaveChanges();

@@ -3,15 +3,22 @@ using KFEOCH.Models;
 using KFEOCH.Models.Views;
 using KFEOCH.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace KFEOCH.Services
 {
     public class OfficeOwnerService : IOfficeOwnerService
     {
         private readonly ApplicationDbContext _db;
-        public OfficeOwnerService(ApplicationDbContext db)
+        private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public OfficeOwnerService(ApplicationDbContext db, IConfiguration configuration,IUserService userService, IHttpContextAccessor httpContextAccessor)
         {
             _db = db;
+            _configuration = configuration;
+            _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public ResultWithMessage GetById(int id)
         {
@@ -45,6 +52,7 @@ namespace KFEOCH.Services
                 NationalityId = officeOwner.NationalityId,
                 Email = officeOwner.Email,
                 PhoneNumber = officeOwner.PhoneNumber,
+                PhoneNumberTwo = officeOwner.PhoneNumberTwo,
                 PositionId = officeOwner.PositionId,
                 SemId = officeOwner.SemId,
                 SpecialityId = officeOwner.SpecialityId,
@@ -68,6 +76,12 @@ namespace KFEOCH.Services
         }
         public async Task<ResultWithMessage> PostOfficeOwnerAsync(OfficeOwner model)
         {
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
+            }
             var o = _db.OfficeOwners?.FirstOrDefault(x => (x.NameArabic == model.NameArabic)
                                    || (x.NameEnglish == model.NameEnglish)
                                    );
@@ -77,6 +91,12 @@ namespace KFEOCH.Services
             }
             model.IsApproved = true;
             model.IsDeleted = false;
+            var office = _db.Offices?.FirstOrDefault(x => x.Id == model.OfficeId);
+            if (office?.IsLocal == true)
+            {
+                var defaultLocalNationality = _db.Nationalities?.FirstOrDefault(x => x.NameEnglish.ToLower() == _configuration.GetValue<string>("DefaultLocalNationality").ToLower());
+                model.NationalityId = defaultLocalNationality.Id;
+            }
             await _db.OfficeOwners.AddAsync(model);
             _db.SaveChanges();
             return new ResultWithMessage { Success = true, Result = model };
@@ -86,6 +106,12 @@ namespace KFEOCH.Services
             if (id != model.Id)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Bad Request" };
+            }
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, model.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
             }
             var owner = _db.OfficeOwners?.Find(id);
             _db.Entry(owner).State = EntityState.Detached;
@@ -102,10 +128,17 @@ namespace KFEOCH.Services
         }
         public async Task<ResultWithMessage> DeleteOfficeOwnerAsync(int id)
         {
+           
             var owner = _db.OfficeOwners?.Find(id);
             if (owner == null)
             {
                 return new ResultWithMessage { Success = false, Message = $@"Owner Not Found !!!" };
+            }
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext.User as ClaimsPrincipal;
+            var can = await _userService.CanManipulateOffice(principal, owner.OfficeId);
+            if (!can)
+            {
+                return new ResultWithMessage { Success = false, Message = $@"Unauthorized" };
             }
             owner.IsApproved = true;
             owner.IsDeleted = true;

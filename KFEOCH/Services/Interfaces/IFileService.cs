@@ -11,8 +11,10 @@ namespace KFEOCH.Services.Interfaces
         Task<ResultWithMessage> UploadPdfFile(FileModel model, string path);
         Task<ResultWithMessage> UploadFile(OwnerFileModel model, string path);
         Task<ResultWithMessage> UploadFile(OfficeFileModel model, string path);
-        Task<ResultWithMessage> UploadPostImage(PostFileModel model, string path);
+        Task<ResultWithMessage> UploadPageImage(ImageModel model, string path);
+        Task<ResultWithMessage> UploadImage(IFormFile image, string path);
         FilePathModel GetFilePath(string fileurl);
         Task<ResultWithMessage> DeleteFile(string fileurl);
+        FileBytesModel ExportToExcel(IEnumerable<object> model);
     }
 }
