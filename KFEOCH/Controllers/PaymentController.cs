@@ -67,76 +67,80 @@ namespace KFEOCH.Controllers
                 };
             }
 
-            var type = _db.RequestTypes.Find(typeId);
-            var entity = _db.CertificateEntities.Find(entityId);
-
-            var req = new OfficeRequest(new OfficeRequestBindingModel
-                                                { OfficeId = officeId,
-                                                  RequestTypeId = typeId,
-                                                  CertificateEntityId = entity != null ? entity.Id : null,
-            },
-                                                  Convert.ToDouble(amount),
-                                                  paymentId);
-            _db.OfficeRequests.Add(req);
-
-            
-            var paymentModel = new OfficePayment
+            else
             {
-                Id = 0,
-                OfficeId = officeId,
-                TypeId = 2,
-                RequestNameArabic = type?.NameArabic + (entity!= null ? ( " - " + entity?.NameArabic) : ""),
-                RequestNameEnglish = type?.NameEnglish + (entity != null ? (" - " + entity?.NameEnglish) : ""), 
-                PaymentDate = string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
-                Amount = Convert.ToDouble(amount),
-                YearsCount = 0,
-                IsPaid = true,
-                PaymentCategoryArabic = "طلب شهادة",
-                PaymentCategoryEnglish = "Certificate Request",
-                PaymentNumber = paymentId,
+                var type = _db.RequestTypes.Find(typeId);
+                var entity = _db.CertificateEntities.Find(entityId);
 
-            };
-            _db.OfficePayments.Add(paymentModel);
-            html = GenerateSuccessHtml(office.NameArabic,
-                                            office.NameEnglish,
-                                            Convert.ToDouble(amount),
-                                            paymentId,
-                                            string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
-                                            string.IsNullOrEmpty(result) ? "success" : result,
-                                            type?.NameEnglish + (entity != null ? (" - " + entity?.NameEnglish) : ""),
-                                            type?.NameArabic + (entity != null ? (" - " + entity?.NameArabic) : ""),
-                                            referenceId,
-                                            lang,
-                                            returnUrl);
+                var req = new OfficeRequest(new OfficeRequestBindingModel
+                {
+                    OfficeId = officeId,
+                    RequestTypeId = typeId,
+                    CertificateEntityId = entity != null ? entity.Id : null,
+                },
+                                                      Convert.ToDouble(amount),
+                                                      paymentId);
+                _db.OfficeRequests.Add(req);
 
 
+                var paymentModel = new OfficePayment
+                {
+                    Id = 0,
+                    OfficeId = officeId,
+                    TypeId = 2,
+                    RequestNameArabic = type?.NameArabic + (entity != null ? (" - " + entity?.NameArabic) : ""),
+                    RequestNameEnglish = type?.NameEnglish + (entity != null ? (" - " + entity?.NameEnglish) : ""),
+                    PaymentDate = string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
+                    Amount = Convert.ToDouble(amount),
+                    YearsCount = 0,
+                    IsPaid = true,
+                    PaymentCategoryArabic = "طلب شهادة",
+                    PaymentCategoryEnglish = "Certificate Request",
+                    PaymentNumber = paymentId,
+
+                };
+                _db.OfficePayments.Add(paymentModel);
+                html = GenerateSuccessHtml(office.NameArabic,
+                                                office.NameEnglish,
+                                                Convert.ToDouble(amount),
+                                                paymentId,
+                                                string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
+                                                string.IsNullOrEmpty(result) ? "success" : result,
+                                                type?.NameEnglish + (entity != null ? (" - " + entity?.NameEnglish) : ""),
+                                                type?.NameArabic + (entity != null ? (" - " + entity?.NameArabic) : ""),
+                                                referenceId,
+                                                lang,
+                                                returnUrl);
 
 
-            _db.SaveChanges();
-            var receipt = await _requestService.GenerateRequestReceipt(req.Id);
-            if (receipt.Success == false)
-            {
+
+
+                _db.SaveChanges();
+                var receipt = await _requestService.GenerateRequestReceipt(req.Id);
+                if (receipt.Success == false)
+                {
+                    return new ContentResult
+                    {
+                        Content = "<p>Generate Receipt Failed </p>",
+                        ContentType = "text/html"
+                    };
+                }
+                var certificate = await _requestService.GenerateRequestCertificate(req.Id);
+                if (certificate.Success == false)
+                {
+                    return new ContentResult
+                    {
+                        Content = "<p>Generate Certificate Failed </p>",
+                        ContentType = "text/html"
+                    };
+                }
                 return new ContentResult
                 {
-                    Content = "<p>Generate Receipt Failed </p>",
+                    Content = html,
                     ContentType = "text/html"
                 };
-            }
-            var certificate = await _requestService.GenerateRequestCertificate(req.Id);
-            if (certificate.Success == false)
-            {
-                return new ContentResult
-                {
-                    Content = "<p>Generate Certificate Failed </p>",
-                    ContentType = "text/html"
-                };
-            }
-            return new ContentResult
-            {
-                Content = html,
-                ContentType = "text/html"
-            };
 
+            }
         }
 
 
@@ -163,7 +167,7 @@ namespace KFEOCH.Controllers
             var postDate = returnlist.FirstOrDefault(x => x.Contains("postdate")).Split('=')[1].ToString();
             var office = _db.Offices.Find(officeId);
 
-            if (string.IsNullOrEmpty(referenceId) ||!(officeSuccess))
+            if (string.IsNullOrEmpty(referenceId) || !(officeSuccess))
             {
                 var htmlerror = GenerateFailedHtml(lang);
                 return new ContentResult
@@ -173,70 +177,75 @@ namespace KFEOCH.Controllers
                 };
             }
 
-            var renewYearsString = returnlist.FirstOrDefault(x => x.Contains("udf1")).Split('=')[1].ToString();
-            var renewYearsSuccess = int.TryParse(renewYearsString, out int renewYears);
-            var missedYearsString = returnlist.FirstOrDefault(x => x.Contains("udf2")).Split('=')[1].ToString();
-            var missedYearsSuccess = int.TryParse(missedYearsString, out int missedYears);
-            var reqNameArabic = "";
-            var reqNameEnglish = "";
-            if (missedYears > 0)
+            else
             {
-                reqNameArabic = "رسوم تجديد الاشتراك لفترة الانقطاع لمدة (" + missedYears + ") سنوات" +
-                                    " - ";
-                reqNameEnglish = "Missing Period Registration Fees For (" + missedYears + ") Years" +
-                                    " - ";
-            }
-            var newPayment = new OfficePayment
-            {
-                Id = 0,
-                OfficeId = office.Id,
-                TypeId = 2,
-                RequestNameArabic = reqNameArabic +
-                                    "رسوم تجديد الاشتراك لمدة (" + renewYears + ") سنوات",
-                RequestNameEnglish = reqNameEnglish +
-                                     "Renew Registration Fees For (" + renewYears + ") Years",
-                PaymentDate = string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
-                Amount = Convert.ToDouble(amount),
-                YearsCount = renewYears + missedYears,
-                MembershipEndDate = office.MembershipEndDate.Value.AddYears(renewYears + missedYears),
-                IsPaid = true,
-                PaymentCategoryArabic = "تجديد اشتراك",
-                PaymentCategoryEnglish = "Renew Registration",
-                PaymentNumber = paymentId,
-            };
-            _db.OfficePayments.Add(newPayment);
-            office.MembershipEndDate = office.MembershipEndDate.Value.AddYears(renewYears + missedYears);
-            office.IsActive = true;
-            office.IsVerified = true;
-            html = GenerateSuccessHtml(office.NameArabic,
-                                            office.NameEnglish,
-                                            Convert.ToDouble(amount),
-                                            paymentId,
-                                            string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
-                                            string.IsNullOrEmpty(result) ? "success" : result,
-                                            "Renew Registration Fees" + " - " + "KFEOCH",
-                                            "رسوم تجديد الاشتراك" + " - " + "الاتحاد الكويتي",
-                                            referenceId,
-                                            lang,
-                                            returnUrl);
 
 
-            _db.SaveChanges();
-            var receipt = await _registrationService.GenerateRenewReceipt(newPayment.Id);
-            if (receipt.Success == false)
-            {
+                var renewYearsString = returnlist.FirstOrDefault(x => x.Contains("udf1")).Split('=')[1].ToString();
+                var renewYearsSuccess = int.TryParse(renewYearsString, out int renewYears);
+                var missedYearsString = returnlist.FirstOrDefault(x => x.Contains("udf2")).Split('=')[1].ToString();
+                var missedYearsSuccess = int.TryParse(missedYearsString, out int missedYears);
+                var reqNameArabic = "";
+                var reqNameEnglish = "";
+                if (missedYears > 0)
+                {
+                    reqNameArabic = "رسوم تجديد الاشتراك لفترة الانقطاع لمدة (" + missedYears + ") سنوات" +
+                                        " - ";
+                    reqNameEnglish = "Missing Period Registration Fees For (" + missedYears + ") Years" +
+                                        " - ";
+                }
+                var newPayment = new OfficePayment
+                {
+                    Id = 0,
+                    OfficeId = office.Id,
+                    TypeId = 2,
+                    RequestNameArabic = reqNameArabic +
+                                        "رسوم تجديد الاشتراك لمدة (" + renewYears + ") سنوات",
+                    RequestNameEnglish = reqNameEnglish +
+                                         "Renew Registration Fees For (" + renewYears + ") Years",
+                    PaymentDate = string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
+                    Amount = Convert.ToDouble(amount),
+                    YearsCount = renewYears + missedYears,
+                    MembershipEndDate = office.MembershipEndDate.Value.AddYears(renewYears + missedYears),
+                    IsPaid = true,
+                    PaymentCategoryArabic = "تجديد اشتراك",
+                    PaymentCategoryEnglish = "Renew Registration",
+                    PaymentNumber = paymentId,
+                };
+                _db.OfficePayments.Add(newPayment);
+                office.MembershipEndDate = office.MembershipEndDate.Value.AddYears(renewYears + missedYears);
+                office.IsActive = true;
+                office.IsVerified = true;
+                html = GenerateSuccessHtml(office.NameArabic,
+                                                office.NameEnglish,
+                                                Convert.ToDouble(amount),
+                                                paymentId,
+                                                string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
+                                                string.IsNullOrEmpty(result) ? "success" : result,
+                                                "Renew Registration Fees" + " - " + "KFEOCH",
+                                                "رسوم تجديد الاشتراك" + " - " + "الاتحاد الكويتي",
+                                                referenceId,
+                                                lang,
+                                                returnUrl);
+
+
+                _db.SaveChanges();
+                var receipt = await _registrationService.GenerateRenewReceipt(newPayment.Id);
+                if (receipt.Success == false)
+                {
+                    return new ContentResult
+                    {
+                        Content = "<p>Generate Receipt Failed </p>",
+                        ContentType = "text/html"
+                    };
+                }
+
                 return new ContentResult
                 {
-                    Content = "<p>Generate Receipt Failed </p>",
+                    Content = html,
                     ContentType = "text/html"
                 };
             }
-
-            return new ContentResult
-            {
-                Content = html,
-                ContentType = "text/html"
-            };
         }
 
 
