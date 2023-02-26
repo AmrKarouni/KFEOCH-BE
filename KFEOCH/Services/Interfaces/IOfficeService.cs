@@ -7,6 +7,7 @@ namespace KFEOCH.Services.Interfaces
     public interface IOfficeService
     {
         Office GetById(int id);
+        Office GetByEmail(string email);
         ResultWithMessage PutOfficeAsync(int id, Office model);
         Task<ResultWithMessage> PutOfficeInfo(int id, OfficePutBindingModel model);
         Task<ResultWithMessage> UploadLogo(FileModel model);

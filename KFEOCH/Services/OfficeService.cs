@@ -34,6 +34,14 @@ namespace KFEOCH.Services
             }
             return office ?? new Office();
         }
+
+        public Office GetByEmail(string email)
+        {
+            var office = _db.Offices?.FirstOrDefault(x => x.Email == email);
+            return office ?? new Office();
+        }
+
+
         public ResultWithMessage PutOfficeAsync(int id, Office model)
         {
             if (id != model.Id)

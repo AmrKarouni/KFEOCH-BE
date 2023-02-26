@@ -18,10 +18,12 @@ namespace KFEOCH.Controllers
     {
         private readonly IUserService _userService;
         private readonly IEmailService _emailService;
-        public AccountController(IUserService userService, IEmailService emailService)
+        private readonly IOfficeService _officeService;
+        public AccountController(IUserService userService, IEmailService emailService,IOfficeService officeService)
         {
             _userService = userService;
             _emailService = emailService;
+            _officeService = officeService;
         }
         [Authorize(Roles = "SuperUser,Administrator")]
         [HttpPost("admin-register")]
@@ -78,7 +80,7 @@ namespace KFEOCH.Controllers
                             </td>
                             </tr>
                             <tr>
-                            <td colspan='2'>You have been sent this email because you created an account on our website.<br />Please click on <a href='{confirmationLink}'>this link </a>to confirm your email address is correct.</td>
+                            <td colspan='2'>You have been sent this email because you created an account on our website.<br />Please click on <a href='{confirmationLink}'>this link </a>to confirm your email address.</td>
                             </tr>
                             <tr>
                             <td colspan='2'>
@@ -110,11 +112,29 @@ namespace KFEOCH.Controllers
             {
                 return BadRequest(generator.Message);
             }
+            var office = _officeService.GetByEmail(email);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token = generator.Result, email = email }, Request.Scheme);
-            var body = (
-                    "Dear Mr. / Ms. , \n" +
-                    "You have been sent this email because you created an account on our website.\n" +
-                    "Please click on <a href =\"" + confirmationLink + "\"> this link </a> to confirm your email address is correct. ");
+            var body = @$"<table style='border-collapse: collapse; width: 100%;'>
+                            <tbody>
+                            <tr>
+                            <td colspan='2'><img style='width: 30%;' src='https://kfeoch-api.techteec.net/logos/logo-horizontal.png' alt='' /></td>
+                            </tr>
+                            <tr>
+                            <td colspan='2'>
+                            <h4>Dear Mr. / Ms. {office.NameEnglish},&nbsp;</h4>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td colspan='2'>You have been sent this email because you request a new confirmation email.<br />Please click on <a href='{confirmationLink}'>this link </a>to confirm your email address.</td>
+                            </tr>
+                            <tr>
+                            <td colspan='2'>
+                            <p>Thank You ,</p>
+                            <h4>KFEOCH Team</h4>
+                            </td>
+                            </tr>
+                            </tbody>
+                            </table>";
             var bodybuilder = new BodyBuilder();
             bodybuilder.HtmlBody = body;
             var ms = bodybuilder.ToMessageBody();
