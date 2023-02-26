@@ -115,9 +115,12 @@ namespace KFEOCH.Controllers
                     "Dear Mr. / Ms. , \n" +
                     "You have been sent this email because you created an account on our website.\n" +
                     "Please click on <a href =\"" + confirmationLink + "\"> this link </a> to confirm your email address is correct. ");
+            var bodybuilder = new BodyBuilder();
+            bodybuilder.HtmlBody = body;
+            var ms = bodybuilder.ToMessageBody();
             var message =
-                        new Message(new string[]
-                        { email! }, "Confirmation Email From KFEOCH", body);
+                             new Message(new string[]
+                             { email! }, "Confirmation Email From KFEOCH", bodybuilder.ToMessageBody());
             _emailService.SendEmail(message);
 
             return Ok();
@@ -152,7 +155,7 @@ namespace KFEOCH.Controllers
         public async Task<ActionResult> OfficeLoginAsync(OfficeLoginModel model)
         {
             var result = await _userService.OfficeLoginAsync(model);
-            if (result.IsAuthenticated)
+            if (result.IsAuthenticated && result.IsEmailConfirmed)
             {
                 SetRefreshTokenInCookie(result.RefreshToken);
             }

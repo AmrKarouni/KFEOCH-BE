@@ -55,11 +55,23 @@ namespace KFEOCH.Controllers
             var typeIdSuccess = int.TryParse(typeIdString, out int typeId);
             var entityIdString = returnlist.FirstOrDefault(x => x.Contains("udf2")).Split('=')[1].ToString();
             var entityIdSuccess = int.TryParse(entityIdString, out int entityId);
-
+            var type = _db.RequestTypes.Find(typeId);
+            var entity = _db.CertificateEntities.Find(entityId);
             if (string.IsNullOrEmpty(referenceId) ||
                !(officeSuccess && typeIdSuccess && entityIdSuccess))
             {
-                var htmlerror = GenerateFailedHtml(lang);
+                //var htmlerror = GenerateFailedHtml(lang);
+                var htmlerror = GenerateSuccessHtml(office.NameArabic,
+                                                office.NameEnglish,
+                                                Convert.ToDouble(amount),
+                                                paymentId,
+                                                string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
+                                                string.IsNullOrEmpty(result) ? "Success" : " Failed",
+                                                type?.NameEnglish + (entity != null ? (" - " + entity?.NameEnglish) : ""),
+                                                type?.NameArabic + (entity != null ? (" - " + entity?.NameArabic) : ""),
+                                                referenceId,
+                                                lang,
+                                                returnUrl);
                 return new ContentResult
                 {
                     Content = htmlerror,
@@ -69,8 +81,7 @@ namespace KFEOCH.Controllers
 
             else
             {
-                var type = _db.RequestTypes.Find(typeId);
-                var entity = _db.CertificateEntities.Find(entityId);
+               
 
                 var req = new OfficeRequest(new OfficeRequestBindingModel
                 {
@@ -105,7 +116,7 @@ namespace KFEOCH.Controllers
                                                 Convert.ToDouble(amount),
                                                 paymentId,
                                                 string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
-                                                string.IsNullOrEmpty(result) ? "success" : result,
+                                                string.IsNullOrEmpty(result) ? "Success" : result,
                                                 type?.NameEnglish + (entity != null ? (" - " + entity?.NameEnglish) : ""),
                                                 type?.NameArabic + (entity != null ? (" - " + entity?.NameArabic) : ""),
                                                 referenceId,
@@ -169,7 +180,18 @@ namespace KFEOCH.Controllers
 
             if (string.IsNullOrEmpty(referenceId) || !(officeSuccess))
             {
-                var htmlerror = GenerateFailedHtml(lang);
+                //var htmlerror = GenerateFailedHtml(lang);
+                var htmlerror =  GenerateSuccessHtml(office.NameArabic,
+                                                office.NameEnglish,
+                                                Convert.ToDouble(amount),
+                                                paymentId,
+                                                string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
+                                                string.IsNullOrEmpty(result) ? "Success" : " Failed ",
+                                                "Renew Registration Fees" + " - " + "KFEOCH",
+                                                "رسوم تجديد الاشتراك" + " - " + "الاتحاد الكويتي",
+                                                referenceId,
+                                                lang,
+                                                returnUrl);
                 return new ContentResult
                 {
                     Content = htmlerror,
@@ -179,8 +201,6 @@ namespace KFEOCH.Controllers
 
             else
             {
-
-
                 var renewYearsString = returnlist.FirstOrDefault(x => x.Contains("udf1")).Split('=')[1].ToString();
                 var renewYearsSuccess = int.TryParse(renewYearsString, out int renewYears);
                 var missedYearsString = returnlist.FirstOrDefault(x => x.Contains("udf2")).Split('=')[1].ToString();
@@ -221,7 +241,7 @@ namespace KFEOCH.Controllers
                                                 Convert.ToDouble(amount),
                                                 paymentId,
                                                 string.IsNullOrEmpty(postDate) ? DateTime.UtcNow : Convert.ToDateTime(postDate),
-                                                string.IsNullOrEmpty(result) ? "success" : result,
+                                                string.IsNullOrEmpty(result) ? "Success" : result,
                                                 "Renew Registration Fees" + " - " + "KFEOCH",
                                                 "رسوم تجديد الاشتراك" + " - " + "الاتحاد الكويتي",
                                                 referenceId,
@@ -317,7 +337,8 @@ namespace KFEOCH.Controllers
                         </tr>
                         <tr >
                         <td style='width: 34.7695%;'>الحالة</td>
-                        <td style='width: 65.2305%;'>{result}</td>
+                        <td style='width: 65.2305%; color :{(result == "Success" ? "green" : "red")}'>
+                                                    {(result == "Success" ? "نجاح" : "فشل")}</td>
                         </tr>
                         <tr >
                         <td style='width: 34.7695%;'>رقم الطلب</td>
@@ -385,7 +406,7 @@ namespace KFEOCH.Controllers
                         </tr>
                         <tr >
                         <td style='width: 34.7695%;'>Result</td>
-                        <td style='width: 65.2305%;'>{result}</td>
+                        <td style='width: 65.2305%; color :{(result=="Success" ? "green" : "red")}'>{result}</td>
                         </tr>
                         <tr >
                         <td style='width: 34.7695%;'>Order Id</td>

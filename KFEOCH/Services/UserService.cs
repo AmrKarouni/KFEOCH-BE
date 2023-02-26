@@ -383,7 +383,7 @@ namespace KFEOCH.Services
             var confimred = await _userManager.IsEmailConfirmedAsync(user);
             if (!confimred)
             {
-                authenticationModel.IsAuthenticated = false;
+                authenticationModel.IsAuthenticated = true;
                 authenticationModel.IsEmailConfirmed = false;
                 authenticationModel.Message = $@"This Account Email Not Confirmed Yet !!!";
                 authenticationModel.MessageArabic = "البريد الإلكتروني للحساب لم يتم تأكيده بعد !!!";
@@ -426,10 +426,6 @@ namespace KFEOCH.Services
                 }
                 return authenticationModel;
             }
-            authenticationModel.IsAuthenticated = false;
-            authenticationModel.IsEmailConfirmed = false;
-            authenticationModel.Message = $"Incorrect Credentials for user {user.Email}.";
-            authenticationModel.MessageArabic = $"بيانات اعتماد غير صحيحة للمستخدم {user.Email}.";
             return authenticationModel;
         }
 
